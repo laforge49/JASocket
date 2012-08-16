@@ -2,6 +2,8 @@ package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.lpc.JLPCActor;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.ServerSocketChannel;
@@ -12,11 +14,12 @@ public class SocketAcceptor extends JLPCActor {
     ServerSocketChannel serverSocketChannel;
     Thread thread;
 
-    public void open(SocketAddress socketAddress, int maxPacketSize) throws Exception {
+    public void open(InetAddress inetAddress, int port, int maxPacketSize) throws Exception {
         this.maxPacketSize = maxPacketSize;
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, port);
         serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.setOption(StandardSocketOptions.SO_RCVBUF, maxPacketSize);
-        serverSocketChannel.bind(socketAddress);
+        serverSocketChannel.bind(inetSocketAddress);
         thread = new Thread(new Acceptor());
         thread.start();
     }
