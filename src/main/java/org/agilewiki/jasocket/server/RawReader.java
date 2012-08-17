@@ -40,11 +40,15 @@ abstract public class RawReader extends JLPCActor {
             try {
                 while (true) {
                     ByteBuffer byteBuffer = ByteBuffer.allocate(maxPacketSize);
-                    socketChannel.read(byteBuffer);
+                    int i = socketChannel.read(byteBuffer);
+                    if (i == -1)
+                        return;
+                    byteBuffer.flip();
                     (new ProcessByteBuffer(byteBuffer)).sendEvent(RawReader.this);
                 }
             } catch (ClosedChannelException cce) {
             } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }

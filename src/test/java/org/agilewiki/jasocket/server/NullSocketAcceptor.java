@@ -7,8 +7,10 @@ public class NullSocketAcceptor extends SocketAcceptor {
     public void acceptSocket(SocketChannel socketChannel) {
         RawReader rawReader = new NullRawReader();
         try {
+            rawReader.initialize(getMailboxFactory().createAsyncMailbox());
             rawReader.open(socketChannel, maxPacketSize, threadFactory);
         } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }

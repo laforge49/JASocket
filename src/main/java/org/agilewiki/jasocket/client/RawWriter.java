@@ -4,6 +4,8 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
+import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 
 public class RawWriter extends JLPCActor {
@@ -19,6 +21,15 @@ public class RawWriter extends JLPCActor {
         socketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
         socketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
         socketChannel.connect(inetSocketAddress);
+    }
+
+    public void writeByteBuffer(ByteBuffer byteBuffer) throws Exception {
+        byteBuffer.flip();
+        try {
+            while (byteBuffer.hasRemaining())
+                socketChannel.write(byteBuffer);
+        } catch (ClosedChannelException ex) {
+        }
     }
 
     public void close() {
