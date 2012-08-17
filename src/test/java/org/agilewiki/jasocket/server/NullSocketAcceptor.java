@@ -5,8 +5,9 @@ import java.nio.channels.SocketChannel;
 public class NullSocketAcceptor extends SocketAcceptor {
     @Override
     public void acceptSocket(SocketChannel socketChannel) {
+        RawReader rawReader = new NullRawReader();
         try {
-            socketChannel.close();
+            rawReader.open(socketChannel, maxPacketSize, threadFactory);
         } catch (Exception ex) {
         }
     }

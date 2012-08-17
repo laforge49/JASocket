@@ -9,7 +9,7 @@ import org.agilewiki.jasocket.server.SocketAcceptor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-public class RawClientOpenTest extends TestCase {
+public class RawConnectionTest extends TestCase {
     public void test() throws Exception {
         MailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(2);
         SocketAcceptor socketAcceptor = new NullSocketAcceptor();
@@ -18,10 +18,10 @@ public class RawClientOpenTest extends TestCase {
             InetAddress inetAddress = InetAddress.getLocalHost();
             InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8889);
             socketAcceptor.open(inetSocketAddress, 100000);
-            RawClient rawClient = new NullRawClient();
-            rawClient.initialize(mailboxFactory.createMailbox());
-            rawClient.open(inetSocketAddress, 100000);
-            rawClient.close();
+            RawWriter rawWriter = new RawWriter();
+            rawWriter.initialize(mailboxFactory.createMailbox());
+            rawWriter.open(inetSocketAddress, 100000);
+            rawWriter.close();
         } finally {
             socketAcceptor.close();
             mailboxFactory.close();

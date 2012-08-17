@@ -17,6 +17,7 @@ import java.util.concurrent.ThreadFactory;
 abstract public class SocketAcceptor extends JLPCActor {
     int maxPacketSize;
     ServerSocketChannel serverSocketChannel;
+    ThreadFactory threadFactory;
     Thread thread;
 
     public void open(InetSocketAddress inetSocketAddress, int maxPacketSize)
@@ -29,6 +30,7 @@ abstract public class SocketAcceptor extends JLPCActor {
                      ThreadFactory threadFactory)
             throws Exception {
         this.maxPacketSize = maxPacketSize;
+        this.threadFactory = threadFactory;
         serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.setOption(StandardSocketOptions.SO_RCVBUF, maxPacketSize);
         serverSocketChannel.bind(inetSocketAddress);
