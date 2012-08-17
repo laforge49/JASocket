@@ -5,13 +5,11 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
-import java.nio.ByteBuffer;
+public class WriteBytes extends Request<Object, RawWriter> {
+    byte[] bytes;
 
-public class WriteByteBuffer extends Request<Object, RawWriter> {
-    ByteBuffer byteBuffer;
-
-    public WriteByteBuffer(ByteBuffer byteBuffer) {
-        this.byteBuffer = byteBuffer;
+    public WriteBytes(byte[] bytes) {
+        this.bytes = bytes;
     }
 
     @Override
@@ -21,7 +19,7 @@ public class WriteByteBuffer extends Request<Object, RawWriter> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((RawWriter) targetActor).writeByteBuffer(byteBuffer);
+        ((RawWriter) targetActor).writeBytes(bytes);
         rp.processResponse(null);
     }
 }
