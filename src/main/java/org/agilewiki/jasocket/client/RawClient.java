@@ -11,10 +11,9 @@ public class RawClient extends JLPCActor {
     int maxPacketSize;
     SocketChannel socketChannel;
 
-    public void open(InetAddress inetAddress, int port, int maxPacketSize)
+    public void open(InetSocketAddress inetSocketAddress, int maxPacketSize)
             throws Exception {
         this.maxPacketSize = maxPacketSize;
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, port);
         socketChannel = SocketChannel.open();
         socketChannel.configureBlocking(true);
         socketChannel.setOption(StandardSocketOptions.SO_SNDBUF, maxPacketSize);
