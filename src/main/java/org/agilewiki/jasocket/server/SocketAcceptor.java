@@ -1,7 +1,10 @@
 package org.agilewiki.jasocket.server;
 
+import org.agilewiki.jactor.Actor;
+import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jactor.lpc.Request;
 
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
@@ -32,7 +35,7 @@ abstract public class SocketAcceptor extends JLPCActor {
         thread.start();
     }
 
-    abstract public void acceptSocket(SocketChannel socketChannel);
+    abstract protected void acceptSocket(SocketChannel socketChannel);
 
     public void close() {
         thread.interrupt();
@@ -59,5 +62,24 @@ abstract public class SocketAcceptor extends JLPCActor {
                 System.exit(1);
             }
         }
+    }
+}
+
+class AcceptSocket extends Request<Object, SocketAcceptor> {
+    SocketChannel socketChannel;
+
+    public AcceptSocket(SocketChannel socketChannel) {
+        this.socketChannel = socketChannel;
+    }
+
+    @Override
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof SocketAcceptor;
+    }
+
+    @Override
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        ((SocketAcceptor) targetActor).acceptSocket(socketChannel);
+        rp.processResponse(null);
     }
 }

@@ -7,6 +7,7 @@ public class NullSocketAcceptor extends SocketAcceptor {
     public void acceptSocket(SocketChannel socketChannel) {
         try {
             socketChannel.close();
-        } catch (Exception ex) {}
+        } catch (Exception ex) {
+        }
     }
 }
