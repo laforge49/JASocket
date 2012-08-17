@@ -12,6 +12,7 @@ import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.ThreadFactory;
 
 abstract public class SocketAcceptor extends JLPCActor {
     int maxPacketSize;
@@ -25,7 +26,7 @@ abstract public class SocketAcceptor extends JLPCActor {
 
     public void open(InetSocketAddress inetSocketAddress,
                      int maxPacketSize,
-                     JAThreadFactory threadFactory)
+                     ThreadFactory threadFactory)
             throws Exception {
         this.maxPacketSize = maxPacketSize;
         serverSocketChannel = ServerSocketChannel.open();
