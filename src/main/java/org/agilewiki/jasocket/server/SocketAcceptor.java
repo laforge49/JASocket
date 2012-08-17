@@ -3,9 +3,7 @@ package org.agilewiki.jasocket.server;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ClosedChannelException;
@@ -34,7 +32,7 @@ abstract public class SocketAcceptor extends JLPCActor {
         thread.start();
     }
 
-    abstract public void acceptSocket(SocketChannel socketChannel) throws Exception;
+    abstract public void acceptSocket(SocketChannel socketChannel);
 
     public void close() {
         thread.interrupt();
