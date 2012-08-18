@@ -1,8 +1,6 @@
 package org.agilewiki.jasocket.server;
 
-import org.agilewiki.jactor.lpc.JLPCActor;
-
-public class NullBytesProcessor extends JLPCActor implements BytesProcessor {
+public class NullBytesProcessor extends BytesProcessor {
     @Override
     public void processBytes(byte[] bytes) throws Exception {
         System.out.println("received " + bytes.length + " bytes");

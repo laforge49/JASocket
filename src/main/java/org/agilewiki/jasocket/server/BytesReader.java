@@ -47,7 +47,7 @@ public class BytesReader extends RawReader {
             return;
         byte[] b = bytes;
         bytes = null;
-        (new ProcessBytes(bytes)).sendEvent(bytesProcessor);
+        (new ProcessBytes(b)).sendEvent(this, bytesProcessor);
     }
 
     @Override
