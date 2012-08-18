@@ -48,7 +48,11 @@ abstract public class RawReader extends JLPCActor {
                 }
             } catch (ClosedChannelException cce) {
             } catch (Exception ex) {
-                ex.printStackTrace();
+                try {
+                    (new ProcessException(ex)).sendEvent(RawReader.this);
+                } catch (Exception x) {
+                    x.printStackTrace();
+                }
             }
         }
     }

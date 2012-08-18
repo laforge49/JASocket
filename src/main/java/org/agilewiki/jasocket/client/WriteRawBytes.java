@@ -5,10 +5,10 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
-public class WriteBytes extends Request<Object, RawWriter> {
+public class WriteRawBytes extends Request<Object, RawWriter> {
     byte[] bytes;
 
-    public WriteBytes(byte[] bytes) {
+    public WriteRawBytes(byte[] bytes) {
         this.bytes = bytes;
     }
 

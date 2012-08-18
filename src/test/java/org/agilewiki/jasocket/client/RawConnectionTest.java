@@ -23,9 +23,9 @@ public class RawConnectionTest extends TestCase {
             RawWriter rawWriter = new RawWriter();
             rawWriter.initialize(mailboxFactory.createAsyncMailbox());
             rawWriter.open(inetSocketAddress, maxPacketSize);
-            (new WriteBytes("Hello".getBytes())).sendEvent(rawWriter);
-            (new WriteBytes(" ".getBytes())).sendEvent(rawWriter);
-            (new WriteBytes("world!".getBytes())).send(new JAFuture(), rawWriter);
+            (new WriteRawBytes("Hello".getBytes())).sendEvent(rawWriter);
+            (new WriteRawBytes(" ".getBytes())).sendEvent(rawWriter);
+            (new WriteRawBytes("world!".getBytes())).send(new JAFuture(), rawWriter);
             rawWriter.close();
             Thread.sleep(200);
         } finally {
