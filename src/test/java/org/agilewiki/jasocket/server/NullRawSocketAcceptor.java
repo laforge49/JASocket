@@ -2,7 +2,7 @@ package org.agilewiki.jasocket.server;
 
 import java.nio.channels.SocketChannel;
 
-public class NullSocketAcceptor extends SocketAcceptor {
+public class NullRawSocketAcceptor extends SocketAcceptor {
     @Override
     public void acceptSocket(SocketChannel socketChannel) {
         RawReader rawReader = new NullRawReader();

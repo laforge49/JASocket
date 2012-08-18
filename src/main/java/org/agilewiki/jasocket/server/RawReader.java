@@ -23,7 +23,7 @@ abstract public class RawReader extends JLPCActor {
         thread.start();
     }
 
-    abstract void processByteBuffer(ByteBuffer byteBuffer);
+    abstract void processByteBuffer(ByteBuffer byteBuffer) throws Exception;
 
     abstract void processException(Exception exception);
 

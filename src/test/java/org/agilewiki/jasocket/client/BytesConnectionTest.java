@@ -10,7 +10,7 @@ import org.agilewiki.jasocket.server.SocketAcceptor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-public class RawConnectionTest extends TestCase {
+public class BytesConnectionTest extends TestCase {
     public void test() throws Exception {
         int maxPacketSize = 3;
         MailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(10);
