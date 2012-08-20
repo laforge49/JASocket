@@ -1,6 +1,6 @@
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket;
 
-import org.agilewiki.jasocket.client.RawSocket;
+import org.agilewiki.jasocket.RawSocket;
 
 import java.nio.ByteBuffer;
 

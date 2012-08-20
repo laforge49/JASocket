@@ -1,4 +1,4 @@
-package org.agilewiki.jasocket.client;
+package org.agilewiki.jasocket;
 
 import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;

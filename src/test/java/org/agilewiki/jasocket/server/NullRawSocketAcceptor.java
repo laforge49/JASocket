@@ -1,6 +1,7 @@
 package org.agilewiki.jasocket.server;
 
-import org.agilewiki.jasocket.client.RawSocket;
+import org.agilewiki.jasocket.NullRawSocket;
+import org.agilewiki.jasocket.RawSocket;
 
 import java.nio.channels.SocketChannel;
 

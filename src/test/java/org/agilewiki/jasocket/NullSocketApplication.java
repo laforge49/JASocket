@@ -1,8 +1,8 @@
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket;
 
-import org.agilewiki.jasocket.client.BytesReceiver;
+import org.agilewiki.jasocket.SocketApplication;
 
-public class NullBytesReceiver extends BytesReceiver {
+public class NullSocketApplication extends SocketApplication {
     @Override
     public void receiveBytes(byte[] bytes) throws Exception {
         System.out.println("received " + bytes.length + " bytes");
