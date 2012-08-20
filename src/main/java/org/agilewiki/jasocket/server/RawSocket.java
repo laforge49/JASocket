@@ -2,28 +2,45 @@ package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.client.SocketWriter;
 
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
-abstract public class RawReader extends JLPCActor {
+abstract public class RawSocket extends SocketWriter {
     int maxPacketSize;
-    SocketChannel socketChannel;
-    Thread thread;
+    Thread readerThread;
 
-    public void open(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
+    @Override
+    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize)
             throws Exception {
-        this.socketChannel = socketChannel;
-        this.maxPacketSize = maxPacketSize;
-        thread = threadFactory.newThread(new Reader());
-        thread.start();
+        clientOpen(inetSocketAddress, maxPacketSize, new JAThreadFactory());
     }
 
-    abstract void processByteBuffer(ByteBuffer byteBuffer) throws Exception;
+    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, ThreadFactory threadFactory)
+            throws Exception {
+        super.clientOpen(inetSocketAddress, maxPacketSize);
+        this.maxPacketSize = maxPacketSize;
+        readerThread = threadFactory.newThread(new Reader());
+        readerThread.start();
+    }
+
+    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
+            throws Exception {
+        writeBuffer = ByteBuffer.allocateDirect(maxPacketSize);
+        this.socketChannel = socketChannel;
+        this.maxPacketSize = maxPacketSize;
+        readerThread = threadFactory.newThread(new Reader());
+        readerThread.start();
+    }
+
+    abstract void receiveByteBuffer(ByteBuffer byteBuffer) throws Exception;
 
     abstract void processException(Exception exception);
 
@@ -44,12 +61,12 @@ abstract public class RawReader extends JLPCActor {
                     if (i == -1)
                         return;
                     byteBuffer.flip();
-                    (new ProcessByteBuffer(byteBuffer)).sendEvent(RawReader.this);
+                    (new ReceiveByteBuffer(byteBuffer)).sendEvent(RawSocket.this);
                 }
             } catch (ClosedChannelException cce) {
             } catch (Exception ex) {
                 try {
-                    (new ProcessException(ex)).sendEvent(RawReader.this);
+                    (new ProcessException(ex)).sendEvent(RawSocket.this);
                 } catch (Exception x) {
                     x.printStackTrace();
                 }
@@ -58,26 +75,26 @@ abstract public class RawReader extends JLPCActor {
     }
 }
 
-class ProcessByteBuffer extends Request<Object, RawReader> {
+class ReceiveByteBuffer extends Request<Object, RawSocket> {
     ByteBuffer byteBuffer;
 
-    public ProcessByteBuffer(ByteBuffer byteBuffer) {
+    public ReceiveByteBuffer(ByteBuffer byteBuffer) {
         this.byteBuffer = byteBuffer;
     }
 
     @Override
     public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof RawReader;
+        return targetActor instanceof RawSocket;
     }
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((RawReader) targetActor).processByteBuffer(byteBuffer);
+        ((RawSocket) targetActor).receiveByteBuffer(byteBuffer);
         rp.processResponse(null);
     }
 }
 
-class ProcessException extends Request<Object, RawReader> {
+class ProcessException extends Request<Object, RawSocket> {
     Exception exception;
 
     public ProcessException(Exception exception) {
@@ -86,12 +103,12 @@ class ProcessException extends Request<Object, RawReader> {
 
     @Override
     public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof RawReader;
+        return targetActor instanceof RawSocket;
     }
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((RawReader) targetActor).processException(exception);
+        ((RawSocket) targetActor).processException(exception);
         rp.processResponse(null);
     }
 }

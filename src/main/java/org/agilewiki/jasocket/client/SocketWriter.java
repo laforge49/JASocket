@@ -9,14 +9,15 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 
 public class SocketWriter extends JLPCActor {
-    SocketChannel socketChannel;
-    ByteBuffer byteBuffer;
+    protected SocketChannel socketChannel;
+    protected ByteBuffer writeBuffer;
 
-    public void open(InetSocketAddress inetSocketAddress, int maxPacketSize)
+    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize)
             throws Exception {
-        byteBuffer = ByteBuffer.allocateDirect(maxPacketSize);
+        writeBuffer = ByteBuffer.allocateDirect(maxPacketSize);
         socketChannel = SocketChannel.open();
         socketChannel.configureBlocking(true);
+        socketChannel.setOption(StandardSocketOptions.SO_RCVBUF, maxPacketSize);
         socketChannel.setOption(StandardSocketOptions.SO_SNDBUF, maxPacketSize);
         socketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
         socketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
@@ -27,26 +28,26 @@ public class SocketWriter extends JLPCActor {
         int i = 0;
         while (i < bytes.length) {
             int l = bytes.length - i;
-            int r = byteBuffer.remaining();
+            int r = writeBuffer.remaining();
             if (l > r)
                 l = r;
-            byteBuffer.put(bytes, i, l);
+            writeBuffer.put(bytes, i, l);
             i += l;
-            if (!byteBuffer.hasRemaining())
+            if (!writeBuffer.hasRemaining())
                 write();
         }
-        if (byteBuffer.position() > 0 && getMailbox().isEmpty())
+        if (writeBuffer.position() > 0 && getMailbox().isEmpty())
             write();
     }
 
     void write() throws Exception {
-        byteBuffer.flip();
+        writeBuffer.flip();
         try {
-            while (byteBuffer.hasRemaining())
-                socketChannel.write(byteBuffer);
+            while (writeBuffer.hasRemaining())
+                socketChannel.write(writeBuffer);
         } catch (ClosedChannelException ex) {
         }
-        byteBuffer.clear();
+        writeBuffer.clear();
     }
 
     public void close() {

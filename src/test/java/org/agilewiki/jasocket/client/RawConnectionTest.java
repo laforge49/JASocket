@@ -22,7 +22,7 @@ public class RawConnectionTest extends TestCase {
             socketAcceptor.open(inetSocketAddress, maxPacketSize);
             SocketWriter rawWriter = new SocketWriter();
             rawWriter.initialize(mailboxFactory.createAsyncMailbox());
-            rawWriter.open(inetSocketAddress, maxPacketSize);
+            rawWriter.clientOpen(inetSocketAddress, maxPacketSize);
             (new WriteRawBytes("Hello".getBytes())).sendEvent(rawWriter);
             (new WriteRawBytes(" ".getBytes())).sendEvent(rawWriter);
             (new WriteRawBytes("world!".getBytes())).send(new JAFuture(), rawWriter);

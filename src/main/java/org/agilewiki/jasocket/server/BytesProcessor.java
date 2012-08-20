@@ -10,9 +10,9 @@ abstract public class BytesProcessor extends JLPCActor {
 
     public void open(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
             throws Exception {
-        BytesReader bytesReader = new BytesReader();
-        bytesReader.bytesProcessor = this;
-        bytesReader.initialize(getMailboxFactory().createAsyncMailbox());
-        bytesReader.open(socketChannel, maxPacketSize, threadFactory);
+        BytesSocket bytesSocket = new BytesSocket();
+        bytesSocket.bytesProcessor = this;
+        bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
+        bytesSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
     }
 }

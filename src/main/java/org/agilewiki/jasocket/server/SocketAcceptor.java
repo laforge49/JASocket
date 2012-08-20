@@ -54,6 +54,7 @@ abstract public class SocketAcceptor extends JLPCActor {
             try {
                 while (true) {
                     SocketChannel socketChannel = serverSocketChannel.accept();
+                    socketChannel.setOption(StandardSocketOptions.SO_SNDBUF, maxPacketSize);
                     socketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
                     socketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
                     (new AcceptSocket(socketChannel)).sendEvent(SocketAcceptor.this);

@@ -2,7 +2,7 @@ package org.agilewiki.jasocket.server;
 
 import java.nio.ByteBuffer;
 
-public class BytesReader extends RawReader {
+public class BytesSocket extends RawSocket {
     public BytesProcessor bytesProcessor;
     byte[] lengthBytes = new byte[4];
     int lengthIndex = 0;
@@ -11,7 +11,7 @@ public class BytesReader extends RawReader {
     int bytesIndex;
 
     @Override
-    void processByteBuffer(ByteBuffer byteBuffer) throws Exception {
+    void receiveByteBuffer(ByteBuffer byteBuffer) throws Exception {
         while (byteBuffer.remaining() > 0) {
             if (bytes == null)
                 buildLength(byteBuffer);

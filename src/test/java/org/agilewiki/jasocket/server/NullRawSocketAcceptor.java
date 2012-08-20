@@ -5,10 +5,10 @@ import java.nio.channels.SocketChannel;
 public class NullRawSocketAcceptor extends SocketAcceptor {
     @Override
     public void acceptSocket(SocketChannel socketChannel) {
-        RawReader rawReader = new NullRawReader();
+        RawSocket rawSocket = new NullRawSocket();
         try {
-            rawReader.initialize(getMailboxFactory().createAsyncMailbox());
-            rawReader.open(socketChannel, maxPacketSize, threadFactory);
+            rawSocket.initialize(getMailboxFactory().createAsyncMailbox());
+            rawSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

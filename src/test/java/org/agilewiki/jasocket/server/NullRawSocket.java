@@ -2,9 +2,9 @@ package org.agilewiki.jasocket.server;
 
 import java.nio.ByteBuffer;
 
-public class NullRawReader extends RawReader {
+public class NullRawSocket extends RawSocket {
     @Override
-    void processByteBuffer(ByteBuffer byteBuffer) {
+    void receiveByteBuffer(ByteBuffer byteBuffer) {
         System.out.println("read " + byteBuffer.remaining() + " bytes");
     }
 
