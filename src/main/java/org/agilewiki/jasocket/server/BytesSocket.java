@@ -3,12 +3,17 @@ package org.agilewiki.jasocket.server;
 import java.nio.ByteBuffer;
 
 public class BytesSocket extends RawSocket {
-    public BytesProcessor bytesProcessor;
+    private BytesReceiver bytesReceiver;
     byte[] lengthBytes = new byte[4];
     int lengthIndex = 0;
     int length;
     byte[] bytes = null;
     int bytesIndex;
+
+    public void setBytesReceiver(BytesReceiver bytesReceiver) {
+        this.bytesReceiver = bytesReceiver;
+        exceptionProcessor = bytesReceiver;
+    }
 
     @Override
     void receiveByteBuffer(ByteBuffer byteBuffer) throws Exception {
@@ -47,11 +52,11 @@ public class BytesSocket extends RawSocket {
             return;
         byte[] b = bytes;
         bytes = null;
-        (new ProcessBytes(b)).sendEvent(this, bytesProcessor);
+        (new ReceiveBytes(b)).sendEvent(this, bytesReceiver);
     }
 
     @Override
-    void processException(Exception exception) {
+    public void processException(Exception exception) {
         exception.printStackTrace();
     }
 }

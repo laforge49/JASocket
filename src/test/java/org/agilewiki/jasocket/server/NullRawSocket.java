@@ -9,7 +9,7 @@ public class NullRawSocket extends RawSocket {
     }
 
     @Override
-    void processException(Exception exception) {
+    public void processException(Exception exception) {
         exception.printStackTrace();
     }
 }
