@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 
-public class RawWriter extends JLPCActor {
+public class SocketWriter extends JLPCActor {
     SocketChannel socketChannel;
     ByteBuffer byteBuffer;
 

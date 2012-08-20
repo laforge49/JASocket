@@ -5,7 +5,7 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
-public class WriteRawBytes extends Request<Object, RawWriter> {
+public class WriteRawBytes extends Request<Object, SocketWriter> {
     byte[] bytes;
 
     public WriteRawBytes(byte[] bytes) {
@@ -14,12 +14,12 @@ public class WriteRawBytes extends Request<Object, RawWriter> {
 
     @Override
     public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof RawWriter;
+        return targetActor instanceof SocketWriter;
     }
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((RawWriter) targetActor).writeBytes(bytes);
+        ((SocketWriter) targetActor).writeBytes(bytes);
         rp.processResponse(null);
     }
 }

@@ -7,7 +7,7 @@ import org.agilewiki.jactor.lpc.Request;
 
 import java.nio.ByteBuffer;
 
-public class WriteBytes extends Request<Object, RawWriter> {
+public class WriteBytes extends Request<Object, SocketWriter> {
     byte[] bytes;
 
     public WriteBytes(byte[] bytes) {
@@ -16,7 +16,7 @@ public class WriteBytes extends Request<Object, RawWriter> {
 
     @Override
     public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof RawWriter;
+        return targetActor instanceof SocketWriter;
     }
 
     @Override
@@ -24,8 +24,8 @@ public class WriteBytes extends Request<Object, RawWriter> {
         byte[] lengthBytes = new byte[4];
         ByteBuffer lengthBuffer = ByteBuffer.wrap(lengthBytes);
         lengthBuffer.putInt(bytes.length);
-        ((RawWriter) targetActor).writeBytes(lengthBytes);
-        ((RawWriter) targetActor).writeBytes(bytes);
+        ((SocketWriter) targetActor).writeBytes(lengthBytes);
+        ((SocketWriter) targetActor).writeBytes(bytes);
         rp.processResponse(null);
     }
 }

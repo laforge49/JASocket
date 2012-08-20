@@ -20,7 +20,7 @@ public class BytesConnectionTest extends TestCase {
             InetAddress inetAddress = InetAddress.getLocalHost();
             InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8886);
             socketAcceptor.open(inetSocketAddress, maxPacketSize);
-            RawWriter rawWriter = new RawWriter();
+            SocketWriter rawWriter = new SocketWriter();
             rawWriter.initialize(mailboxFactory.createAsyncMailbox());
             rawWriter.open(inetSocketAddress, maxPacketSize);
             (new WriteBytes("Hello".getBytes())).sendEvent(rawWriter);
