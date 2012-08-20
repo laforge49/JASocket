@@ -1,4 +1,4 @@
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.client;
 
 import org.agilewiki.jactor.lpc.TargetActor;
 

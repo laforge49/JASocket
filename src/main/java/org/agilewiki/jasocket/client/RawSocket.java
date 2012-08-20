@@ -1,11 +1,10 @@
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.client;
 
 import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.client.SocketWriter;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -41,7 +40,7 @@ abstract public class RawSocket extends SocketWriter implements ExceptionProcess
         readerThread.start();
     }
 
-    abstract void receiveByteBuffer(ByteBuffer byteBuffer) throws Exception;
+    protected abstract void receiveByteBuffer(ByteBuffer byteBuffer) throws Exception;
 
     public void close() {
         try {

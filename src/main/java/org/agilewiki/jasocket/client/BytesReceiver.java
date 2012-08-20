@@ -1,8 +1,7 @@
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.client;
 
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.client.WriteBytes;
 
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;

@@ -1,4 +1,4 @@
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.client;
 
 import java.nio.ByteBuffer;
 
@@ -16,7 +16,7 @@ public class BytesSocket extends RawSocket {
     }
 
     @Override
-    void receiveByteBuffer(ByteBuffer byteBuffer) throws Exception {
+    protected void receiveByteBuffer(ByteBuffer byteBuffer) throws Exception {
         while (byteBuffer.remaining() > 0) {
             if (bytes == null)
                 buildLength(byteBuffer);

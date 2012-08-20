@@ -1,5 +1,7 @@
 package org.agilewiki.jasocket.server;
 
+import org.agilewiki.jasocket.client.BytesReceiver;
+
 import java.nio.channels.SocketChannel;
 
 public class NullBytesSocketAcceptor extends SocketAcceptor {
