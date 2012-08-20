@@ -7,13 +7,9 @@ import java.nio.channels.SocketChannel;
 
 public class NullRawSocketAcceptor extends SocketAcceptor {
     @Override
-    public void acceptSocket(SocketChannel socketChannel) {
+    protected ServerOpened createServerOpened() throws Exception {
         RawSocket rawSocket = new NullRawSocket();
-        try {
-            rawSocket.initialize(getMailboxFactory().createAsyncMailbox());
-            rawSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        rawSocket.initialize(getMailboxFactory().createAsyncMailbox());
+        return rawSocket;
     }
 }

@@ -38,7 +38,16 @@ abstract public class SocketAcceptor extends JLPCActor {
         thread.start();
     }
 
-    abstract protected void acceptSocket(SocketChannel socketChannel);
+    abstract protected ServerOpened createServerOpened() throws Exception;
+
+    public void acceptSocket(SocketChannel socketChannel) {
+        try {
+            ServerOpened serverOpened = createServerOpened();
+            serverOpened.serverOpen(socketChannel, maxPacketSize, threadFactory);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
     public void close() {
         thread.interrupt();

@@ -2,12 +2,13 @@ package org.agilewiki.jasocket;
 
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.server.ServerOpened;
 
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
-abstract public class SocketApplication extends JLPCActor implements ExceptionProcessor {
+abstract public class SocketApplication extends JLPCActor implements ExceptionProcessor, ServerOpened {
     BytesSocket bytesSocket;
 
     abstract public void receiveBytes(byte[] bytes) throws Exception;
@@ -29,6 +30,7 @@ abstract public class SocketApplication extends JLPCActor implements ExceptionPr
         bytesSocket.clientOpen(inetSocketAddress, maxPacketSize, threadFactory);
     }
 
+    @Override
     public void serverOpen(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
             throws Exception {
         bytesSocket = new BytesSocket();

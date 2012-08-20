@@ -5,6 +5,7 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.server.ServerOpened;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -12,7 +13,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
-abstract public class RawSocket extends SocketWriter implements ExceptionProcessor {
+abstract public class RawSocket extends SocketWriter implements ExceptionProcessor, ServerOpened {
     int maxPacketSize;
     Thread readerThread;
     protected ExceptionProcessor exceptionProcessor = this;
@@ -31,6 +32,7 @@ abstract public class RawSocket extends SocketWriter implements ExceptionProcess
         readerThread.start();
     }
 
+    @Override
     public void serverOpen(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
             throws Exception {
         writeBuffer = ByteBuffer.allocateDirect(maxPacketSize);
@@ -41,13 +43,6 @@ abstract public class RawSocket extends SocketWriter implements ExceptionProcess
     }
 
     protected abstract void receiveByteBuffer(ByteBuffer byteBuffer) throws Exception;
-
-    public void close() {
-        try {
-            socketChannel.close();
-        } catch (Exception ex) {
-        }
-    }
 
     class Reader implements Runnable {
         @Override

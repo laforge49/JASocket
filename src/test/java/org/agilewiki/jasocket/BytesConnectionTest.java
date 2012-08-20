@@ -4,8 +4,6 @@ import junit.framework.TestCase;
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jactor.MailboxFactory;
-import org.agilewiki.jasocket.SocketWriter;
-import org.agilewiki.jasocket.WriteBytes;
 import org.agilewiki.jasocket.server.NullBytesSocketAcceptor;
 import org.agilewiki.jasocket.server.SocketAcceptor;
 
