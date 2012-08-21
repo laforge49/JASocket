@@ -8,9 +8,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 
-public class SocketWriter extends JLPCActor {
+abstract public class SocketWriter extends JLPCActor implements ExceptionProcessor {
     protected SocketChannel socketChannel;
     protected ByteBuffer writeBuffer;
+    protected ExceptionProcessor exceptionProcessor = this;
 
     public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize)
             throws Exception {
@@ -25,19 +26,27 @@ public class SocketWriter extends JLPCActor {
     }
 
     public void writeBytes(byte[] bytes) throws Exception {
-        int i = 0;
-        while (i < bytes.length) {
-            int l = bytes.length - i;
-            int r = writeBuffer.remaining();
-            if (l > r)
-                l = r;
-            writeBuffer.put(bytes, i, l);
-            i += l;
-            if (!writeBuffer.hasRemaining())
+        try {
+            int i = 0;
+            while (i < bytes.length) {
+                int l = bytes.length - i;
+                int r = writeBuffer.remaining();
+                if (l > r)
+                    l = r;
+                writeBuffer.put(bytes, i, l);
+                i += l;
+                if (!writeBuffer.hasRemaining())
+                    write();
+            }
+            if (writeBuffer.position() > 0 && getMailbox().isEmpty())
                 write();
+        } catch (Exception ex) {
+            try {
+                (new ProcessException(ex)).sendEvent(exceptionProcessor);
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
         }
-        if (writeBuffer.position() > 0 && getMailbox().isEmpty())
-            write();
     }
 
     void write() throws Exception {

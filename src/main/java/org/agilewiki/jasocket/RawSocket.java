@@ -13,10 +13,9 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
-abstract public class RawSocket extends SocketWriter implements ExceptionProcessor, ServerOpened {
+abstract public class RawSocket extends SocketWriter implements ServerOpened {
     int maxPacketSize;
     Thread readerThread;
-    protected ExceptionProcessor exceptionProcessor = this;
 
     @Override
     public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize)
@@ -83,25 +82,6 @@ class ReceiveByteBuffer extends Request<Object, RawSocket> {
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
         ((RawSocket) targetActor).receiveByteBuffer(byteBuffer);
-        rp.processResponse(null);
-    }
-}
-
-class ProcessException extends Request<Object, ExceptionProcessor> {
-    Exception exception;
-
-    public ProcessException(Exception exception) {
-        this.exception = exception;
-    }
-
-    @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof RawSocket;
-    }
-
-    @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((RawSocket) targetActor).processException(exception);
         rp.processResponse(null);
     }
 }

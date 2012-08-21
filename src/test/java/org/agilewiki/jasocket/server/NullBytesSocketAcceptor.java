@@ -1,10 +1,6 @@
 package org.agilewiki.jasocket.server;
 
-import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.NullSocketApplication;
-import org.agilewiki.jasocket.SocketApplication;
-
-import java.nio.channels.SocketChannel;
 
 public class NullBytesSocketAcceptor extends SocketAcceptor {
     @Override

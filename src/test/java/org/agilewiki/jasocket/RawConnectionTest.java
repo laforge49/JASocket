@@ -20,7 +20,7 @@ public class RawConnectionTest extends TestCase {
             InetAddress inetAddress = InetAddress.getLocalHost();
             InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8889);
             socketAcceptor.open(inetSocketAddress, maxPacketSize);
-            SocketWriter rawWriter = new SocketWriter();
+            SocketWriter rawWriter = new SimpleSocketWriter();
             rawWriter.initialize(mailboxFactory.createAsyncMailbox());
             rawWriter.clientOpen(inetSocketAddress, maxPacketSize);
             (new WriteRawBytes("Hello".getBytes())).sendEvent(rawWriter);
