@@ -5,7 +5,7 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.server.ServerOpened;
+import org.agilewiki.jasocket.server.ServerApplication;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -13,7 +13,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
-abstract public class RawSocket extends SocketWriter implements ServerOpened {
+abstract public class RawSocket extends SocketWriter implements ServerApplication {
     int maxPacketSize;
     Thread readerThread;
 

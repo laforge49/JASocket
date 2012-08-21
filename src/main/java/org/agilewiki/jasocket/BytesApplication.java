@@ -2,13 +2,13 @@ package org.agilewiki.jasocket;
 
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.server.ServerOpened;
+import org.agilewiki.jasocket.server.ServerApplication;
 
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
-abstract public class SocketApplication extends JLPCActor implements ExceptionProcessor, ServerOpened {
+abstract public class BytesApplication extends JLPCActor implements ExceptionProcessor, ServerApplication {
     BytesSocket bytesSocket;
 
     abstract public void receiveBytes(byte[] bytes) throws Exception;
@@ -25,7 +25,7 @@ abstract public class SocketApplication extends JLPCActor implements ExceptionPr
     public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, ThreadFactory threadFactory)
             throws Exception {
         bytesSocket = new BytesSocket();
-        bytesSocket.setSocketApplication(this);
+        bytesSocket.setBytesApplication(this);
         bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
         bytesSocket.clientOpen(inetSocketAddress, maxPacketSize, threadFactory);
     }
@@ -34,7 +34,7 @@ abstract public class SocketApplication extends JLPCActor implements ExceptionPr
     public void serverOpen(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
             throws Exception {
         bytesSocket = new BytesSocket();
-        bytesSocket.setSocketApplication(this);
+        bytesSocket.setBytesApplication(this);
         bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
         bytesSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
     }

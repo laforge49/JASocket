@@ -38,12 +38,12 @@ abstract public class SocketAcceptor extends JLPCActor {
         thread.start();
     }
 
-    abstract protected ServerOpened createServerOpened() throws Exception;
+    abstract protected ServerApplication createServerOpened() throws Exception;
 
     public void acceptSocket(SocketChannel socketChannel) {
         try {
-            ServerOpened serverOpened = createServerOpened();
-            serverOpened.serverOpen(socketChannel, maxPacketSize, threadFactory);
+            ServerApplication serverApplication = createServerOpened();
+            serverApplication.serverOpen(socketChannel, maxPacketSize, threadFactory);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

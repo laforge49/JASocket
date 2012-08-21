@@ -5,7 +5,7 @@ import org.agilewiki.jasocket.RawSocket;
 
 public class NullRawSocketAcceptor extends SocketAcceptor {
     @Override
-    protected ServerOpened createServerOpened() throws Exception {
+    protected ServerApplication createServerOpened() throws Exception {
         RawSocket rawSocket = new NullRawSocket();
         rawSocket.initialize(getMailboxFactory().createAsyncMailbox());
         return rawSocket;
