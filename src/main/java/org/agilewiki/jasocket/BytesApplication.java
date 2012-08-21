@@ -8,7 +8,8 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
-abstract public class BytesApplication extends JLPCActor implements ExceptionProcessor, ServerApplication {
+abstract public class BytesApplication extends JLPCActor implements SocketApplication, ServerApplication {
+    public SocketApplication socketApplication = this;
     BytesSocket bytesSocket;
 
     abstract public void receiveBytes(byte[] bytes) throws Exception;
@@ -25,7 +26,7 @@ abstract public class BytesApplication extends JLPCActor implements ExceptionPro
     public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, ThreadFactory threadFactory)
             throws Exception {
         bytesSocket = new BytesSocket();
-        bytesSocket.setBytesApplication(this);
+        bytesSocket.setSocketApplication(socketApplication);
         bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
         bytesSocket.clientOpen(inetSocketAddress, maxPacketSize, threadFactory);
     }
@@ -34,7 +35,7 @@ abstract public class BytesApplication extends JLPCActor implements ExceptionPro
     public void serverOpen(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
             throws Exception {
         bytesSocket = new BytesSocket();
-        bytesSocket.setBytesApplication(this);
+        bytesSocket.setSocketApplication(socketApplication);
         bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
         bytesSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
     }
