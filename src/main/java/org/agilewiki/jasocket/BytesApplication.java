@@ -38,4 +38,8 @@ abstract public class BytesApplication extends JLPCActor implements ExceptionPro
         bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
         bytesSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
     }
+
+    public void close() {
+        bytesSocket.close();
+    }
 }
