@@ -25,13 +25,12 @@ package org.agilewiki.jasocket;
 
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.server.ServerApplication;
 
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
-abstract public class BytesApplication extends JLPCActor implements SocketApplication, ServerApplication {
+abstract public class BytesApplication extends JLPCActor implements SocketApplication {
     public SocketApplication socketApplication = this;
     BytesSocket bytesSocket;
 
