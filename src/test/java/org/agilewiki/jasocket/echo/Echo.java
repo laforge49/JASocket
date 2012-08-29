@@ -14,5 +14,6 @@ public class Echo extends BytesApplication {
     }
 
     @Override
-    protected void closed() {}
+    protected void closed() {
+    }
 }

@@ -38,5 +38,6 @@ public class Driver extends BytesApplication {
     }
 
     @Override
-    protected void closed() {}
+    protected void closed() {
+    }
 }

@@ -1,4 +1,4 @@
-package org.agilewiki.jasocket.jid.echo;
+package org.agilewiki.jasocket.jid.exception;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
@@ -19,7 +19,7 @@ public class Driver extends JidApplication {
         int maxPacketSize = 300;
         InetAddress inetAddress = InetAddress.getLocalHost();
         InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8884);
-        socketAcceptor = new JidEchoSocketAcceptor();
+        socketAcceptor = new ExceptionSocketAcceptor();
         socketAcceptor.initialize(getMailboxFactory().createMailbox(), this);
         socketAcceptor.open(inetSocketAddress, maxPacketSize);
         clientOpen(inetSocketAddress, maxPacketSize);
@@ -30,16 +30,6 @@ public class Driver extends JidApplication {
             public void processResponse(Jid response) throws Exception {
                 StringJid rsp = (StringJid) response;
                 System.out.println(rsp.getValue());
-            }
-        });
-        StringJid sj2 = (StringJid) JAFactory.newActor(this, JidFactories.STRING_JID_TYPE);
-        sj2.setValue("world!");
-        (new WriteRequest(sj2)).send(this, this, new RP<Jid>() {
-            @Override
-            public void processResponse(Jid response) throws Exception {
-                StringJid rsp = (StringJid) response;
-                System.out.println(rsp.getValue());
-                rp.processResponse(null);
             }
         });
     }

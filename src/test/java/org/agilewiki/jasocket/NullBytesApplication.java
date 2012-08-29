@@ -12,5 +12,6 @@ public class NullBytesApplication extends BytesApplication {
     }
 
     @Override
-    protected void closed() {}
+    protected void closed() {
+    }
 }

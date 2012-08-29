@@ -25,7 +25,6 @@ package org.agilewiki.jasocket.jid;
 
 import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.BytesApplication;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.collection.flenc.TupleJid;
@@ -33,7 +32,6 @@ import org.agilewiki.jid.scalar.flens.bool.BooleanJid;
 import org.agilewiki.jid.scalar.flens.lng.LongJid;
 import org.agilewiki.jid.scalar.vlens.actor.ActorJid;
 import org.agilewiki.jid.scalar.vlens.actor.RootJid;
-import org.agilewiki.jid.scalar.vlens.actor.RootJidFactory;
 
 import java.util.HashMap;
 
@@ -46,7 +44,6 @@ public class JidApplication extends BytesApplication {
         RootJid root = new RootJid();
         root.initialize(getMailbox(), this);
         root.load(bytes);
-        try {
         TupleJid transport = (TupleJid) root.getValue();
         BooleanJid requestFlag = (BooleanJid) transport.iGet(0);
         LongJid idj = (LongJid) transport.iGet(1);
@@ -57,17 +54,16 @@ public class JidApplication extends BytesApplication {
             gotReq(id, jid);
         else
             gotRsp(id, jid);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
-        }
     }
 
     private void gotReq(final Long id, Jid jid) throws Exception {
         setExceptionHandler(new ExceptionHandler() {
             @Override
             public void process(Exception exception) throws Exception {
-                //To change body of implemented methods use File | Settings | File Templates.
+                RemoteException re = new RemoteException(exception);
+                ExceptionJid bj = (ExceptionJid) ExceptionJidFactory.fac.newActor(getMailbox(), null);
+                bj.setObject(re);
+                write(false, id, bj);
             }
         });
         receiveRequest(jid, new RP<Jid>() {
@@ -83,8 +79,14 @@ public class JidApplication extends BytesApplication {
 
     private void gotRsp(Long id, Jid jid) throws Exception {
         RP rp = rps.remove(id);
-        if (rp != null)
-            rp.processResponse(jid);
+        if (rp != null) {
+            if (jid instanceof ExceptionJid) {
+                ExceptionJid ej = (ExceptionJid) jid;
+                Exception ex = (Exception) ej.getObject();
+                rp.processResponse(ex);
+            } else
+                rp.processResponse(jid);
+        }
     }
 
     @Override
@@ -94,9 +96,10 @@ public class JidApplication extends BytesApplication {
     }
 
     @Override
-    protected void closed() {}
+    protected void closed() {
+    }
 
-    public void writeRequest(final Jid jid, final RP<Jid> rp) throws Exception {
+    void writeRequest(final Jid jid, final RP rp) throws Exception {
         requestId += 1;
         requestId %= 1000000000000000000L;
         rps.put(requestId, rp);
