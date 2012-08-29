@@ -23,6 +23,7 @@
  */
 package org.agilewiki.jasocket.jid;
 
+import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.BytesApplication;
@@ -63,6 +64,12 @@ public class JidApplication extends BytesApplication {
     }
 
     private void gotReq(final Long id, Jid jid) throws Exception {
+        setExceptionHandler(new ExceptionHandler() {
+            @Override
+            public void process(Exception exception) throws Exception {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
         receiveRequest(jid, new RP<Jid>() {
             @Override
             public void processResponse(Jid response) throws Exception {
