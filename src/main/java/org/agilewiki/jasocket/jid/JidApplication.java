@@ -86,6 +86,9 @@ public class JidApplication extends BytesApplication {
         close();
     }
 
+    @Override
+    protected void closed() {}
+
     public void writeRequest(final Jid jid, final RP<Jid> rp) throws Exception {
         requestId += 1;
         requestId %= 1000000000000000000L;

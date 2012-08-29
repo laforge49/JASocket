@@ -36,4 +36,7 @@ public class Driver extends BytesApplication {
         socketAcceptor.close();
         super.close();
     }
+
+    @Override
+    protected void closed() {}
 }

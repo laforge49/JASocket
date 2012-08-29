@@ -10,4 +10,7 @@ public class NullBytesApplication extends BytesApplication {
     public void processException(Exception exception) {
         exception.printStackTrace();
     }
+
+    @Override
+    protected void closed() {}
 }

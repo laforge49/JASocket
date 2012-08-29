@@ -12,4 +12,7 @@ public class Echo extends BytesApplication {
     public void processException(Exception ex) {
         ex.printStackTrace();
     }
+
+    @Override
+    protected void closed() {}
 }

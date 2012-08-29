@@ -64,5 +64,8 @@ abstract public class BytesApplication extends JLPCActor implements SocketApplic
 
     public void close() {
         bytesSocket.close();
+        closed();
     }
+
+    abstract protected void closed();
 }
