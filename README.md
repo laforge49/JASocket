@@ -1,4 +1,1 @@
-JASocket
-========
-
-Integrates SocketChannel and JActor
+[Project Page](http://jactorconsulting.com/product/jasocket/)
