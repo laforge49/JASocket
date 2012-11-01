@@ -23,7 +23,12 @@ public class Driver extends BytesApplication {
 
     @Override
     public void receiveBytes(byte[] bytes) throws Exception {
-        System.out.println(new String(bytes));
+        String s = new String(bytes);
+        System.out.println(s);
+        if (s.endsWith("!")) {
+            close();
+            getMailboxFactory().close();
+        }
     }
 
     @Override
