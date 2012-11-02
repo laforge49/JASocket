@@ -24,13 +24,11 @@
 package org.agilewiki.jasocket.jid;
 
 import org.agilewiki.jactor.ExceptionHandler;
+import org.agilewiki.jactor.JANoResponse;
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.BytesApplication;
 import org.agilewiki.jid.Jid;
-import org.agilewiki.jid.collection.flenc.TupleJid;
-import org.agilewiki.jid.scalar.flens.bool.BooleanJid;
-import org.agilewiki.jid.scalar.flens.lng.LongJid;
-import org.agilewiki.jid.scalar.vlens.actor.ActorJid;
 import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 
 import java.util.HashMap;
@@ -49,9 +47,23 @@ public class JidApplication extends BytesApplication {
         Long id = transport.getId();
         Jid jid = transport.getContent();
         if (requestFlag)
-            gotReq(id, jid);
+            if (id == -1)
+                gotEvent(jid);
+            else
+                gotReq(id, jid);
         else
             gotRsp(id, jid);
+    }
+
+    private void gotEvent(Jid jid) throws Exception {
+        final Request request = getMailbox().getCurrentRequest().getUnwrappedRequest();
+        setExceptionHandler(new ExceptionHandler() {
+            @Override
+            public void process(Exception exception) throws Exception {
+                getMailboxFactory().eventException(request, exception);
+            }
+        });
+        receiveRequest(jid, JANoResponse.nrp);
     }
 
     private void gotReq(final Long id, Jid jid) throws Exception {
@@ -98,10 +110,14 @@ public class JidApplication extends BytesApplication {
     }
 
     void writeRequest(final Jid jid, final RP rp) throws Exception {
-        requestId += 1;
-        requestId %= 1000000000000000000L;
-        rps.put(requestId, rp);
-        write(true, requestId, jid);
+        if (rp.isEvent()) {
+            write(true, -1, jid);
+        } else {
+            requestId += 1;
+            requestId %= 1000000000000000000L;
+            rps.put(requestId, rp);
+            write(true, requestId, jid);
+        }
     }
 
     private void write(boolean requestFlag, long id, Jid jid) throws Exception {

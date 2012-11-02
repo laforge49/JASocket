@@ -34,8 +34,6 @@ abstract public class BytesApplication extends JLPCActor implements SocketApplic
     public SocketApplication socketApplication = this;
     BytesSocket bytesSocket;
 
-    abstract public void receiveBytes(byte[] bytes) throws Exception;
-
     public void writeBytes(byte[] bytes) throws Exception {
         (new WriteBytes(bytes)).sendEvent(this, bytesSocket);
     }

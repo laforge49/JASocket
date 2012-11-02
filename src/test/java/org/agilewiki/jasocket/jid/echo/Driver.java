@@ -23,6 +23,7 @@ public class Driver extends JidApplication {
         socketAcceptor.initialize(getMailboxFactory().createMailbox(), this);
         socketAcceptor.open(inetSocketAddress, maxPacketSize);
         clientOpen(inetSocketAddress, maxPacketSize);
+
         StringJid sj = (StringJid) JAFactory.newActor(this, JidFactories.STRING_JID_TYPE);
         sj.setValue("Hello");
         (new WriteRequest(sj)).send(this, this, new RP<Jid>() {
@@ -32,6 +33,11 @@ public class Driver extends JidApplication {
                 System.out.println(rsp.getValue());
             }
         });
+
+        StringJid sjx = (StringJid) JAFactory.newActor(this, JidFactories.STRING_JID_TYPE);
+        sjx.setValue("!!!");
+        (new WriteRequest(sjx)).sendEvent(this, this);
+
         StringJid sj2 = (StringJid) JAFactory.newActor(this, JidFactories.STRING_JID_TYPE);
         sj2.setValue("world!");
         (new WriteRequest(sj2)).send(this, this, new RP<Jid>() {
