@@ -22,14 +22,14 @@ public class JidEchoTest extends TestCase {
         JidFactories factories = new JidFactories();
         factories.initialize(mailbox, factory);
         factory.registerActorFactory(TransportJidFactory.fac);
-        DriverApplication driverApplication = new DriverApplication();
-        driverApplication.initialize(mailbox, factory);
         int maxPacketSize = 300;
         InetAddress inetAddress = InetAddress.getLocalHost();
         InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8884);
         SocketAcceptor socketAcceptor = new JidEchoSocketAcceptor();
         socketAcceptor.initialize(mailboxFactory.createMailbox(), factory);
         socketAcceptor.open(inetSocketAddress, maxPacketSize);
+        DriverApplication driverApplication = new DriverApplication();
+        driverApplication.initialize(mailbox, factory);
         driverApplication.socketAcceptor = socketAcceptor;
         driverApplication.clientOpen(inetSocketAddress, maxPacketSize);
 
