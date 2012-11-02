@@ -7,7 +7,11 @@ import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
+import org.agilewiki.jasocket.server.SocketAcceptor;
 import org.agilewiki.jid.JidFactories;
+
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 public class JidEchoTest extends TestCase {
     public void test() throws Exception {
@@ -18,12 +22,21 @@ public class JidEchoTest extends TestCase {
         JidFactories factories = new JidFactories();
         factories.initialize(mailbox, factory);
         factory.registerActorFactory(TransportJidFactory.fac);
-        Driver driver = new Driver();
-        driver.initialize(mailbox, factory);
+        DriverApplication driverApplication = new DriverApplication();
+        driverApplication.initialize(mailbox, factory);
+        int maxPacketSize = 300;
+        InetAddress inetAddress = InetAddress.getLocalHost();
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8884);
+        SocketAcceptor socketAcceptor = new JidEchoSocketAcceptor();
+        socketAcceptor.initialize(mailboxFactory.createMailbox(), factory);
+        socketAcceptor.open(inetSocketAddress, maxPacketSize);
+        driverApplication.socketAcceptor = socketAcceptor;
+        driverApplication.clientOpen(inetSocketAddress, maxPacketSize);
+
         try {
-            DoIt.req.send(new JAFuture(), driver);
+            DoIt.req.send(new JAFuture(), driverApplication);
         } finally {
-            driver.close();
+            socketAcceptor.close();
             mailboxFactory.close();
         }
     }

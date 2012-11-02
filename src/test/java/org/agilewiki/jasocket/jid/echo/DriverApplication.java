@@ -8,19 +8,8 @@ import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.JidFactories;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-
-public class Driver extends JidApplication {
+public class DriverApplication extends JidApplication {
     public void doit(final RP rp) throws Exception {
-        int maxPacketSize = 300;
-        InetAddress inetAddress = InetAddress.getLocalHost();
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8884);
-        socketAcceptor = new JidEchoSocketAcceptor();
-        socketAcceptor.initialize(getMailboxFactory().createMailbox(), this);
-        socketAcceptor.open(inetSocketAddress, maxPacketSize);
-        clientOpen(inetSocketAddress, maxPacketSize);
-
         StringJid sj = (StringJid) JAFactory.newActor(this, JidFactories.STRING_JID_TYPE);
         sj.setValue("Hello");
         (new WriteRequest(sj)).send(this, this, new RP<Jid>() {
@@ -45,11 +34,5 @@ public class Driver extends JidApplication {
                 rp.processResponse(null);
             }
         });
-    }
-
-    @Override
-    public void close() {
-        socketAcceptor.close();
-        super.close();
     }
 }
