@@ -7,7 +7,7 @@ import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
-import org.agilewiki.jasocket.jid.TransportFactory;
+import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jid.JidFactories;
 
 public class ExceptionTest extends TestCase {
@@ -18,7 +18,7 @@ public class ExceptionTest extends TestCase {
         factory.initialize(mailbox);
         JidFactories factories = new JidFactories();
         factories.initialize(mailbox, factory);
-        factory.registerActorFactory(TransportFactory.fac);
+        factory.registerActorFactory(TransportJidFactory.fac);
         factory.registerActorFactory(ExceptionJidFactory.fac);
         Driver driver = new Driver();
         driver.initialize(mailbox, factory);

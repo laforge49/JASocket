@@ -44,13 +44,11 @@ public class JidApplication extends BytesApplication {
         RootJid root = new RootJid();
         root.initialize(getMailbox(), this);
         root.load(bytes);
-        TupleJid transport = (TupleJid) root.getValue();
-        BooleanJid requestFlag = (BooleanJid) transport.iGet(0);
-        LongJid idj = (LongJid) transport.iGet(1);
-        Long id = idj.getValue();
-        ActorJid envelope = (ActorJid) transport.iGet(2);
-        Jid jid = (Jid) envelope.getValue();
-        if (requestFlag.getValue())
+        TransportJid transport = (TransportJid) root.getValue();
+        boolean requestFlag = transport.isRequest();
+        Long id = transport.getId();
+        Jid jid = transport.getContent();
+        if (requestFlag)
             gotReq(id, jid);
         else
             gotRsp(id, jid);
@@ -106,17 +104,14 @@ public class JidApplication extends BytesApplication {
         write(true, requestId, jid);
     }
 
-    private void write(boolean requestFlag, Long id, Jid jid) throws Exception {
+    private void write(boolean requestFlag, long id, Jid jid) throws Exception {
         RootJid root = new RootJid();
         root.initialize(getMailbox(), this);
-        root.setValue(TransportFactory.TRANSPORT_FACTORY);
-        TupleJid transport = (TupleJid) root.getValue();
-        BooleanJid requestFlagJid = (BooleanJid) transport.iGet(0);
-        requestFlagJid.setValue(requestFlag);
-        LongJid idj = (LongJid) transport.iGet(1);
-        idj.setValue(id);
-        ActorJid envelope = (ActorJid) transport.iGet(2);
-        envelope.setBytes(jid.getFactory(), jid.getSerializedBytes());
+        root.setValue(TransportJidFactory.TRANSPORT_FACTORY);
+        TransportJid transport = (TransportJid) root.getValue();
+        transport.setRequest(requestFlag);
+        transport.setId(id);
+        transport.setContent(jid);
         byte[] bytes = root.getSerializedBytes();
         writeBytes(bytes);
     }

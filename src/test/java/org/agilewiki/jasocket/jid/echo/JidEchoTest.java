@@ -6,7 +6,7 @@ import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jactor.factory.JAFactory;
-import org.agilewiki.jasocket.jid.TransportFactory;
+import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jid.JidFactories;
 
 public class JidEchoTest extends TestCase {
@@ -17,7 +17,7 @@ public class JidEchoTest extends TestCase {
         factory.initialize(mailbox);
         JidFactories factories = new JidFactories();
         factories.initialize(mailbox, factory);
-        factory.registerActorFactory(TransportFactory.fac);
+        factory.registerActorFactory(TransportJidFactory.fac);
         Driver driver = new Driver();
         driver.initialize(mailbox, factory);
         try {

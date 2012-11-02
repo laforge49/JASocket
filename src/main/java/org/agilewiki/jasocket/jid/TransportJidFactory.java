@@ -23,16 +23,22 @@
  */
 package org.agilewiki.jasocket.jid;
 
-import org.agilewiki.jid.collection.flenc.TupleJidFactory;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
 import org.agilewiki.jid.scalar.flens.bool.BooleanJidFactory;
 import org.agilewiki.jid.scalar.flens.lng.LongJidFactory;
 import org.agilewiki.jid.scalar.vlens.actor.ActorJidFactory;
 
-public class TransportFactory extends TupleJidFactory {
-    public final static TransportFactory fac = new TransportFactory();
+public class TransportJidFactory extends AppJidFactory {
+    public final static TransportJidFactory fac = new TransportJidFactory();
     public final static String TRANSPORT_FACTORY = "transportJid";
 
-    public TransportFactory() {
+    public TransportJidFactory() {
         super(TRANSPORT_FACTORY, BooleanJidFactory.fac, LongJidFactory.fac, ActorJidFactory.fac);
+    }
+
+    @Override
+    protected JLPCActor instantiateActor() throws Exception {
+        return new TransportJid();
     }
 }
