@@ -45,6 +45,7 @@ abstract public class SocketWriter extends JLPCActor implements ExceptionProcess
         socketChannel.setOption(StandardSocketOptions.SO_SNDBUF, maxPacketSize);
         socketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
         socketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
+
         socketChannel.connect(inetSocketAddress);
     }
 

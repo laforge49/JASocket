@@ -37,10 +37,14 @@ public class JidApplication extends BytesApplication {
     HashMap<Long, RP> rps = new HashMap<Long, RP>();
     long requestId = 0;
 
+    protected void initRoot(RootJid root) throws Exception {
+        root.initialize(getMailbox(), this);
+    }
+
     @Override
     public void receiveBytes(byte[] bytes) throws Exception {
         RootJid root = new RootJid();
-        root.initialize(getMailbox(), this);
+        initRoot(root);
         root.load(bytes);
         TransportJid transport = (TransportJid) root.getValue();
         boolean requestFlag = transport.isRequest();
