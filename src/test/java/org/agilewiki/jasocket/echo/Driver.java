@@ -1,14 +1,11 @@
 package org.agilewiki.jasocket.echo;
 
 import org.agilewiki.jasocket.BytesApplication;
-import org.agilewiki.jasocket.server.SocketAcceptor;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 public class Driver extends BytesApplication {
-    SocketAcceptor socketAcceptor;
-
     public void doit() throws Exception {
         int maxPacketSize = 30;
         InetAddress inetAddress = InetAddress.getLocalHost();

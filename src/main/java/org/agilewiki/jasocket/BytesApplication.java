@@ -25,6 +25,7 @@ package org.agilewiki.jasocket;
 
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.server.SocketAcceptor;
 
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
@@ -33,6 +34,7 @@ import java.util.concurrent.ThreadFactory;
 abstract public class BytesApplication extends JLPCActor implements SocketApplication {
     public SocketApplication socketApplication = this;
     BytesSocket bytesSocket;
+    public SocketAcceptor socketAcceptor;
 
     public void writeBytes(byte[] bytes) throws Exception {
         (new WriteBytes(bytes)).sendEvent(this, bytesSocket);

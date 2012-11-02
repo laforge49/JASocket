@@ -1,7 +1,6 @@
 package org.agilewiki.jasocket.jid;
 
 import org.agilewiki.jactor.factory.ActorFactory;
-import org.agilewiki.jid.JidFactories;
 
 public class ExceptionJidFactory extends ActorFactory {
     final public static ExceptionJidFactory fac = new ExceptionJidFactory();
