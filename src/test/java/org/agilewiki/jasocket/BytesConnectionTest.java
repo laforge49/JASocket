@@ -15,22 +15,16 @@ public class BytesConnectionTest extends TestCase {
         int maxPacketSize = 30;
         MailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(10);
         SocketAcceptor socketAcceptor = new NullBytesSocketAcceptor();
-        try {
-            socketAcceptor.initialize(mailboxFactory.createMailbox());
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8886);
-            socketAcceptor.open(inetSocketAddress, maxPacketSize);
-            SocketWriter rawWriter = new SimpleSocketWriter();
-            rawWriter.initialize(mailboxFactory.createAsyncMailbox());
-            rawWriter.clientOpen(inetSocketAddress, maxPacketSize);
-            (new WriteBytes("Hello".getBytes())).sendEvent(rawWriter);
-            (new WriteBytes(" ".getBytes())).sendEvent(rawWriter);
-            (new WriteBytes("world!".getBytes())).send(new JAFuture(), rawWriter);
-            rawWriter.close();
-            Thread.sleep(200);
-        } finally {
-            socketAcceptor.close();
-            mailboxFactory.close();
-        }
+        socketAcceptor.initialize(mailboxFactory.createMailbox());
+        InetAddress inetAddress = InetAddress.getLocalHost();
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8886);
+        socketAcceptor.open(inetSocketAddress, maxPacketSize);
+        SocketWriter rawWriter = new SimpleSocketWriter();
+        rawWriter.initialize(mailboxFactory.createAsyncMailbox());
+        rawWriter.clientOpen(inetSocketAddress, maxPacketSize);
+        (new WriteBytes("Hello".getBytes())).sendEvent(rawWriter);
+        (new WriteBytes(" ".getBytes())).sendEvent(rawWriter);
+        (new WriteBytes("world!".getBytes())).send(new JAFuture(), rawWriter);
+        rawWriter.close();
     }
 }

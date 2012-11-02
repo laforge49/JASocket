@@ -7,6 +7,7 @@ public class NullBytesSocketAcceptor extends SocketAcceptor {
     protected ServerApplication createServerOpened() throws Exception {
         NullBytesApplication nullSocketApplication = new NullBytesApplication();
         nullSocketApplication.initialize(getMailboxFactory().createAsyncMailbox());
+        nullSocketApplication.socketAcceptor = this;
         return nullSocketApplication;
     }
 }
