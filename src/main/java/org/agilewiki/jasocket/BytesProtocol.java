@@ -34,19 +34,24 @@ import java.util.concurrent.ThreadFactory;
 abstract public class BytesProtocol extends JLPCActor implements SocketProtocol {
     public SocketProtocol socketProtocol = this;
     BytesSocket bytesSocket;
-    public SocketAcceptor socketAcceptor;
+    private SocketAcceptor socketAcceptor;
+
+    public SocketAcceptor socketAcceptor() {
+        return socketAcceptor;
+    }
 
     public void writeBytes(byte[] bytes) throws Exception {
         (new WriteBytes(bytes)).sendEvent(this, bytesSocket);
     }
 
-    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize)
+    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketAcceptor socketAcceptor)
             throws Exception {
-        clientOpen(inetSocketAddress, maxPacketSize, new JAThreadFactory());
+        clientOpen(inetSocketAddress, maxPacketSize, socketAcceptor, new JAThreadFactory());
     }
 
-    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, ThreadFactory threadFactory)
+    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketAcceptor socketAcceptor, ThreadFactory threadFactory)
             throws Exception {
+        this.socketAcceptor = socketAcceptor;
         bytesSocket = new BytesSocket();
         bytesSocket.setSocketApplication(socketProtocol);
         bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());

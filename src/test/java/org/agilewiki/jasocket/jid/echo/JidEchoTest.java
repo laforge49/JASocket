@@ -28,11 +28,9 @@ public class JidEchoTest extends TestCase {
         SocketAcceptor socketAcceptor = new JidEchoSocketAcceptor();
         socketAcceptor.initialize(mailboxFactory.createMailbox(), factory);
         socketAcceptor.open(inetSocketAddress, maxPacketSize);
-
         DriverProtocol driverApplication = new DriverProtocol();
         driverApplication.initialize(mailbox, factory);
-        driverApplication.socketAcceptor = socketAcceptor;
-        driverApplication.clientOpen(inetSocketAddress, maxPacketSize);
+        driverApplication.clientOpen(inetSocketAddress, maxPacketSize, socketAcceptor);
 
         try {
             DoIt.req.send(new JAFuture(), driverApplication);

@@ -8,7 +8,6 @@ public class EchoSocketAcceptor extends SocketAcceptor {
     protected ServerProtocol createServerOpened() throws Exception {
         Echo echo = new Echo();
         echo.initialize(getMailboxFactory().createAsyncMailbox());
-        echo.socketAcceptor = this;
         return echo;
     }
 }
