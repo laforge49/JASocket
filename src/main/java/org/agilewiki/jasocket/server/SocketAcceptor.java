@@ -29,6 +29,7 @@ import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.ClosedByInterruptException;
@@ -42,6 +43,17 @@ abstract public class SocketAcceptor extends JLPCActor {
     ServerSocketChannel serverSocketChannel;
     ThreadFactory threadFactory;
     Thread thread;
+    InetSocketAddress inetSocketAddress;
+
+    public InetSocketAddress inetSocketAddress() {
+        return inetSocketAddress;
+    }
+
+    public void openLocal(int port, int maxPacketSize) throws Exception {
+        InetAddress inetAddress = InetAddress.getLocalHost();
+        inetSocketAddress = new InetSocketAddress(inetAddress, port);
+        open(inetSocketAddress, maxPacketSize);
+    }
 
     public void open(InetSocketAddress inetSocketAddress, int maxPacketSize)
             throws Exception {
@@ -52,6 +64,7 @@ abstract public class SocketAcceptor extends JLPCActor {
                      int maxPacketSize,
                      ThreadFactory threadFactory)
             throws Exception {
+        this.inetSocketAddress = inetSocketAddress;
         this.maxPacketSize = maxPacketSize;
         this.threadFactory = threadFactory;
         serverSocketChannel = ServerSocketChannel.open();
@@ -66,7 +79,7 @@ abstract public class SocketAcceptor extends JLPCActor {
     public void acceptSocket(SocketChannel socketChannel) {
         try {
             ServerProtocol serverProtocol = createServerOpened();
-            serverProtocol.serverOpen(socketChannel, maxPacketSize, threadFactory);
+            serverProtocol.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

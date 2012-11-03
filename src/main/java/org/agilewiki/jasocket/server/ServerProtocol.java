@@ -27,6 +27,6 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
 public interface ServerProtocol {
-    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
+    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, SocketAcceptor socketAcceptor, ThreadFactory threadFactory)
             throws Exception;
 }

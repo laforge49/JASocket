@@ -27,7 +27,6 @@ import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.server.SocketAcceptor;
 
-import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
@@ -44,27 +43,28 @@ abstract public class BytesProtocol extends JLPCActor implements SocketProtocol 
         (new WriteBytes(bytes)).sendEvent(this, bytesSocket);
     }
 
-    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketAcceptor socketAcceptor)
+    public void clientOpen(int maxPacketSize, SocketAcceptor socketAcceptor)
             throws Exception {
-        clientOpen(inetSocketAddress, maxPacketSize, socketAcceptor, new JAThreadFactory());
+        clientOpen(maxPacketSize, socketAcceptor, new JAThreadFactory());
     }
 
-    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketAcceptor socketAcceptor, ThreadFactory threadFactory)
+    public void clientOpen(int maxPacketSize, SocketAcceptor socketAcceptor, ThreadFactory threadFactory)
             throws Exception {
         this.socketAcceptor = socketAcceptor;
         bytesSocket = new BytesSocket();
         bytesSocket.setSocketApplication(socketProtocol);
         bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
-        bytesSocket.clientOpen(inetSocketAddress, maxPacketSize, threadFactory);
+        bytesSocket.clientOpen(socketAcceptor.inetSocketAddress(), maxPacketSize, threadFactory);
     }
 
     @Override
-    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
+    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, SocketAcceptor socketAcceptor, ThreadFactory threadFactory)
             throws Exception {
+        this.socketAcceptor = socketAcceptor;
         bytesSocket = new BytesSocket();
         bytesSocket.setSocketApplication(socketProtocol);
         bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
-        bytesSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
+        bytesSocket.serverOpen(socketChannel, maxPacketSize, socketAcceptor, threadFactory);
     }
 
     public void close() {
@@ -72,7 +72,8 @@ abstract public class BytesProtocol extends JLPCActor implements SocketProtocol 
         closed();
     }
 
-    protected void closed() {}
+    protected void closed() {
+    }
 
     @Override
     public void processException(Exception exception) {

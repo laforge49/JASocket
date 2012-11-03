@@ -11,9 +11,6 @@ import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jasocket.server.SocketAcceptor;
 import org.agilewiki.jid.JidFactories;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-
 public class ExceptionTest extends TestCase {
     public void test() throws Exception {
         MailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(10);
@@ -25,14 +22,12 @@ public class ExceptionTest extends TestCase {
         factory.registerActorFactory(TransportJidFactory.fac);
         factory.registerActorFactory(ExceptionJidFactory.fac);
         int maxPacketSize = 300;
-        InetAddress inetAddress = InetAddress.getLocalHost();
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8884);
         SocketAcceptor socketAcceptor = new ExceptionSocketAcceptor();
         socketAcceptor.initialize(mailboxFactory.createMailbox(), factory);
-        socketAcceptor.open(inetSocketAddress, maxPacketSize);
+        socketAcceptor.openLocal(8884, maxPacketSize);
         DriverProtocol driverProtocol = new DriverProtocol();
         driverProtocol.initialize(mailbox, factory);
-        driverProtocol.clientOpen(inetSocketAddress, maxPacketSize, socketAcceptor);
+        driverProtocol.clientOpen(maxPacketSize, socketAcceptor);
         try {
             DoIt.req.send(new JAFuture(), driverProtocol);
         } catch (Exception ex) {

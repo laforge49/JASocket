@@ -29,6 +29,7 @@ import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.server.ServerProtocol;
+import org.agilewiki.jasocket.server.SocketAcceptor;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -55,7 +56,7 @@ abstract public class RawSocket extends SocketWriter implements ServerProtocol {
     }
 
     @Override
-    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
+    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, SocketAcceptor socketAcceptor, ThreadFactory threadFactory)
             throws Exception {
         writeBuffer = ByteBuffer.allocateDirect(maxPacketSize);
         this.socketChannel = socketChannel;
