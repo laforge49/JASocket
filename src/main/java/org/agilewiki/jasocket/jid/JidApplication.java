@@ -37,15 +37,11 @@ public class JidApplication extends BytesApplication {
     HashMap<Long, RP> rps = new HashMap<Long, RP>();
     long requestId = 0;
 
-    protected void initRoot(RootJid root) throws Exception {
-        root.initialize(getMailbox(), this);
-    }
-
     @Override
     public void receiveBytes(byte[] bytes) throws Exception {
         RootJid root = new RootJid();
-        initRoot(root);
-        root.load(bytes);
+        root.initialize(getMailbox(), this);
+        root.load(bytes, 0, bytes.length);
         TransportJid transport = (TransportJid) root.getValue();
         boolean requestFlag = transport.isRequest();
         Long id = transport.getId();
@@ -132,7 +128,8 @@ public class JidApplication extends BytesApplication {
         transport.setRequest(requestFlag);
         transport.setId(id);
         transport.setContent(jid);
-        byte[] bytes = root.getSerializedBytes();
+        byte[] bytes = new byte[root.getSerializedLength()];
+        root.save(bytes, 0);
         writeBytes(bytes);
     }
 }

@@ -35,8 +35,4 @@ public class AgentApplication extends JidApplication {
         agentJid.agentApplication = this;
         StartAgent.req.send(this, agentJid, rp);
     }
-
-    protected void initRoot(RootJid root) throws Exception {
-        root.initialize(getMailboxFactory().createAsyncMailbox(), this);
-    }
 }
