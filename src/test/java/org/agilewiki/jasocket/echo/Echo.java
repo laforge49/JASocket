@@ -7,13 +7,4 @@ public class Echo extends BytesProtocol {
     public void receiveBytes(byte[] bytes) throws Exception {
         writeBytes(bytes);
     }
-
-    @Override
-    public void processException(Exception ex) {
-        ex.printStackTrace();
-    }
-
-    @Override
-    protected void closed() {
-    }
 }

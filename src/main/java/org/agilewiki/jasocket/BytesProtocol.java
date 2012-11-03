@@ -72,5 +72,10 @@ abstract public class BytesProtocol extends JLPCActor implements SocketProtocol 
         closed();
     }
 
-    abstract protected void closed();
+    protected void closed() {}
+
+    @Override
+    public void processException(Exception exception) {
+        exception.printStackTrace();
+    }
 }

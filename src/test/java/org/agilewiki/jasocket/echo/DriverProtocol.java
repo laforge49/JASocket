@@ -17,13 +17,4 @@ public class DriverProtocol extends BytesProtocol {
             getMailboxFactory().close();
         }
     }
-
-    @Override
-    public void processException(Exception ex) {
-        ex.printStackTrace();
-    }
-
-    @Override
-    protected void closed() {
-    }
 }

@@ -104,10 +104,6 @@ abstract public class JidProtocol extends BytesProtocol {
         close();
     }
 
-    @Override
-    protected void closed() {
-    }
-
     void writeRequest(final Jid jid, final RP rp) throws Exception {
         if (rp.isEvent()) {
             write(true, -1, jid);
