@@ -28,7 +28,7 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
-public class ReceiveBytes extends Request<Object, BytesApplication> {
+public class ReceiveBytes extends Request<Object, BytesProtocol> {
     byte[] bytes;
 
     public ReceiveBytes(byte[] bytes) {
@@ -37,12 +37,12 @@ public class ReceiveBytes extends Request<Object, BytesApplication> {
 
     @Override
     public boolean isTargetType(Actor actor) {
-        return actor instanceof BytesApplication;
+        return actor instanceof BytesProtocol;
     }
 
     @Override
     public void processRequest(JLPCActor jlpcActor, RP rp) throws Exception {
-        ((BytesApplication) jlpcActor).receiveBytes(bytes);
+        ((BytesProtocol) jlpcActor).receiveBytes(bytes);
         rp.processResponse(null);
     }
 }

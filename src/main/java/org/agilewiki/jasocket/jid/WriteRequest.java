@@ -6,7 +6,7 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jid.Jid;
 
-public class WriteRequest extends Request<Jid, JidApplication> {
+public class WriteRequest extends Request<Jid, JidProtocol> {
     public final Jid request;
 
     public WriteRequest(Jid request) {
@@ -15,11 +15,11 @@ public class WriteRequest extends Request<Jid, JidApplication> {
 
     @Override
     public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof JidApplication;
+        return targetActor instanceof JidProtocol;
     }
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((JidApplication) targetActor).writeRequest(request, rp);
+        ((JidProtocol) targetActor).writeRequest(request, rp);
     }
 }

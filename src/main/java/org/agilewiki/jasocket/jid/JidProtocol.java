@@ -27,13 +27,13 @@ import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.JANoResponse;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.BytesApplication;
+import org.agilewiki.jasocket.BytesProtocol;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 
 import java.util.HashMap;
 
-public class JidApplication extends BytesApplication {
+public class JidProtocol extends BytesProtocol {
     HashMap<Long, RP> rps = new HashMap<Long, RP>();
     long requestId = 0;
 

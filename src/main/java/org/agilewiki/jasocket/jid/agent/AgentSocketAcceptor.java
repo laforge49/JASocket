@@ -29,7 +29,7 @@ import org.agilewiki.jasocket.server.SocketAcceptor;
 public class AgentSocketAcceptor extends SocketAcceptor {
     @Override
     protected ServerApplication createServerOpened() throws Exception {
-        AgentApplication agentApplication = new AgentApplication();
+        AgentProtocol agentApplication = new AgentProtocol();
         agentApplication.initialize(getMailbox(), this);
         return agentApplication;
     }

@@ -24,11 +24,10 @@
 package org.agilewiki.jasocket.jid.agent;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.jid.JidApplication;
+import org.agilewiki.jasocket.jid.JidProtocol;
 import org.agilewiki.jid.Jid;
-import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 
-public class AgentApplication extends JidApplication {
+public class AgentProtocol extends JidProtocol {
     @Override
     protected void receiveRequest(Jid jid, RP<Jid> rp) throws Exception {
         AgentJid agentJid = (AgentJid) jid;

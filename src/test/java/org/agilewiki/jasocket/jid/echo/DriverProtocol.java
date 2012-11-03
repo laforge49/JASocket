@@ -2,13 +2,13 @@ package org.agilewiki.jasocket.jid.echo;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
-import org.agilewiki.jasocket.jid.JidApplication;
+import org.agilewiki.jasocket.jid.JidProtocol;
 import org.agilewiki.jasocket.jid.WriteRequest;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.JidFactories;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class DriverApplication extends JidApplication {
+public class DriverProtocol extends JidProtocol {
     public void doit(final RP rp) throws Exception {
         StringJid sj = (StringJid) JAFactory.newActor(this, JidFactories.STRING_JID_TYPE);
         sj.setValue("Hello");

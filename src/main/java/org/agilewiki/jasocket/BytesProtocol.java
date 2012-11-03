@@ -31,7 +31,7 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
-abstract public class BytesApplication extends JLPCActor implements SocketApplication {
+abstract public class BytesProtocol extends JLPCActor implements SocketApplication {
     public SocketApplication socketApplication = this;
     BytesSocket bytesSocket;
     public SocketAcceptor socketAcceptor;

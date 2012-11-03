@@ -1,11 +1,11 @@
 package org.agilewiki.jasocket.server;
 
-import org.agilewiki.jasocket.NullBytesApplication;
+import org.agilewiki.jasocket.NullBytesProtocol;
 
 public class NullBytesSocketAcceptor extends SocketAcceptor {
     @Override
     protected ServerApplication createServerOpened() throws Exception {
-        NullBytesApplication nullSocketApplication = new NullBytesApplication();
+        NullBytesProtocol nullSocketApplication = new NullBytesProtocol();
         nullSocketApplication.initialize(getMailboxFactory().createAsyncMailbox());
         nullSocketApplication.socketAcceptor = this;
         return nullSocketApplication;

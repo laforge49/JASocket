@@ -2,7 +2,7 @@ package org.agilewiki.jasocket.jid.exception;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
-import org.agilewiki.jasocket.jid.JidApplication;
+import org.agilewiki.jasocket.jid.JidProtocol;
 import org.agilewiki.jasocket.jid.WriteRequest;
 import org.agilewiki.jasocket.server.SocketAcceptor;
 import org.agilewiki.jid.Jid;
@@ -12,7 +12,7 @@ import org.agilewiki.jid.scalar.vlens.string.StringJid;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-public class Driver extends JidApplication {
+public class Driver extends JidProtocol {
     SocketAcceptor socketAcceptor;
 
     public void doit(final RP rp) throws Exception {
