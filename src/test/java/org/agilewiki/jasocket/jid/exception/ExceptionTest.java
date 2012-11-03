@@ -24,10 +24,10 @@ public class ExceptionTest extends TestCase {
         int maxPacketSize = 300;
         SocketAcceptor socketAcceptor = new ExceptionSocketAcceptor();
         socketAcceptor.initialize(mailboxFactory.createMailbox(), factory);
-        socketAcceptor.openLocal(8884, maxPacketSize);
+        socketAcceptor.open(8884, maxPacketSize);
         DriverProtocol driverProtocol = new DriverProtocol();
         driverProtocol.initialize(mailbox, factory);
-        driverProtocol.clientOpen(maxPacketSize, socketAcceptor);
+        driverProtocol.clientOpenLocal(8884, maxPacketSize, socketAcceptor);
         try {
             DoIt.req.send(new JAFuture(), driverProtocol);
         } catch (Exception ex) {

@@ -45,11 +45,7 @@ abstract public class SocketAcceptor extends JLPCActor {
     Thread thread;
     InetSocketAddress inetSocketAddress;
 
-    public InetSocketAddress inetSocketAddress() {
-        return inetSocketAddress;
-    }
-
-    public void openLocal(int port, int maxPacketSize) throws Exception {
+    public void open(int port, int maxPacketSize) throws Exception {
         InetAddress inetAddress = InetAddress.getLocalHost();
         inetSocketAddress = new InetSocketAddress(inetAddress, port);
         open(inetSocketAddress, maxPacketSize);

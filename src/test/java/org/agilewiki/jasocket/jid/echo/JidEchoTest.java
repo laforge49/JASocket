@@ -22,10 +22,10 @@ public class JidEchoTest extends TestCase {
         int maxPacketSize = 300;
         SocketAcceptor socketAcceptor = new JidEchoSocketAcceptor();
         socketAcceptor.initialize(mailboxFactory.createMailbox(), factory);
-        socketAcceptor.openLocal(8884, maxPacketSize);
+        socketAcceptor.open(8884, maxPacketSize);
         DriverProtocol driverApplication = new DriverProtocol();
         driverApplication.initialize(mailbox, factory);
-        driverApplication.clientOpen(maxPacketSize, socketAcceptor);
+        driverApplication.clientOpenLocal(8884, maxPacketSize, socketAcceptor);
 
         try {
             DoIt.req.send(new JAFuture(), driverApplication);

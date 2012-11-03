@@ -27,6 +27,8 @@ import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.server.SocketAcceptor;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
@@ -43,18 +45,24 @@ abstract public class BytesProtocol extends JLPCActor implements SocketProtocol 
         (new WriteBytes(bytes)).sendEvent(this, bytesSocket);
     }
 
-    public void clientOpen(int maxPacketSize, SocketAcceptor socketAcceptor)
+    public void clientOpenLocal(int port, int maxPacketSize, SocketAcceptor socketAcceptor)
             throws Exception {
-        clientOpen(maxPacketSize, socketAcceptor, new JAThreadFactory());
+        InetAddress inetAddress = InetAddress.getLocalHost();
+        clientOpen(new InetSocketAddress(inetAddress, port), maxPacketSize, socketAcceptor);
     }
 
-    public void clientOpen(int maxPacketSize, SocketAcceptor socketAcceptor, ThreadFactory threadFactory)
+    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketAcceptor socketAcceptor)
+            throws Exception {
+        clientOpen(inetSocketAddress, maxPacketSize, socketAcceptor, new JAThreadFactory());
+    }
+
+    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketAcceptor socketAcceptor, ThreadFactory threadFactory)
             throws Exception {
         this.socketAcceptor = socketAcceptor;
         bytesSocket = new BytesSocket();
         bytesSocket.setSocketApplication(socketProtocol);
         bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
-        bytesSocket.clientOpen(socketAcceptor.inetSocketAddress(), maxPacketSize, threadFactory);
+        bytesSocket.clientOpen(inetSocketAddress, maxPacketSize, threadFactory);
     }
 
     @Override

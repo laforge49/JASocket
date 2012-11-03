@@ -12,10 +12,10 @@ public class EchoTest extends TestCase {
         int maxPacketSize = 30;
         SocketAcceptor socketAcceptor = new EchoSocketAcceptor();
         socketAcceptor.initialize(mailboxFactory.createMailbox());
-        socketAcceptor.openLocal(8885, maxPacketSize);
+        socketAcceptor.open(8885, maxPacketSize);
         DriverProtocol driverProtocol = new DriverProtocol();
         driverProtocol.initialize(mailboxFactory.createMailbox());
-        driverProtocol.clientOpen(maxPacketSize, socketAcceptor);
+        driverProtocol.clientOpenLocal(8885, maxPacketSize, socketAcceptor);
         DoIt.req.send(new JAFuture(), driverProtocol);
     }
 }
