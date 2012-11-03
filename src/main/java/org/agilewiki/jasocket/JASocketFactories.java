@@ -21,24 +21,35 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.jid;
+package org.agilewiki.jasocket;
 
+import org.agilewiki.jactor.Actor;
+import org.agilewiki.jactor.Mailbox;
+import org.agilewiki.jactor.factory.ActorFactory;
+import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jid.collection.flenc.AppJidFactory;
-import org.agilewiki.jid.scalar.flens.bool.BooleanJidFactory;
-import org.agilewiki.jid.scalar.flens.lng.LongJidFactory;
-import org.agilewiki.jid.scalar.vlens.actor.ActorJidFactory;
+import org.agilewiki.jasocket.jid.TransportJidFactory;
+import org.agilewiki.jid.JidFactories;
 
-public class TransportJidFactory extends AppJidFactory {
-    public final static TransportJidFactory fac = new TransportJidFactory();
-
-    public TransportJidFactory() {
-        super(JASocketFactories.TRANSPORT_FACTORY, BooleanJidFactory.fac, LongJidFactory.fac, ActorJidFactory.fac);
-    }
+public class JASocketFactories extends JLPCActor {
+    public final static String TRANSPORT_FACTORY = "transportJid";
 
     @Override
-    protected JLPCActor instantiateActor() throws Exception {
-        return new TransportJid();
+    public void initialize(Mailbox mailbox, Actor parent, ActorFactory actorFactory)
+            throws Exception {
+        if (parent == null) {
+            parent = new JidFactories();
+            ((JidFactories) parent).initialize(mailbox);
+        }
+        super.initialize(mailbox, parent, actorFactory);
+
+        registerActorFactory(TransportJidFactory.fac);
+    }
+
+    public void registerActorFactory(ActorFactory actorFactory) throws Exception {
+        Actor f = getParent();
+        while (!(f instanceof JAFactory)) f = f.getParent();
+        JAFactory factory = (JAFactory) f;
+        factory.registerActorFactory(actorFactory);
     }
 }

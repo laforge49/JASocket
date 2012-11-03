@@ -24,9 +24,9 @@
 package org.agilewiki.jasocket.jid.agent;
 
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.jid.JidProtocol;
 import org.agilewiki.jasocket.jid.TransportJid;
-import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 
@@ -63,7 +63,7 @@ public class AgentProtocol extends JidProtocol {
     protected void write(boolean requestFlag, long id, Jid jid) throws Exception {
         RootJid root = new RootJid();
         root.initialize(this);
-        root.setValue(TransportJidFactory.TRANSPORT_FACTORY);
+        root.setValue(JASocketFactories.TRANSPORT_FACTORY);
         TransportJid transport = (TransportJid) root.getValue();
         transport.setRequest(requestFlag);
         transport.setId(id);

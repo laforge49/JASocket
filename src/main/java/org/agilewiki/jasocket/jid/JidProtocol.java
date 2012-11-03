@@ -28,6 +28,7 @@ import org.agilewiki.jactor.JANoResponse;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.BytesProtocol;
+import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 
@@ -118,7 +119,7 @@ abstract public class JidProtocol extends BytesProtocol {
     protected void write(boolean requestFlag, long id, Jid jid) throws Exception {
         RootJid root = new RootJid();
         root.initialize(this);
-        root.setValue(TransportJidFactory.TRANSPORT_FACTORY);
+        root.setValue(JASocketFactories.TRANSPORT_FACTORY);
         TransportJid transport = (TransportJid) root.getValue();
         transport.setRequest(requestFlag);
         transport.setId(id);
