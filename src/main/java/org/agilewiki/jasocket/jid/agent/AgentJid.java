@@ -31,4 +31,8 @@ abstract public class AgentJid extends AppJid {
     public AgentProtocol agentApplication;
 
     abstract public void start(RP<Jid> rp) throws Exception;
+
+    public boolean async() {
+        return true;
+    }
 }

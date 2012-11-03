@@ -25,7 +25,10 @@ package org.agilewiki.jasocket.jid.agent;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.jid.JidProtocol;
+import org.agilewiki.jasocket.jid.TransportJid;
+import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jid.Jid;
+import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 
 public class AgentProtocol extends JidProtocol {
     @Override
@@ -33,5 +36,44 @@ public class AgentProtocol extends JidProtocol {
         AgentJid agentJid = (AgentJid) jid;
         agentJid.agentApplication = this;
         StartAgent.req.send(this, agentJid, rp);
+    }
+
+    @Override
+    public void receiveBytes(byte[] bytes) throws Exception {
+        RootJid root = new RootJid();
+        if (bytes[0] == 1)
+            root.initialize(getMailboxFactory().createAsyncMailbox(), this);
+        else
+            root.initialize(getMailboxFactory().createMailbox(), this);
+        root.load(bytes, 1, bytes.length - 1);
+        TransportJid transport = (TransportJid) root.getValue();
+        boolean requestFlag = transport.isRequest();
+        Long id = transport.getId();
+        Jid jid = transport.getContent();
+        if (requestFlag)
+            if (id == -1)
+                gotEvent(jid);
+            else
+                gotReq(id, jid);
+        else
+            gotRsp(id, jid);
+    }
+
+    @Override
+    protected void write(boolean requestFlag, long id, Jid jid) throws Exception {
+        RootJid root = new RootJid();
+        root.initialize(this);
+        root.setValue(TransportJidFactory.TRANSPORT_FACTORY);
+        TransportJid transport = (TransportJid) root.getValue();
+        transport.setRequest(requestFlag);
+        transport.setId(id);
+        transport.setContent(jid);
+        byte[] bytes = new byte[root.getSerializedLength() + 1];
+        if (requestFlag && ((AgentJid) jid).async())
+            bytes[0] = 1;
+        else
+            bytes[0] = 0;
+        root.save(bytes, 1);
+        writeBytes(bytes);
     }
 }

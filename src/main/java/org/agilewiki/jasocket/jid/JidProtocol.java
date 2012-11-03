@@ -40,7 +40,7 @@ abstract public class JidProtocol extends BytesProtocol {
     @Override
     public void receiveBytes(byte[] bytes) throws Exception {
         RootJid root = new RootJid();
-        root.initialize(getMailbox(), this);
+        root.initialize(getMailboxFactory().createMailbox(), this);
         root.load(bytes, 0, bytes.length);
         TransportJid transport = (TransportJid) root.getValue();
         boolean requestFlag = transport.isRequest();
@@ -55,7 +55,7 @@ abstract public class JidProtocol extends BytesProtocol {
             gotRsp(id, jid);
     }
 
-    private void gotEvent(Jid jid) throws Exception {
+    protected void gotEvent(Jid jid) throws Exception {
         final Request request = getMailbox().getCurrentRequest().getUnwrappedRequest();
         setExceptionHandler(new ExceptionHandler() {
             @Override
@@ -66,7 +66,7 @@ abstract public class JidProtocol extends BytesProtocol {
         receiveRequest(jid, JANoResponse.nrp);
     }
 
-    private void gotReq(final Long id, Jid jid) throws Exception {
+    protected void gotReq(final Long id, Jid jid) throws Exception {
         setExceptionHandler(new ExceptionHandler() {
             @Override
             public void process(Exception exception) throws Exception {
@@ -86,7 +86,7 @@ abstract public class JidProtocol extends BytesProtocol {
 
     abstract protected void receiveRequest(Jid jid, RP<Jid> rp) throws Exception;
 
-    private void gotRsp(Long id, Jid jid) throws Exception {
+    protected void gotRsp(Long id, Jid jid) throws Exception {
         RP rp = rps.remove(id);
         if (rp != null) {
             if (jid instanceof ExceptionJid) {
@@ -119,9 +119,9 @@ abstract public class JidProtocol extends BytesProtocol {
         }
     }
 
-    private void write(boolean requestFlag, long id, Jid jid) throws Exception {
+    protected void write(boolean requestFlag, long id, Jid jid) throws Exception {
         RootJid root = new RootJid();
-        root.initialize(getMailbox(), this);
+        root.initialize(this);
         root.setValue(TransportJidFactory.TRANSPORT_FACTORY);
         TransportJid transport = (TransportJid) root.getValue();
         transport.setRequest(requestFlag);
