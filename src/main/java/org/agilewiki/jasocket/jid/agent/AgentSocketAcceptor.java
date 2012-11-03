@@ -23,12 +23,12 @@
  */
 package org.agilewiki.jasocket.jid.agent;
 
-import org.agilewiki.jasocket.server.ServerApplication;
+import org.agilewiki.jasocket.server.ServerProtocol;
 import org.agilewiki.jasocket.server.SocketAcceptor;
 
 public class AgentSocketAcceptor extends SocketAcceptor {
     @Override
-    protected ServerApplication createServerOpened() throws Exception {
+    protected ServerProtocol createServerOpened() throws Exception {
         AgentProtocol agentApplication = new AgentProtocol();
         agentApplication.initialize(getMailbox(), this);
         return agentApplication;

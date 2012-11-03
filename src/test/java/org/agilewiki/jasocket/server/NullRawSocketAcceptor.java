@@ -6,7 +6,7 @@ public class NullRawSocketAcceptor extends SocketAcceptor {
     public int deadIn;
 
     @Override
-    protected ServerApplication createServerOpened() throws Exception {
+    protected ServerProtocol createServerOpened() throws Exception {
         NullRawSocket rawSocket = new NullRawSocket();
         rawSocket.initialize(getMailboxFactory().createAsyncMailbox());
         rawSocket.socketAcceptor = this;

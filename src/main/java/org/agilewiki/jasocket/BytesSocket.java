@@ -26,14 +26,14 @@ package org.agilewiki.jasocket;
 import java.nio.ByteBuffer;
 
 public class BytesSocket extends RawSocket {
-    private SocketApplication socketApplication;
+    private SocketProtocol socketApplication;
     byte[] lengthBytes = new byte[4];
     int lengthIndex = 0;
     int length;
     byte[] bytes = null;
     int bytesIndex;
 
-    public void setSocketApplication(SocketApplication socketApplication) {
+    public void setSocketApplication(SocketProtocol socketApplication) {
         this.socketApplication = socketApplication;
         exceptionProcessor = socketApplication;
     }

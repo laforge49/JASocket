@@ -21,12 +21,10 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket;
 
-import java.nio.channels.SocketChannel;
-import java.util.concurrent.ThreadFactory;
+import org.agilewiki.jasocket.server.ServerProtocol;
 
-public interface ServerApplication {
-    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
-            throws Exception;
+public interface SocketProtocol extends ExceptionProcessor, ServerProtocol {
+    public void receiveBytes(byte[] bytes) throws Exception;
 }

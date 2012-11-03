@@ -5,7 +5,7 @@ import org.agilewiki.jasocket.BytesProtocol;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-public class Driver extends BytesProtocol {
+public class DriverProtocol extends BytesProtocol {
     public void doit() throws Exception {
         int maxPacketSize = 30;
         InetAddress inetAddress = InetAddress.getLocalHost();
