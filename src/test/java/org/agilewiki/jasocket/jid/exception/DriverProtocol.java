@@ -12,9 +12,7 @@ import org.agilewiki.jid.scalar.vlens.string.StringJid;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-public class Driver extends JidProtocol {
-    SocketAcceptor socketAcceptor;
-
+public class DriverProtocol extends JidProtocol {
     public void doit(final RP rp) throws Exception {
         int maxPacketSize = 300;
         InetAddress inetAddress = InetAddress.getLocalHost();
@@ -34,9 +32,7 @@ public class Driver extends JidProtocol {
         });
     }
 
-    @Override
-    public void close() {
-        socketAcceptor.close();
-        super.close();
+    protected void receiveRequest(Jid jid, RP<Jid> rp) throws Exception {
+        throw new UnsupportedOperationException();
     }
 }

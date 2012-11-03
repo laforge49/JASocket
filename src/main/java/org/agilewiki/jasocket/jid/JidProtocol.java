@@ -33,7 +33,7 @@ import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 
 import java.util.HashMap;
 
-public class JidProtocol extends BytesProtocol {
+abstract public class JidProtocol extends BytesProtocol {
     HashMap<Long, RP> rps = new HashMap<Long, RP>();
     long requestId = 0;
 
@@ -84,8 +84,7 @@ public class JidProtocol extends BytesProtocol {
         });
     }
 
-    protected void receiveRequest(Jid jid, RP<Jid> rp) throws Exception {
-    }
+    abstract protected void receiveRequest(Jid jid, RP<Jid> rp) throws Exception;
 
     private void gotRsp(Long id, Jid jid) throws Exception {
         RP rp = rps.remove(id);

@@ -35,4 +35,8 @@ public class DriverProtocol extends JidProtocol {
             }
         });
     }
+
+    protected void receiveRequest(Jid jid, RP<Jid> rp) throws Exception {
+        throw new UnsupportedOperationException();
+    }
 }

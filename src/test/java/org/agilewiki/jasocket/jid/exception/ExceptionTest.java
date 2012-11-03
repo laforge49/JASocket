@@ -20,14 +20,13 @@ public class ExceptionTest extends TestCase {
         factories.initialize(mailbox, factory);
         factory.registerActorFactory(TransportJidFactory.fac);
         factory.registerActorFactory(ExceptionJidFactory.fac);
-        Driver driver = new Driver();
-        driver.initialize(mailbox, factory);
+        DriverProtocol driverProtocol = new DriverProtocol();
+        driverProtocol.initialize(mailbox, factory);
         try {
-            DoIt.req.send(new JAFuture(), driver);
+            DoIt.req.send(new JAFuture(), driverProtocol);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-        } finally {
-            driver.close();
+            driverProtocol.socketAcceptor.close();
             mailboxFactory.close();
         }
     }
