@@ -3,7 +3,6 @@ package org.agilewiki.jasocket.jid.exception;
 import junit.framework.TestCase;
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
-import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
@@ -12,7 +11,6 @@ import org.agilewiki.jasocket.server.SocketManager;
 public class ExceptionTest extends TestCase {
     public void test() throws Exception {
         MailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(10);
-        Mailbox mailbox = mailboxFactory.createMailbox();
         JASocketFactories factory = new JASocketFactories();
         factory.initialize();
         factory.registerActorFactory(ExceptionJidFactory.fac);
@@ -21,8 +19,8 @@ public class ExceptionTest extends TestCase {
         socketManager.initialize(mailboxFactory.createMailbox(), factory);
         socketManager.openServerSocket(8884, maxPacketSize);
         DriverProtocol driverProtocol = new DriverProtocol();
-        driverProtocol.initialize(mailbox, factory);
-        driverProtocol.clientOpenLocal(8884, maxPacketSize, socketManager);
+        driverProtocol.initialize(mailboxFactory.createMailbox(), factory);
+        driverProtocol.openLocal(8884, maxPacketSize, socketManager);
         try {
             DoIt.req.send(new JAFuture(), driverProtocol);
         } catch (Exception ex) {

@@ -49,18 +49,18 @@ abstract public class BytesProtocol extends JLPCActor implements SocketProtocol 
         (new WriteBytes(bytes)).sendEvent(this, bytesSocket);
     }
 
-    public void clientOpenLocal(int port, int maxPacketSize, SocketManager socketManager)
+    public void openLocal(int port, int maxPacketSize, SocketManager socketManager)
             throws Exception {
         InetAddress inetAddress = InetAddress.getLocalHost();
-        clientOpen(new InetSocketAddress(inetAddress, port), maxPacketSize, socketManager);
+        open(new InetSocketAddress(inetAddress, port), maxPacketSize, socketManager);
     }
 
-    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketManager socketManager)
+    public void open(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketManager socketManager)
             throws Exception {
-        clientOpen(inetSocketAddress, maxPacketSize, socketManager, new JAThreadFactory());
+        open(inetSocketAddress, maxPacketSize, socketManager, new JAThreadFactory());
     }
 
-    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketManager socketManager, ThreadFactory threadFactory)
+    public void open(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketManager socketManager, ThreadFactory threadFactory)
             throws Exception {
         this.socketManager = socketManager;
         bytesSocket = new BytesSocket();
