@@ -26,16 +26,16 @@ package org.agilewiki.jasocket;
 import java.nio.ByteBuffer;
 
 public class BytesSocket extends RawSocket {
-    private SocketProtocol socketApplication;
+    private BytesProtocol bytesProtocol;
     byte[] lengthBytes = new byte[4];
     int lengthIndex = 0;
     int length;
     byte[] bytes = null;
     int bytesIndex;
 
-    public void setSocketApplication(SocketProtocol socketApplication) {
-        this.socketApplication = socketApplication;
-        exceptionProcessor = socketApplication;
+    public void setBytesProtocol(BytesProtocol bytesProtocol) {
+        this.bytesProtocol = bytesProtocol;
+        exceptionProcessor = bytesProtocol;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class BytesSocket extends RawSocket {
             return;
         byte[] b = bytes;
         bytes = null;
-        (new ReceiveBytes(b)).sendEvent(this, socketApplication);
+        (new ReceiveBytes(b)).sendEvent(this, bytesProtocol);
     }
 
     @Override

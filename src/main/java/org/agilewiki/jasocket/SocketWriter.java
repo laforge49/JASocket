@@ -36,6 +36,10 @@ abstract public class SocketWriter extends JLPCActor implements ExceptionProcess
     protected ByteBuffer writeBuffer;
     protected ExceptionProcessor exceptionProcessor = this;
 
+    public String getRemoteAddress() throws Exception {
+        return socketChannel.getRemoteAddress().toString();
+    }
+
     public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize)
             throws Exception {
         writeBuffer = ByteBuffer.allocateDirect(maxPacketSize);

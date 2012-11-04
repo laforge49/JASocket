@@ -43,12 +43,10 @@ abstract public class SocketAcceptor extends JLPCActor {
     ServerSocketChannel serverSocketChannel;
     ThreadFactory threadFactory;
     Thread thread;
-    InetSocketAddress inetSocketAddress;
 
     public void open(int port, int maxPacketSize) throws Exception {
         InetAddress inetAddress = InetAddress.getLocalHost();
-        inetSocketAddress = new InetSocketAddress(inetAddress, port);
-        open(inetSocketAddress, maxPacketSize);
+        open(new InetSocketAddress(inetAddress, port), maxPacketSize);
     }
 
     public void open(InetSocketAddress inetSocketAddress, int maxPacketSize)
@@ -60,7 +58,6 @@ abstract public class SocketAcceptor extends JLPCActor {
                      int maxPacketSize,
                      ThreadFactory threadFactory)
             throws Exception {
-        this.inetSocketAddress = inetSocketAddress;
         this.maxPacketSize = maxPacketSize;
         this.threadFactory = threadFactory;
         serverSocketChannel = ServerSocketChannel.open();

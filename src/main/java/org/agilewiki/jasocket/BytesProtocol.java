@@ -33,12 +33,16 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
 abstract public class BytesProtocol extends JLPCActor implements SocketProtocol {
-    public SocketProtocol socketProtocol = this;
-    BytesSocket bytesSocket;
+    private BytesSocket bytesSocket;
     private SocketAcceptor socketAcceptor;
+    private boolean client;
 
-    public SocketAcceptor socketAcceptor() {
-        return socketAcceptor;
+    public boolean isClient() {
+        return client;
+    }
+
+    public String getRemoteAddress() throws Exception {
+        return bytesSocket.getRemoteAddress();
     }
 
     public void writeBytes(byte[] bytes) throws Exception {
@@ -60,9 +64,10 @@ abstract public class BytesProtocol extends JLPCActor implements SocketProtocol 
             throws Exception {
         this.socketAcceptor = socketAcceptor;
         bytesSocket = new BytesSocket();
-        bytesSocket.setSocketApplication(socketProtocol);
+        bytesSocket.setBytesProtocol(this);
         bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
         bytesSocket.clientOpen(inetSocketAddress, maxPacketSize, threadFactory);
+        client = true;
     }
 
     @Override
@@ -70,21 +75,18 @@ abstract public class BytesProtocol extends JLPCActor implements SocketProtocol 
             throws Exception {
         this.socketAcceptor = socketAcceptor;
         bytesSocket = new BytesSocket();
-        bytesSocket.setSocketApplication(socketProtocol);
+        bytesSocket.setBytesProtocol(this);
         bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
         bytesSocket.serverOpen(socketChannel, maxPacketSize, socketAcceptor, threadFactory);
     }
 
     public void close() {
         bytesSocket.close();
-        closed();
-    }
-
-    protected void closed() {
     }
 
     @Override
     public void processException(Exception exception) {
         exception.printStackTrace();
+        close();
     }
 }

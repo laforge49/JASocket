@@ -99,12 +99,6 @@ abstract public class JidProtocol extends BytesProtocol {
         }
     }
 
-    @Override
-    public void processException(Exception ex) {
-        ex.printStackTrace();
-        close();
-    }
-
     void writeRequest(final Jid jid, final RP rp) throws Exception {
         if (rp.isEvent()) {
             write(true, -1, jid);
