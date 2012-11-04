@@ -28,7 +28,6 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.server.SocketAcceptor;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;

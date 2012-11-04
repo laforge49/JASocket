@@ -25,7 +25,7 @@ package org.agilewiki.jasocket;
 
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.server.SocketAcceptor;
+import org.agilewiki.jasocket.server.SocketManager;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadFactory;
 
 abstract public class BytesProtocol extends JLPCActor implements SocketProtocol {
     private BytesSocket bytesSocket;
-    private SocketAcceptor socketAcceptor;
+    private SocketManager socketManager;
     private boolean client;
 
     public boolean isClient() {
@@ -49,20 +49,20 @@ abstract public class BytesProtocol extends JLPCActor implements SocketProtocol 
         (new WriteBytes(bytes)).sendEvent(this, bytesSocket);
     }
 
-    public void clientOpenLocal(int port, int maxPacketSize, SocketAcceptor socketAcceptor)
+    public void clientOpenLocal(int port, int maxPacketSize, SocketManager socketManager)
             throws Exception {
         InetAddress inetAddress = InetAddress.getLocalHost();
-        clientOpen(new InetSocketAddress(inetAddress, port), maxPacketSize, socketAcceptor);
+        clientOpen(new InetSocketAddress(inetAddress, port), maxPacketSize, socketManager);
     }
 
-    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketAcceptor socketAcceptor)
+    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketManager socketManager)
             throws Exception {
-        clientOpen(inetSocketAddress, maxPacketSize, socketAcceptor, new JAThreadFactory());
+        clientOpen(inetSocketAddress, maxPacketSize, socketManager, new JAThreadFactory());
     }
 
-    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketAcceptor socketAcceptor, ThreadFactory threadFactory)
+    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketManager socketManager, ThreadFactory threadFactory)
             throws Exception {
-        this.socketAcceptor = socketAcceptor;
+        this.socketManager = socketManager;
         bytesSocket = new BytesSocket();
         bytesSocket.setBytesProtocol(this);
         bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
@@ -70,9 +70,9 @@ abstract public class BytesProtocol extends JLPCActor implements SocketProtocol 
         client = true;
     }
 
-    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, SocketAcceptor socketAcceptor, ThreadFactory threadFactory)
+    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, SocketManager socketManager, ThreadFactory threadFactory)
             throws Exception {
-        this.socketAcceptor = socketAcceptor;
+        this.socketManager = socketManager;
         bytesSocket = new BytesSocket();
         bytesSocket.setBytesProtocol(this);
         bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());

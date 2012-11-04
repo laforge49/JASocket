@@ -6,7 +6,7 @@ import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jasocket.server.SocketAcceptor;
+import org.agilewiki.jasocket.server.SocketManager;
 
 public class JidEchoTest extends TestCase {
     public void test() throws Exception {
@@ -15,17 +15,17 @@ public class JidEchoTest extends TestCase {
         JASocketFactories factory = new JASocketFactories();
         factory.initialize();
         int maxPacketSize = 300;
-        SocketAcceptor socketAcceptor = new JidEchoSocketAcceptor();
-        socketAcceptor.initialize(mailboxFactory.createMailbox(), factory);
-        socketAcceptor.open(8884, maxPacketSize);
+        SocketManager socketManager = new JidEchoSocketManager();
+        socketManager.initialize(mailboxFactory.createMailbox(), factory);
+        socketManager.openServerSocket(8884, maxPacketSize);
         DriverProtocol driverApplication = new DriverProtocol();
         driverApplication.initialize(mailbox, factory);
-        driverApplication.clientOpenLocal(8884, maxPacketSize, socketAcceptor);
+        driverApplication.clientOpenLocal(8884, maxPacketSize, socketManager);
 
         try {
             DoIt.req.send(new JAFuture(), driverApplication);
         } finally {
-            socketAcceptor.close();
+            socketManager.close();
             mailboxFactory.close();
         }
     }

@@ -24,9 +24,9 @@
 package org.agilewiki.jasocket.jid.agent;
 
 import org.agilewiki.jasocket.BytesProtocol;
-import org.agilewiki.jasocket.server.SocketAcceptor;
+import org.agilewiki.jasocket.server.SocketManager;
 
-public class AgentSocketAcceptor extends SocketAcceptor {
+public class AgentSocketManager extends SocketManager {
     @Override
     protected BytesProtocol createServerOpened() throws Exception {
         AgentProtocol agentProtocol = new AgentProtocol();

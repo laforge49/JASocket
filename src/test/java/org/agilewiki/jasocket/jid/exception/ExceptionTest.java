@@ -7,7 +7,7 @@ import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
-import org.agilewiki.jasocket.server.SocketAcceptor;
+import org.agilewiki.jasocket.server.SocketManager;
 
 public class ExceptionTest extends TestCase {
     public void test() throws Exception {
@@ -17,17 +17,17 @@ public class ExceptionTest extends TestCase {
         factory.initialize();
         factory.registerActorFactory(ExceptionJidFactory.fac);
         int maxPacketSize = 300;
-        SocketAcceptor socketAcceptor = new ExceptionSocketAcceptor();
-        socketAcceptor.initialize(mailboxFactory.createMailbox(), factory);
-        socketAcceptor.open(8884, maxPacketSize);
+        SocketManager socketManager = new ExceptionSocketManager();
+        socketManager.initialize(mailboxFactory.createMailbox(), factory);
+        socketManager.openServerSocket(8884, maxPacketSize);
         DriverProtocol driverProtocol = new DriverProtocol();
         driverProtocol.initialize(mailbox, factory);
-        driverProtocol.clientOpenLocal(8884, maxPacketSize, socketAcceptor);
+        driverProtocol.clientOpenLocal(8884, maxPacketSize, socketManager);
         try {
             DoIt.req.send(new JAFuture(), driverProtocol);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-            socketAcceptor.close();
+            socketManager.close();
             mailboxFactory.close();
         }
     }

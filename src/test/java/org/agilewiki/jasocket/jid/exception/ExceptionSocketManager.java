@@ -1,9 +1,9 @@
 package org.agilewiki.jasocket.jid.exception;
 
 import org.agilewiki.jasocket.BytesProtocol;
-import org.agilewiki.jasocket.server.SocketAcceptor;
+import org.agilewiki.jasocket.server.SocketManager;
 
-public class ExceptionSocketAcceptor extends SocketAcceptor {
+public class ExceptionSocketManager extends SocketManager {
     @Override
     protected BytesProtocol createServerOpened() throws Exception {
         ExceptionEcho exceptionEcho = new ExceptionEcho();

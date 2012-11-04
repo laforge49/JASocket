@@ -1,9 +1,9 @@
 package org.agilewiki.jasocket.jid.echo;
 
 import org.agilewiki.jasocket.BytesProtocol;
-import org.agilewiki.jasocket.server.SocketAcceptor;
+import org.agilewiki.jasocket.server.SocketManager;
 
-public class JidEchoSocketAcceptor extends SocketAcceptor {
+public class JidEchoSocketManager extends SocketManager {
     @Override
     protected BytesProtocol createServerOpened() throws Exception {
         JidEcho jidEcho = new JidEcho();

@@ -39,25 +39,25 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
-abstract public class SocketAcceptor extends JLPCActor {
+abstract public class SocketManager extends JLPCActor {
     int maxPacketSize;
     ServerSocketChannel serverSocketChannel;
     ThreadFactory threadFactory;
     Thread thread;
 
-    public void open(int port, int maxPacketSize) throws Exception {
+    public void openServerSocket(int port, int maxPacketSize) throws Exception {
         InetAddress inetAddress = InetAddress.getLocalHost();
-        open(new InetSocketAddress(inetAddress, port), maxPacketSize);
+        openServerSocket(new InetSocketAddress(inetAddress, port), maxPacketSize);
     }
 
-    public void open(InetSocketAddress inetSocketAddress, int maxPacketSize)
+    public void openServerSocket(InetSocketAddress inetSocketAddress, int maxPacketSize)
             throws Exception {
-        open(inetSocketAddress, maxPacketSize, new JAThreadFactory());
+        openServerSocket(inetSocketAddress, maxPacketSize, new JAThreadFactory());
     }
 
-    public void open(InetSocketAddress inetSocketAddress,
-                     int maxPacketSize,
-                     ThreadFactory threadFactory)
+    public void openServerSocket(InetSocketAddress inetSocketAddress,
+                                 int maxPacketSize,
+                                 ThreadFactory threadFactory)
             throws Exception {
         this.maxPacketSize = maxPacketSize;
         this.threadFactory = threadFactory;
@@ -96,7 +96,7 @@ abstract public class SocketAcceptor extends JLPCActor {
                     socketChannel.setOption(StandardSocketOptions.SO_SNDBUF, maxPacketSize);
                     socketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
                     socketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
-                    (new AcceptSocket(socketChannel)).sendEvent(SocketAcceptor.this);
+                    (new AcceptSocket(socketChannel)).sendEvent(SocketManager.this);
                 }
             } catch (ClosedByInterruptException cbie) {
             } catch (ClosedChannelException cce) {
@@ -108,7 +108,7 @@ abstract public class SocketAcceptor extends JLPCActor {
     }
 }
 
-class AcceptSocket extends Request<Object, SocketAcceptor> {
+class AcceptSocket extends Request<Object, SocketManager> {
     SocketChannel socketChannel;
 
     public AcceptSocket(SocketChannel socketChannel) {
@@ -117,12 +117,12 @@ class AcceptSocket extends Request<Object, SocketAcceptor> {
 
     @Override
     public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof SocketAcceptor;
+        return targetActor instanceof SocketManager;
     }
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((SocketAcceptor) targetActor).acceptSocket(socketChannel);
+        ((SocketManager) targetActor).acceptSocket(socketChannel);
         rp.processResponse(null);
     }
 }
