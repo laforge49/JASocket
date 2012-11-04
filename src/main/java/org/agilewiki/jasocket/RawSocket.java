@@ -28,7 +28,6 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.server.ServerProtocol;
 import org.agilewiki.jasocket.server.SocketAcceptor;
 
 import java.net.InetSocketAddress;
@@ -37,7 +36,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
-abstract public class RawSocket extends SocketWriter implements ServerProtocol {
+abstract public class RawSocket extends SocketWriter {
     int maxPacketSize;
     Thread readerThread;
 
@@ -55,8 +54,7 @@ abstract public class RawSocket extends SocketWriter implements ServerProtocol {
         readerThread.start();
     }
 
-    @Override
-    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, SocketAcceptor socketAcceptor, ThreadFactory threadFactory)
+    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
             throws Exception {
         writeBuffer = ByteBuffer.allocateDirect(maxPacketSize);
         this.socketChannel = socketChannel;

@@ -28,6 +28,7 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.BytesProtocol;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -67,12 +68,12 @@ abstract public class SocketAcceptor extends JLPCActor {
         thread.start();
     }
 
-    abstract protected ServerProtocol createServerOpened() throws Exception;
+    abstract protected BytesProtocol createServerOpened() throws Exception;
 
     public void acceptSocket(SocketChannel socketChannel) {
         try {
-            ServerProtocol serverProtocol = createServerOpened();
-            serverProtocol.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
+            BytesProtocol bytesProtocol = createServerOpened();
+            bytesProtocol.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

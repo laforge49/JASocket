@@ -70,14 +70,13 @@ abstract public class BytesProtocol extends JLPCActor implements SocketProtocol 
         client = true;
     }
 
-    @Override
     public void serverOpen(SocketChannel socketChannel, int maxPacketSize, SocketAcceptor socketAcceptor, ThreadFactory threadFactory)
             throws Exception {
         this.socketAcceptor = socketAcceptor;
         bytesSocket = new BytesSocket();
         bytesSocket.setBytesProtocol(this);
         bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
-        bytesSocket.serverOpen(socketChannel, maxPacketSize, socketAcceptor, threadFactory);
+        bytesSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
     }
 
     public void close() {

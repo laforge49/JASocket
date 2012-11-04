@@ -23,8 +23,6 @@
  */
 package org.agilewiki.jasocket;
 
-import org.agilewiki.jasocket.server.ServerProtocol;
-
-public interface SocketProtocol extends ExceptionProcessor, ServerProtocol {
+public interface SocketProtocol extends ExceptionProcessor {
     public void receiveBytes(byte[] bytes) throws Exception;
 }
