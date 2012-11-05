@@ -28,7 +28,7 @@ import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.collection.flenc.AppJid;
 
 abstract public class AgentJid extends AppJid {
-    public AgentProtocol agentApplication;
+    public AgentProtocol agentProtocol;
 
     abstract public void start(RP<Jid> rp) throws Exception;
 

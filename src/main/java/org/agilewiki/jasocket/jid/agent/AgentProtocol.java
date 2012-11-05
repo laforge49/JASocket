@@ -128,7 +128,7 @@ public class AgentProtocol extends JLPCActor implements SocketProtocol {
 
     protected void receiveRequest(Jid jid, RP<Jid> rp) throws Exception {
         AgentJid agentJid = (AgentJid) jid;
-        agentJid.agentApplication = this;
+        agentJid.agentProtocol = this;
         StartAgent.req.send(this, agentJid, rp);
     }
 
