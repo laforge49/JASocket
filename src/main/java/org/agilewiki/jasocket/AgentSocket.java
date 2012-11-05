@@ -27,7 +27,7 @@ import org.agilewiki.jasocket.jid.agent.AgentProtocol;
 
 import java.nio.ByteBuffer;
 
-public class BytesSocket extends RawSocket {
+public class AgentSocket extends RawSocket {
     private AgentProtocol agentProtocol;
     byte[] lengthBytes = new byte[4];
     int lengthIndex = 0;

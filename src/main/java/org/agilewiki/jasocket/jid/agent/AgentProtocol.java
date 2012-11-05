@@ -29,7 +29,7 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.BytesSocket;
+import org.agilewiki.jasocket.AgentSocket;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.SocketProtocol;
 import org.agilewiki.jasocket.WriteBytes;
@@ -50,7 +50,7 @@ import java.util.concurrent.ThreadFactory;
 public class AgentProtocol extends JLPCActor implements SocketProtocol {
     HashMap<Long, RP> rps = new HashMap<Long, RP>();
     long requestId = 0;
-    private BytesSocket bytesSocket;
+    private AgentSocket agentSocket;
     private SocketManager socketManager;
     private boolean client;
 
@@ -59,11 +59,11 @@ public class AgentProtocol extends JLPCActor implements SocketProtocol {
     }
 
     public String getRemoteAddress() throws Exception {
-        return bytesSocket.getRemoteAddress();
+        return agentSocket.getRemoteAddress();
     }
 
     public void writeBytes(byte[] bytes) throws Exception {
-        (new WriteBytes(bytes)).sendEvent(this, bytesSocket);
+        (new WriteBytes(bytes)).sendEvent(this, agentSocket);
     }
 
     @Override
@@ -86,24 +86,24 @@ public class AgentProtocol extends JLPCActor implements SocketProtocol {
     public void open(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketManager socketManager, ThreadFactory threadFactory)
             throws Exception {
         this.socketManager = socketManager;
-        bytesSocket = new BytesSocket();
-        bytesSocket.setAgentProtocol(this);
-        bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
-        bytesSocket.clientOpen(inetSocketAddress, maxPacketSize, threadFactory);
+        agentSocket = new AgentSocket();
+        agentSocket.setAgentProtocol(this);
+        agentSocket.initialize(getMailboxFactory().createAsyncMailbox());
+        agentSocket.clientOpen(inetSocketAddress, maxPacketSize, threadFactory);
         client = true;
     }
 
     public void serverOpen(SocketChannel socketChannel, int maxPacketSize, SocketManager socketManager, ThreadFactory threadFactory)
             throws Exception {
         this.socketManager = socketManager;
-        bytesSocket = new BytesSocket();
-        bytesSocket.setAgentProtocol(this);
-        bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
-        bytesSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
+        agentSocket = new AgentSocket();
+        agentSocket.setAgentProtocol(this);
+        agentSocket.initialize(getMailboxFactory().createAsyncMailbox());
+        agentSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
     }
 
     public void close() {
-        bytesSocket.close();
+        agentSocket.close();
     }
 
     protected void gotEvent(Jid jid) throws Exception {
