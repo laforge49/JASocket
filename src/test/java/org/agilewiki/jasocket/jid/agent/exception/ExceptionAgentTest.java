@@ -13,7 +13,6 @@ public class ExceptionAgentTest extends TestCase {
         JAMailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(10);
         JASocketFactories factory = new JASocketFactories();
         factory.initialize();
-        int maxPacketSize = 300;
         SocketManager socketManager = new SocketManager();
         socketManager.initialize(mailboxFactory.createMailbox(), factory);
         socketManager.openServerSocket(8888);
@@ -26,8 +25,7 @@ public class ExceptionAgentTest extends TestCase {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
-        agentProtocol.close();
-        socketManager.close();
+        socketManager.closeAll();
         mailboxFactory.close();
     }
 }

@@ -38,6 +38,8 @@ import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 
 public class SocketManager extends JLPCActor {
@@ -108,6 +110,24 @@ public class SocketManager extends JLPCActor {
         try {
             serverSocketChannel.close();
         } catch (Exception ex) {
+        }
+    }
+
+    public void closeAll() {
+        close();
+        Set<String> remoteAddresses = agentProtocols.keySet();
+        if (remoteAddresses.isEmpty()) {
+            return;
+        }
+        Iterator<String> sit = remoteAddresses.iterator();
+        while (sit.hasNext()) {
+            String remoteAddress = sit.next();
+            while (true) {
+                AgentProtocol agentProtocol = agentProtocols.getAny(remoteAddress);
+                if (agentProtocol == null)
+                    break;
+                agentProtocol.close();
+            }
         }
     }
 

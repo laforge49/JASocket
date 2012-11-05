@@ -14,7 +14,6 @@ public class EchoAgentTest extends TestCase {
         JAMailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(10);
         JASocketFactories factory = new JASocketFactories();
         factory.initialize();
-        int maxPacketSize = 300;
         SocketManager socketManager = new SocketManager();
         socketManager.initialize(mailboxFactory.createMailbox(), factory);
         socketManager.openServerSocket(8888);
@@ -25,8 +24,7 @@ public class EchoAgentTest extends TestCase {
         echoAgent0.setValue("Hello world!");
         StringJid rsp = (StringJid) (new WriteRequest(echoAgent0)).send(future, agentProtocol);
         System.out.println(rsp.getValue());
-        agentProtocol.close();
-        socketManager.close();
+        socketManager.closeAll();
         mailboxFactory.close();
     }
 }
