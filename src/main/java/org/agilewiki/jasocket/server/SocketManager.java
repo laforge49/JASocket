@@ -28,6 +28,7 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.concurrent.ConcurrentDupMap;
 import org.agilewiki.jasocket.jid.agent.AgentProtocol;
 
 import java.net.InetAddress;
@@ -44,6 +45,7 @@ public class SocketManager extends JLPCActor {
     ThreadFactory threadFactory;
     Thread thread;
     public int maxPacketSize = 10000;
+    ConcurrentDupMap<String, AgentProtocol> agentProtocols = new ConcurrentDupMap<String, AgentProtocol>();
 
     public AgentProtocol createLocalAgentProtocol(int port)
             throws Exception {
@@ -61,6 +63,7 @@ public class SocketManager extends JLPCActor {
         AgentProtocol agentProtocol = new AgentProtocol();
         agentProtocol.initialize(getMailboxFactory().createMailbox(), this);
         agentProtocol.open(inetSocketAddress, maxPacketSize, this, threadFactory);
+        agentProtocols.add(agentProtocol.getRemoteAddress(), agentProtocol);
         return agentProtocol;
     }
 
@@ -94,6 +97,7 @@ public class SocketManager extends JLPCActor {
         try {
             AgentProtocol agentProtocol = createServerOpened();
             agentProtocol.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
+            agentProtocols.add(agentProtocol.getRemoteAddress(), agentProtocol);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -105,6 +109,10 @@ public class SocketManager extends JLPCActor {
             serverSocketChannel.close();
         } catch (Exception ex) {
         }
+    }
+
+    public void closed(AgentProtocol agentProtocol) {
+        agentProtocols.remove(agentProtocol.getRemoteAddress(), agentProtocol);
     }
 
     class Acceptor implements Runnable {

@@ -65,4 +65,8 @@ public class ConcurrentDupMap<KEY_TYPE, VALUE_TYPE> {
             return false;
         return set.remove(value);
     }
+
+    public Set<KEY_TYPE> keySet() {
+        return map.keySet();
+    }
 }

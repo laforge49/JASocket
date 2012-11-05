@@ -51,13 +51,14 @@ public class AgentProtocol extends JLPCActor implements SocketProtocol {
     private AgentSocket agentSocket;
     private SocketManager socketManager;
     private boolean client;
+    String remoteAddress;
 
     public boolean isClient() {
         return client;
     }
 
-    public String getRemoteAddress() throws Exception {
-        return agentSocket.getRemoteAddress();
+    public String getRemoteAddress() {
+        return remoteAddress;
     }
 
     public void writeBytes(byte[] bytes) throws Exception {
@@ -78,6 +79,7 @@ public class AgentProtocol extends JLPCActor implements SocketProtocol {
         agentSocket.initialize(getMailboxFactory().createAsyncMailbox());
         agentSocket.clientOpen(inetSocketAddress, maxPacketSize, threadFactory);
         client = true;
+        remoteAddress = agentSocket.getRemoteAddress();
     }
 
     public void serverOpen(SocketChannel socketChannel, int maxPacketSize, SocketManager socketManager, ThreadFactory threadFactory)
@@ -87,9 +89,11 @@ public class AgentProtocol extends JLPCActor implements SocketProtocol {
         agentSocket.setAgentProtocol(this);
         agentSocket.initialize(getMailboxFactory().createAsyncMailbox());
         agentSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
+        remoteAddress = agentSocket.getRemoteAddress();
     }
 
     public void close() {
+        socketManager.closed(this);
         agentSocket.close();
     }
 
