@@ -21,8 +21,11 @@ public class EchoAgentTest extends TestCase {
         JAFuture future = new JAFuture();
         factory.registerActorFactory(EchoAgentFactory.fac);
         EchoAgent echoAgent0 = (EchoAgent) factory.newActor("EchoAgent");
-        echoAgent0.setValue("Hello world!");
+        echoAgent0.setValue("Hello");
         StringJid rsp = (StringJid) (new WriteRequest(echoAgent0)).send(future, agentProtocol);
+        System.out.println(rsp.getValue());
+        echoAgent0.setValue("world!");
+        rsp = (StringJid) (new WriteRequest(echoAgent0)).send(future, agentProtocol);
         System.out.println(rsp.getValue());
         socketManager.closeAll();
         mailboxFactory.close();
