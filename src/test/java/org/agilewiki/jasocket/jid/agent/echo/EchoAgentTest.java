@@ -17,7 +17,7 @@ public class EchoAgentTest extends TestCase {
         SocketManager socketManager = new SocketManager();
         socketManager.initialize(mailboxFactory.createMailbox(), factory);
         socketManager.openServerSocket(8888);
-        AgentProtocol agentProtocol = socketManager.createLocalAgentProtocol(8888);
+        AgentProtocol agentProtocol = socketManager.localAgentProtocol(8888);
         JAFuture future = new JAFuture();
         factory.registerActorFactory(EchoAgentFactory.fac);
         EchoAgent echoAgent0 = (EchoAgent) factory.newActor("EchoAgent");

@@ -25,6 +25,7 @@ package org.agilewiki.jasocket;
 
 import org.agilewiki.jactor.lpc.JLPCActor;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
@@ -37,7 +38,9 @@ abstract public class SocketWriter extends JLPCActor implements ExceptionProcess
     protected ExceptionProcessor exceptionProcessor = this;
 
     public String getRemoteAddress() throws Exception {
-        return socketChannel.getRemoteAddress().toString();
+        InetSocketAddress inetSocketAddress = (InetSocketAddress) socketChannel.getRemoteAddress();
+        InetAddress inetAddress = inetSocketAddress.getAddress();
+        return inetAddress.getHostAddress() + ":" + inetSocketAddress.getPort();
     }
 
     public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize)

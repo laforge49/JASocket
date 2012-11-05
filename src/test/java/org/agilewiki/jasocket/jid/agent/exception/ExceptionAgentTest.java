@@ -16,7 +16,7 @@ public class ExceptionAgentTest extends TestCase {
         SocketManager socketManager = new SocketManager();
         socketManager.initialize(mailboxFactory.createMailbox(), factory);
         socketManager.openServerSocket(8888);
-        AgentProtocol agentProtocol = socketManager.createLocalAgentProtocol(8888);
+        AgentProtocol agentProtocol = socketManager.localAgentProtocol(8888);
         JAFuture future = new JAFuture();
         factory.registerActorFactory(ExceptionAgentFactory.fac);
         ExceptionAgent echoAgent0 = (ExceptionAgent) factory.newActor("ExceptionAgent");

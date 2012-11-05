@@ -49,20 +49,25 @@ public class SocketManager extends JLPCActor {
     public int maxPacketSize = 10000;
     ConcurrentDupMap<String, AgentProtocol> agentProtocols = new ConcurrentDupMap<String, AgentProtocol>();
 
-    public AgentProtocol createLocalAgentProtocol(int port)
+    public AgentProtocol localAgentProtocol(int port)
             throws Exception {
         InetAddress inetAddress = InetAddress.getLocalHost();
-        return createAgentProtocol(new InetSocketAddress(inetAddress, port));
+        return agentProtocol(new InetSocketAddress(inetAddress, port));
     }
 
-    public AgentProtocol createAgentProtocol(InetSocketAddress inetSocketAddress)
+    public AgentProtocol agentProtocol(InetSocketAddress inetSocketAddress)
             throws Exception {
-        return createAgentProtocol(inetSocketAddress, new JAThreadFactory());
+        return agentProtocol(inetSocketAddress, new JAThreadFactory());
     }
 
-    public AgentProtocol createAgentProtocol(InetSocketAddress inetSocketAddress, ThreadFactory threadFactory)
+    public AgentProtocol agentProtocol(InetSocketAddress inetSocketAddress, ThreadFactory threadFactory)
             throws Exception {
-        AgentProtocol agentProtocol = new AgentProtocol();
+        InetAddress inetAddress = inetSocketAddress.getAddress();
+        String remoteAddress = inetAddress.getHostAddress() + ":" + inetSocketAddress.getPort();
+        AgentProtocol agentProtocol = agentProtocols.getAny(remoteAddress);
+        if (agentProtocol != null)
+            return agentProtocol;
+        agentProtocol = new AgentProtocol();
         agentProtocol.initialize(getMailboxFactory().createMailbox(), this);
         agentProtocol.open(inetSocketAddress, maxPacketSize, this, threadFactory);
         agentProtocols.add(agentProtocol.getRemoteAddress(), agentProtocol);
