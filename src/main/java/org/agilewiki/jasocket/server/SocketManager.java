@@ -29,6 +29,7 @@ import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.BytesProtocol;
+import org.agilewiki.jasocket.jid.agent.AgentProtocol;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -39,7 +40,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
-abstract public class SocketManager extends JLPCActor {
+public class SocketManager extends JLPCActor {
     int maxPacketSize;
     ServerSocketChannel serverSocketChannel;
     ThreadFactory threadFactory;
@@ -68,7 +69,11 @@ abstract public class SocketManager extends JLPCActor {
         thread.start();
     }
 
-    abstract protected BytesProtocol createServerOpened() throws Exception;
+    protected AgentProtocol createServerOpened() throws Exception {
+        AgentProtocol agentProtocol = new AgentProtocol();
+        agentProtocol.initialize(getMailbox(), this);
+        return agentProtocol;
+    }
 
     public void acceptSocket(SocketChannel socketChannel) {
         try {

@@ -6,7 +6,7 @@ import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.jid.WriteRequest;
 import org.agilewiki.jasocket.jid.agent.AgentProtocol;
-import org.agilewiki.jasocket.jid.agent.AgentSocketManager;
+import org.agilewiki.jasocket.server.SocketManager;
 
 public class ExceptionAgentTest extends TestCase {
     public void test() throws Exception {
@@ -14,7 +14,7 @@ public class ExceptionAgentTest extends TestCase {
         JASocketFactories factory = new JASocketFactories();
         factory.initialize();
         int maxPacketSize = 300;
-        AgentSocketManager socketManager = new AgentSocketManager();
+        SocketManager socketManager = new SocketManager();
         socketManager.initialize(mailboxFactory.createMailbox(), factory);
         socketManager.openServerSocket(8888, maxPacketSize);
         AgentProtocol agentProtocol = new AgentProtocol();

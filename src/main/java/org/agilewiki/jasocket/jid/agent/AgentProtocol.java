@@ -23,15 +23,51 @@
  */
 package org.agilewiki.jasocket.jid.agent;
 
+import org.agilewiki.jactor.ExceptionHandler;
+import org.agilewiki.jactor.JANoResponse;
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.BytesProtocol;
 import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jasocket.jid.JidProtocol;
-import org.agilewiki.jasocket.jid.TransportJid;
+import org.agilewiki.jasocket.jid.*;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 
-public class AgentProtocol extends JidProtocol {
-    @Override
+import java.util.HashMap;
+
+public class AgentProtocol extends BytesProtocol {
+    HashMap<Long, RP> rps = new HashMap<Long, RP>();
+    long requestId = 0;
+
+    protected void gotEvent(Jid jid) throws Exception {
+        final Request request = getMailbox().getCurrentRequest().getUnwrappedRequest();
+        setExceptionHandler(new ExceptionHandler() {
+            @Override
+            public void process(Exception exception) throws Exception {
+                getMailboxFactory().eventException(request, exception);
+            }
+        });
+        receiveRequest(jid, JANoResponse.nrp);
+    }
+
+    protected void gotReq(final Long id, Jid jid) throws Exception {
+        setExceptionHandler(new ExceptionHandler() {
+            @Override
+            public void process(Exception exception) throws Exception {
+                RemoteException re = new RemoteException(exception);
+                ExceptionJid bj = (ExceptionJid) ExceptionJidFactory.fac.newActor(getMailbox(), null);
+                bj.setObject(re);
+                write(false, id, bj);
+            }
+        });
+        receiveRequest(jid, new RP<Jid>() {
+            @Override
+            public void processResponse(Jid response) throws Exception {
+                write(false, id, response);
+            }
+        });
+    }
+
     protected void receiveRequest(Jid jid, RP<Jid> rp) throws Exception {
         AgentJid agentJid = (AgentJid) jid;
         agentJid.agentApplication = this;
@@ -59,7 +95,29 @@ public class AgentProtocol extends JidProtocol {
             gotRsp(id, jid);
     }
 
-    @Override
+    protected void gotRsp(Long id, Jid jid) throws Exception {
+        RP rp = rps.remove(id);
+        if (rp != null) {
+            if (jid instanceof ExceptionJid) {
+                ExceptionJid ej = (ExceptionJid) jid;
+                Exception ex = (Exception) ej.getObject();
+                rp.processResponse(ex);
+            } else
+                rp.processResponse(jid);
+        }
+    }
+
+    public void writeRequest(final Jid jid, final RP rp) throws Exception {
+        if (rp.isEvent()) {
+            write(true, -1, jid);
+        } else {
+            requestId += 1;
+            requestId %= 1000000000000000000L;
+            rps.put(requestId, rp);
+            write(true, requestId, jid);
+        }
+    }
+
     protected void write(boolean requestFlag, long id, Jid jid) throws Exception {
         RootJid root = new RootJid();
         root.initialize(this);
