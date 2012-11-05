@@ -165,7 +165,7 @@ public class AgentProtocol extends JLPCActor implements SocketProtocol {
         }
     }
 
-    public void writeRequest(final Jid jid, final RP rp) throws Exception {
+    public void writeRequest(final AgentJid jid, final RP rp) throws Exception {
         if (rp.isEvent()) {
             write(true, -1, jid);
         } else {
