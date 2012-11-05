@@ -17,10 +17,8 @@ public class EchoAgentTest extends TestCase {
         int maxPacketSize = 300;
         SocketManager socketManager = new SocketManager();
         socketManager.initialize(mailboxFactory.createMailbox(), factory);
-        socketManager.openServerSocket(8888, maxPacketSize);
-        AgentProtocol agentProtocol = new AgentProtocol();
-        agentProtocol.initialize(mailboxFactory.createMailbox(), factory);
-        agentProtocol.openLocal(8888, maxPacketSize, socketManager);
+        socketManager.openServerSocket(8888);
+        AgentProtocol agentProtocol = socketManager.createLocalAgentProtocol(8888);
         JAFuture future = new JAFuture();
         factory.registerActorFactory(EchoAgentFactory.fac);
         EchoAgent echoAgent0 = (EchoAgent) factory.newActor("EchoAgent");

@@ -26,7 +26,6 @@ package org.agilewiki.jasocket.jid.agent;
 import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.JANoResponse;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.AgentSocket;
@@ -41,7 +40,6 @@ import org.agilewiki.jasocket.server.SocketManager;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
@@ -70,17 +68,6 @@ public class AgentProtocol extends JLPCActor implements SocketProtocol {
     public void processException(Exception exception) {
         exception.printStackTrace();
         close();
-    }
-
-    public void openLocal(int port, int maxPacketSize, SocketManager socketManager)
-            throws Exception {
-        InetAddress inetAddress = InetAddress.getLocalHost();
-        open(new InetSocketAddress(inetAddress, port), maxPacketSize, socketManager);
-    }
-
-    public void open(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketManager socketManager)
-            throws Exception {
-        open(inetSocketAddress, maxPacketSize, socketManager, new JAThreadFactory());
     }
 
     public void open(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketManager socketManager, ThreadFactory threadFactory)

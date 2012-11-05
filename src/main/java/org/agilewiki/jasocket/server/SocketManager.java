@@ -40,26 +40,42 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.ThreadFactory;
 
 public class SocketManager extends JLPCActor {
-    int maxPacketSize;
     ServerSocketChannel serverSocketChannel;
     ThreadFactory threadFactory;
     Thread thread;
+    public int maxPacketSize = 10000;
 
-    public void openServerSocket(int port, int maxPacketSize) throws Exception {
+    public AgentProtocol createLocalAgentProtocol(int port)
+            throws Exception {
         InetAddress inetAddress = InetAddress.getLocalHost();
-        openServerSocket(new InetSocketAddress(inetAddress, port), maxPacketSize);
+        return createAgentProtocol(new InetSocketAddress(inetAddress, port));
     }
 
-    public void openServerSocket(InetSocketAddress inetSocketAddress, int maxPacketSize)
+    public AgentProtocol createAgentProtocol(InetSocketAddress inetSocketAddress)
             throws Exception {
-        openServerSocket(inetSocketAddress, maxPacketSize, new JAThreadFactory());
+        return createAgentProtocol(inetSocketAddress, new JAThreadFactory());
     }
 
-    public void openServerSocket(InetSocketAddress inetSocketAddress,
-                                 int maxPacketSize,
-                                 ThreadFactory threadFactory)
+    public AgentProtocol createAgentProtocol(InetSocketAddress inetSocketAddress, ThreadFactory threadFactory)
             throws Exception {
-        this.maxPacketSize = maxPacketSize;
+        AgentProtocol agentProtocol = new AgentProtocol();
+        agentProtocol.initialize(getMailboxFactory().createMailbox(), this);
+        agentProtocol.open(inetSocketAddress, maxPacketSize, this, threadFactory);
+        return agentProtocol;
+    }
+
+    public void openServerSocket(int port) throws Exception {
+        InetAddress inetAddress = InetAddress.getLocalHost();
+        openServerSocket(new InetSocketAddress(inetAddress, port));
+    }
+
+    public void openServerSocket(InetSocketAddress inetSocketAddress)
+            throws Exception {
+        openServerSocket(inetSocketAddress, new JAThreadFactory());
+    }
+
+    public void openServerSocket(InetSocketAddress inetSocketAddress, ThreadFactory threadFactory)
+            throws Exception {
         this.threadFactory = threadFactory;
         serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.setOption(StandardSocketOptions.SO_RCVBUF, maxPacketSize);
