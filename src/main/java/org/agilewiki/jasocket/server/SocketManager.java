@@ -28,7 +28,6 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.BytesProtocol;
 import org.agilewiki.jasocket.jid.agent.AgentProtocol;
 
 import java.net.InetAddress;
@@ -77,8 +76,8 @@ public class SocketManager extends JLPCActor {
 
     public void acceptSocket(SocketChannel socketChannel) {
         try {
-            BytesProtocol bytesProtocol = createServerOpened();
-            bytesProtocol.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
+            AgentProtocol agentProtocol = createServerOpened();
+            agentProtocol.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -26,18 +26,85 @@ package org.agilewiki.jasocket.jid.agent;
 import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.JANoResponse;
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jactor.concurrent.JAThreadFactory;
+import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.BytesProtocol;
+import org.agilewiki.jasocket.BytesSocket;
 import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jasocket.jid.*;
+import org.agilewiki.jasocket.SocketProtocol;
+import org.agilewiki.jasocket.WriteBytes;
+import org.agilewiki.jasocket.jid.ExceptionJid;
+import org.agilewiki.jasocket.jid.ExceptionJidFactory;
+import org.agilewiki.jasocket.jid.RemoteException;
+import org.agilewiki.jasocket.jid.TransportJid;
+import org.agilewiki.jasocket.server.SocketManager;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.nio.channels.SocketChannel;
 import java.util.HashMap;
+import java.util.concurrent.ThreadFactory;
 
-public class AgentProtocol extends BytesProtocol {
+public class AgentProtocol extends JLPCActor implements SocketProtocol {
     HashMap<Long, RP> rps = new HashMap<Long, RP>();
     long requestId = 0;
+    private BytesSocket bytesSocket;
+    private SocketManager socketManager;
+    private boolean client;
+
+    public boolean isClient() {
+        return client;
+    }
+
+    public String getRemoteAddress() throws Exception {
+        return bytesSocket.getRemoteAddress();
+    }
+
+    public void writeBytes(byte[] bytes) throws Exception {
+        (new WriteBytes(bytes)).sendEvent(this, bytesSocket);
+    }
+
+    @Override
+    public void processException(Exception exception) {
+        exception.printStackTrace();
+        close();
+    }
+
+    public void openLocal(int port, int maxPacketSize, SocketManager socketManager)
+            throws Exception {
+        InetAddress inetAddress = InetAddress.getLocalHost();
+        open(new InetSocketAddress(inetAddress, port), maxPacketSize, socketManager);
+    }
+
+    public void open(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketManager socketManager)
+            throws Exception {
+        open(inetSocketAddress, maxPacketSize, socketManager, new JAThreadFactory());
+    }
+
+    public void open(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketManager socketManager, ThreadFactory threadFactory)
+            throws Exception {
+        this.socketManager = socketManager;
+        bytesSocket = new BytesSocket();
+        bytesSocket.setAgentProtocol(this);
+        bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
+        bytesSocket.clientOpen(inetSocketAddress, maxPacketSize, threadFactory);
+        client = true;
+    }
+
+    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, SocketManager socketManager, ThreadFactory threadFactory)
+            throws Exception {
+        this.socketManager = socketManager;
+        bytesSocket = new BytesSocket();
+        bytesSocket.setAgentProtocol(this);
+        bytesSocket.initialize(getMailboxFactory().createAsyncMailbox());
+        bytesSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
+    }
+
+    public void close() {
+        bytesSocket.close();
+    }
 
     protected void gotEvent(Jid jid) throws Exception {
         final Request request = getMailbox().getCurrentRequest().getUnwrappedRequest();
