@@ -13,7 +13,6 @@ public class ExceptionTest extends TestCase {
         MailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(10);
         JASocketFactories factory = new JASocketFactories();
         factory.initialize();
-        factory.registerActorFactory(ExceptionJidFactory.fac);
         int maxPacketSize = 300;
         SocketManager socketManager = new ExceptionSocketManager();
         socketManager.initialize(mailboxFactory.createMailbox(), factory);

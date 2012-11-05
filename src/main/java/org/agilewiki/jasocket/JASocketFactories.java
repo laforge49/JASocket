@@ -28,10 +28,12 @@ import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.factory.ActorFactory;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jid.JidFactories;
 
 public class JASocketFactories extends JLPCActor {
+    public final static String EXCEPTION_FACTORY = "ExceptionJid";
     public final static String TRANSPORT_FACTORY = "transportJid";
 
     @Override
@@ -43,6 +45,7 @@ public class JASocketFactories extends JLPCActor {
         }
         super.initialize(mailbox, parent, actorFactory);
 
+        registerActorFactory(ExceptionJidFactory.fac);
         registerActorFactory(TransportJidFactory.fac);
     }
 
