@@ -52,4 +52,9 @@ public class JASocketFactories extends JLPCActor {
         JAFactory factory = (JAFactory) f;
         factory.registerActorFactory(actorFactory);
     }
+
+    public Actor newActor(String actorType)
+            throws Exception {
+        return JAFactory.newActor(this, actorType);
+    }
 }
