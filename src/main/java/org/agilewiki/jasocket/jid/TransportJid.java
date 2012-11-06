@@ -63,6 +63,7 @@ public class TransportJid extends AppJid {
     }
 
     public void setContent(Jid content) throws Exception {
-        envelope().setBytes(content.getFactory(), content.getSerializedBytes());
+        if (content != null)
+            envelope().setBytes(content.getFactory(), content.getSerializedBytes());
     }
 }
