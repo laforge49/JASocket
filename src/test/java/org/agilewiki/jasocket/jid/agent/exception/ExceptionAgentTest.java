@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jasocket.jid.WriteRequest;
+import org.agilewiki.jasocket.jid.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.AgentChannel;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 
@@ -21,7 +21,7 @@ public class ExceptionAgentTest extends TestCase {
         factory.registerActorFactory(ExceptionAgentFactory.fac);
         ExceptionAgent echoAgent0 = (ExceptionAgent) factory.newActor("ExceptionAgent");
         try {
-            (new WriteRequest(echoAgent0)).send(future, agentChannel);
+            (new ShipAgent(echoAgent0)).send(future, agentChannel);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }

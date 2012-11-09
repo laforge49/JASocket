@@ -1,7 +1,7 @@
 package org.agilewiki.jasocket.jid.agent.bounce;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.jid.WriteRequest;
+import org.agilewiki.jasocket.jid.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.scalar.flens.integer.IntegerJid;
@@ -28,6 +28,6 @@ public class BounceAgent extends AgentJid {
             return;
         }
         setCounter(counter);
-        (new WriteRequest(this)).send(this, this, rp);
+        (new ShipAgent(this)).send(this, this, rp);
     }
 }

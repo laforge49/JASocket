@@ -8,10 +8,10 @@ import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.jid.agent.AgentChannel;
 import org.agilewiki.jid.Jid;
 
-public class WriteRequest extends Request<Jid, AgentChannel> {
+public class ShipAgent extends Request<Jid, AgentChannel> {
     public final AgentJid request;
 
-    public WriteRequest(AgentJid request) {
+    public ShipAgent(AgentJid request) {
         this.request = request;
     }
 
@@ -22,6 +22,6 @@ public class WriteRequest extends Request<Jid, AgentChannel> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentChannel) targetActor).writeRequest(request, rp);
+        ((AgentChannel) targetActor).shipAgent(request, rp);
     }
 }
