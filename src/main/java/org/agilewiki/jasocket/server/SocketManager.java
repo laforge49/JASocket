@@ -29,7 +29,7 @@ import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.concurrent.ConcurrentDupMap;
-import org.agilewiki.jasocket.jid.agent.AgentProtocol;
+import org.agilewiki.jasocket.jid.agent.AgentChannel;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -47,31 +47,31 @@ public class SocketManager extends JLPCActor {
     ThreadFactory threadFactory;
     Thread thread;
     public int maxPacketSize = 10000;
-    ConcurrentDupMap<String, AgentProtocol> agentProtocols = new ConcurrentDupMap<String, AgentProtocol>();
+    ConcurrentDupMap<String, AgentChannel> agentProtocols = new ConcurrentDupMap<String, AgentChannel>();
 
-    public AgentProtocol localAgentProtocol(int port)
+    public AgentChannel localAgentProtocol(int port)
             throws Exception {
         InetAddress inetAddress = InetAddress.getLocalHost();
         return agentProtocol(new InetSocketAddress(inetAddress, port));
     }
 
-    public AgentProtocol agentProtocol(InetSocketAddress inetSocketAddress)
+    public AgentChannel agentProtocol(InetSocketAddress inetSocketAddress)
             throws Exception {
         return agentProtocol(inetSocketAddress, new JAThreadFactory());
     }
 
-    public AgentProtocol agentProtocol(InetSocketAddress inetSocketAddress, ThreadFactory threadFactory)
+    public AgentChannel agentProtocol(InetSocketAddress inetSocketAddress, ThreadFactory threadFactory)
             throws Exception {
         InetAddress inetAddress = inetSocketAddress.getAddress();
         String remoteAddress = inetAddress.getHostAddress() + ":" + inetSocketAddress.getPort();
-        AgentProtocol agentProtocol = agentProtocols.getAny(remoteAddress);
-        if (agentProtocol != null)
-            return agentProtocol;
-        agentProtocol = new AgentProtocol();
-        agentProtocol.initialize(getMailboxFactory().createMailbox(), this);
-        agentProtocol.open(inetSocketAddress, maxPacketSize, this, threadFactory);
-        agentProtocols.add(agentProtocol.getRemoteAddress(), agentProtocol);
-        return agentProtocol;
+        AgentChannel agentChannel = agentProtocols.getAny(remoteAddress);
+        if (agentChannel != null)
+            return agentChannel;
+        agentChannel = new AgentChannel();
+        agentChannel.initialize(getMailboxFactory().createMailbox(), this);
+        agentChannel.open(inetSocketAddress, maxPacketSize, this, threadFactory);
+        agentProtocols.add(agentChannel.getRemoteAddress(), agentChannel);
+        return agentChannel;
     }
 
     public void openServerSocket(int port) throws Exception {
@@ -94,17 +94,17 @@ public class SocketManager extends JLPCActor {
         thread.start();
     }
 
-    protected AgentProtocol createServerOpened() throws Exception {
-        AgentProtocol agentProtocol = new AgentProtocol();
-        agentProtocol.initialize(getMailbox(), this);
-        return agentProtocol;
+    protected AgentChannel createServerOpened() throws Exception {
+        AgentChannel agentChannel = new AgentChannel();
+        agentChannel.initialize(getMailbox(), this);
+        return agentChannel;
     }
 
     public void acceptSocket(SocketChannel socketChannel) {
         try {
-            AgentProtocol agentProtocol = createServerOpened();
-            agentProtocol.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
-            agentProtocols.add(agentProtocol.getRemoteAddress(), agentProtocol);
+            AgentChannel agentChannel = createServerOpened();
+            agentChannel.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
+            agentProtocols.add(agentChannel.getRemoteAddress(), agentChannel);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -128,16 +128,16 @@ public class SocketManager extends JLPCActor {
         while (sit.hasNext()) {
             String remoteAddress = sit.next();
             while (true) {
-                AgentProtocol agentProtocol = agentProtocols.getAny(remoteAddress);
-                if (agentProtocol == null)
+                AgentChannel agentChannel = agentProtocols.getAny(remoteAddress);
+                if (agentChannel == null)
                     break;
-                agentProtocol.close();
+                agentChannel.close();
             }
         }
     }
 
-    public void closed(AgentProtocol agentProtocol) {
-        agentProtocols.remove(agentProtocol.getRemoteAddress(), agentProtocol);
+    public void closed(AgentChannel agentChannel) {
+        agentProtocols.remove(agentChannel.getRemoteAddress(), agentChannel);
     }
 
     class Acceptor implements Runnable {

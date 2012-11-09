@@ -5,10 +5,10 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jasocket.jid.agent.AgentProtocol;
+import org.agilewiki.jasocket.jid.agent.AgentChannel;
 import org.agilewiki.jid.Jid;
 
-public class WriteRequest extends Request<Jid, AgentProtocol> {
+public class WriteRequest extends Request<Jid, AgentChannel> {
     public final AgentJid request;
 
     public WriteRequest(AgentJid request) {
@@ -17,11 +17,11 @@ public class WriteRequest extends Request<Jid, AgentProtocol> {
 
     @Override
     public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof AgentProtocol;
+        return targetActor instanceof AgentChannel;
     }
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentProtocol) targetActor).writeRequest(request, rp);
+        ((AgentChannel) targetActor).writeRequest(request, rp);
     }
 }

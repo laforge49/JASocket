@@ -45,7 +45,7 @@ import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.concurrent.ThreadFactory;
 
-public class AgentProtocol extends JLPCActor implements SocketProtocol {
+public class AgentChannel extends JLPCActor implements SocketProtocol {
     HashMap<Long, RP> rps = new HashMap<Long, RP>();
     long requestId = 0;
     private AgentSocket agentSocket;
@@ -75,7 +75,7 @@ public class AgentProtocol extends JLPCActor implements SocketProtocol {
             throws Exception {
         this.socketManager = socketManager;
         agentSocket = new AgentSocket();
-        agentSocket.setAgentProtocol(this);
+        agentSocket.setAgentChannel(this);
         agentSocket.initialize(getMailboxFactory().createAsyncMailbox());
         agentSocket.clientOpen(inetSocketAddress, maxPacketSize, threadFactory);
         client = true;
@@ -86,7 +86,7 @@ public class AgentProtocol extends JLPCActor implements SocketProtocol {
             throws Exception {
         this.socketManager = socketManager;
         agentSocket = new AgentSocket();
-        agentSocket.setAgentProtocol(this);
+        agentSocket.setAgentChannel(this);
         agentSocket.initialize(getMailboxFactory().createAsyncMailbox());
         agentSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
         remoteAddress = agentSocket.getRemoteAddress();

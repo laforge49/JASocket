@@ -23,21 +23,21 @@
  */
 package org.agilewiki.jasocket;
 
-import org.agilewiki.jasocket.jid.agent.AgentProtocol;
+import org.agilewiki.jasocket.jid.agent.AgentChannel;
 
 import java.nio.ByteBuffer;
 
 public class AgentSocket extends RawSocket {
-    private AgentProtocol agentProtocol;
+    private AgentChannel agentChannel;
     byte[] lengthBytes = new byte[4];
     int lengthIndex = 0;
     int length;
     byte[] bytes = null;
     int bytesIndex;
 
-    public void setAgentProtocol(AgentProtocol agentProtocol) {
-        this.agentProtocol = agentProtocol;
-        exceptionProcessor = agentProtocol;
+    public void setAgentChannel(AgentChannel agentChannel) {
+        this.agentChannel = agentChannel;
+        exceptionProcessor = agentChannel;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class AgentSocket extends RawSocket {
             return;
         byte[] b = bytes;
         bytes = null;
-        (new ReceiveBytes(b)).sendEvent(this, agentProtocol);
+        (new ReceiveBytes(b)).sendEvent(this, agentChannel);
     }
 
     @Override
