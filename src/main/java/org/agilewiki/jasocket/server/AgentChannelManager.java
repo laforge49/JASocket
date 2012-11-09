@@ -26,10 +26,15 @@ package org.agilewiki.jasocket.server;
 import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
+import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.concurrent.ConcurrentDupMap;
+import org.agilewiki.jasocket.jid.ShipAgent;
+import org.agilewiki.jasocket.jid.agent.AddResourceNameAgent;
 import org.agilewiki.jasocket.jid.agent.AgentChannel;
+import org.agilewiki.jid.Jid;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -38,6 +43,7 @@ import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
@@ -48,6 +54,33 @@ public class AgentChannelManager extends JLPCActor {
     Thread thread;
     public int maxPacketSize = 100000;
     ConcurrentDupMap<String, AgentChannel> agentProtocols = new ConcurrentDupMap<String, AgentChannel>();
+    protected HashMap<String, Jid> localResources = new HashMap<String, Jid>();
+
+    public Jid getLocalResource(String name) {
+        return localResources.get(name);
+    }
+
+    public void removeLocalResource(String name, RP rp) throws Exception {
+        rp.processResponse(localResources.remove(name));
+    }
+
+    public void putLocalResource(String name, Jid jid, RP rp) throws Exception {
+        AddResourceNameAgent agent = (AddResourceNameAgent)
+                JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY);
+        agent.setResourceName(name);
+        ShipAgent shipAgent = new ShipAgent(agent);
+        Iterator<String> ksit = agentProtocols.keySet().iterator();
+        while (ksit.hasNext()) {
+            String remoteAddress = ksit.next();
+            Set<AgentChannel> agentChannelSet = agentProtocols.getSet(remoteAddress);
+            Iterator<AgentChannel> acit = agentChannelSet.iterator();
+            while (acit.hasNext()) {
+                AgentChannel agentChannel = acit.next();
+                shipAgent.sendEvent(this, agentChannel);
+            }
+        }
+        rp.processResponse(localResources.put(name, jid));
+    }
 
     public AgentChannel localAgentProtocol(int port)
             throws Exception {

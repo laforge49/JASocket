@@ -43,6 +43,7 @@ import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.ThreadFactory;
 
 public class AgentChannel extends JLPCActor implements SocketProtocol {
@@ -52,6 +53,15 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
     private AgentChannelManager agentChannelManager;
     private boolean client;
     String remoteAddress;
+    protected HashSet<String> remoteResourceNames = new HashSet<String>();
+
+    public void addRemoteResourceName(String name) {
+        remoteResourceNames.add(name);
+    }
+
+    public void removeRemoteResourceName(String name) {
+        remoteResourceNames.remove(name);
+    }
 
     public boolean isClient() {
         return client;
@@ -162,6 +172,10 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
             } else
                 rp.processResponse(jid);
         }
+    }
+
+    public void shipAgentEvent(AgentJid jid) throws Exception {
+        shipAgent(jid, JANoResponse.nrp);
     }
 
     public void shipAgent(final AgentJid jid, final RP rp) throws Exception {
