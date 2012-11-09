@@ -46,7 +46,7 @@ public class AgentChannelManager extends JLPCActor {
     ServerSocketChannel serverSocketChannel;
     ThreadFactory threadFactory;
     Thread thread;
-    public int maxPacketSize = 10000;
+    public int maxPacketSize = 100000;
     ConcurrentDupMap<String, AgentChannel> agentProtocols = new ConcurrentDupMap<String, AgentChannel>();
 
     public AgentChannel localAgentProtocol(int port)

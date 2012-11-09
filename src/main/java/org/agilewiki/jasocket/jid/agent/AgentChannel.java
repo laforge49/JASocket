@@ -175,7 +175,7 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         }
     }
 
-    protected void write(boolean requestFlag, long id, Jid jid) throws Exception {
+    private void write(boolean requestFlag, long id, Jid jid) throws Exception {
         RootJid root = new RootJid();
         root.initialize(this);
         root.setValue(JASocketFactories.TRANSPORT_FACTORY);
