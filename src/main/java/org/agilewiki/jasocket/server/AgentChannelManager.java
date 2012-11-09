@@ -42,7 +42,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 
-public class SocketManager extends JLPCActor {
+public class AgentChannelManager extends JLPCActor {
     ServerSocketChannel serverSocketChannel;
     ThreadFactory threadFactory;
     Thread thread;
@@ -149,7 +149,7 @@ public class SocketManager extends JLPCActor {
                     socketChannel.setOption(StandardSocketOptions.SO_SNDBUF, maxPacketSize);
                     socketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
                     socketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
-                    (new AcceptSocket(socketChannel)).sendEvent(SocketManager.this);
+                    (new AcceptSocket(socketChannel)).sendEvent(AgentChannelManager.this);
                 }
             } catch (ClosedByInterruptException cbie) {
             } catch (ClosedChannelException cce) {
@@ -161,7 +161,7 @@ public class SocketManager extends JLPCActor {
     }
 }
 
-class AcceptSocket extends Request<Object, SocketManager> {
+class AcceptSocket extends Request<Object, AgentChannelManager> {
     SocketChannel socketChannel;
 
     public AcceptSocket(SocketChannel socketChannel) {
@@ -170,12 +170,12 @@ class AcceptSocket extends Request<Object, SocketManager> {
 
     @Override
     public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof SocketManager;
+        return targetActor instanceof AgentChannelManager;
     }
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((SocketManager) targetActor).acceptSocket(socketChannel);
+        ((AgentChannelManager) targetActor).acceptSocket(socketChannel);
         rp.processResponse(null);
     }
 }

@@ -36,7 +36,7 @@ import org.agilewiki.jasocket.jid.ExceptionJid;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.RemoteException;
 import org.agilewiki.jasocket.jid.TransportJid;
-import org.agilewiki.jasocket.server.SocketManager;
+import org.agilewiki.jasocket.server.AgentChannelManager;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 
@@ -49,7 +49,7 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
     HashMap<Long, RP> rps = new HashMap<Long, RP>();
     long requestId = 0;
     private AgentSocket agentSocket;
-    private SocketManager socketManager;
+    private AgentChannelManager agentChannelManager;
     private boolean client;
     String remoteAddress;
 
@@ -71,9 +71,9 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         close();
     }
 
-    public void open(InetSocketAddress inetSocketAddress, int maxPacketSize, SocketManager socketManager, ThreadFactory threadFactory)
+    public void open(InetSocketAddress inetSocketAddress, int maxPacketSize, AgentChannelManager agentChannelManager, ThreadFactory threadFactory)
             throws Exception {
-        this.socketManager = socketManager;
+        this.agentChannelManager = agentChannelManager;
         agentSocket = new AgentSocket();
         agentSocket.setAgentChannel(this);
         agentSocket.initialize(getMailboxFactory().createAsyncMailbox());
@@ -82,9 +82,9 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         remoteAddress = agentSocket.getRemoteAddress();
     }
 
-    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, SocketManager socketManager, ThreadFactory threadFactory)
+    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, AgentChannelManager agentChannelManager, ThreadFactory threadFactory)
             throws Exception {
-        this.socketManager = socketManager;
+        this.agentChannelManager = agentChannelManager;
         agentSocket = new AgentSocket();
         agentSocket.setAgentChannel(this);
         agentSocket.initialize(getMailboxFactory().createAsyncMailbox());
@@ -93,7 +93,7 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
     }
 
     public void close() {
-        socketManager.closed(this);
+        agentChannelManager.closed(this);
         agentSocket.close();
     }
 
