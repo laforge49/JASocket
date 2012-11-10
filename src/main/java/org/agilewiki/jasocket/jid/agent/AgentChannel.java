@@ -23,6 +23,7 @@
  */
 package org.agilewiki.jasocket.jid.agent;
 
+import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.JANoResponse;
 import org.agilewiki.jactor.RP;
@@ -37,6 +38,7 @@ import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.RemoteException;
 import org.agilewiki.jasocket.jid.TransportJid;
 import org.agilewiki.jasocket.server.AgentChannelManager;
+import org.agilewiki.jid.CopyJID;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 
@@ -118,7 +120,7 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         receiveRequest(jid, JANoResponse.nrp);
     }
 
-    protected void gotReq(final Long id, Jid jid) throws Exception {
+    private void gotReq(final Long id, Jid jid) throws Exception {
         setExceptionHandler(new ExceptionHandler() {
             @Override
             public void process(Exception exception) throws Exception {
@@ -189,7 +191,19 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         }
     }
 
-    private void write(boolean requestFlag, long id, Jid jid) throws Exception {
+    private void write(final boolean requestFlag, final long id, Jid jid) throws Exception {
+        if (jid == null)
+            writeCopy(requestFlag, id, jid);
+        else
+            (new CopyJID()).send(this, jid, new RP<Actor>() {
+                @Override
+                public void processResponse(Actor response) throws Exception {
+                    writeCopy(requestFlag, id, (Jid) response);
+                }
+            });
+    }
+
+    private void writeCopy(boolean requestFlag, long id, Jid jid) throws Exception {
         RootJid root = new RootJid();
         root.initialize(this);
         root.setValue(JASocketFactories.TRANSPORT_FACTORY);

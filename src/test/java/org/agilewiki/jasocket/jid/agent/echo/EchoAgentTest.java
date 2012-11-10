@@ -20,7 +20,7 @@ public class EchoAgentTest extends TestCase {
         AgentChannel agentChannel = agentChannelManager.localAgentProtocol(8888);
         JAFuture future = new JAFuture();
         factory.registerActorFactory(EchoAgentFactory.fac);
-        EchoAgent echoAgent0 = (EchoAgent) factory.newActor("EchoAgent");
+        EchoAgent echoAgent0 = (EchoAgent) factory.newActor("EchoAgent", mailboxFactory.createMailbox());
         echoAgent0.setValue("Hello");
         StringJid rsp = (StringJid) (new ShipAgent(echoAgent0)).send(future, agentChannel);
         System.out.println(rsp.getValue());

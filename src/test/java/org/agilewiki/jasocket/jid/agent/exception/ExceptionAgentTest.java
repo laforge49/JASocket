@@ -19,7 +19,7 @@ public class ExceptionAgentTest extends TestCase {
         AgentChannel agentChannel = agentChannelManager.localAgentProtocol(8888);
         JAFuture future = new JAFuture();
         factory.registerActorFactory(ExceptionAgentFactory.fac);
-        ExceptionAgent echoAgent0 = (ExceptionAgent) factory.newActor("ExceptionAgent");
+        ExceptionAgent echoAgent0 = (ExceptionAgent) factory.newActor("ExceptionAgent", mailboxFactory.createMailbox());
         try {
             (new ShipAgent(echoAgent0)).send(future, agentChannel);
         } catch (Exception ex) {

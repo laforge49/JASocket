@@ -63,4 +63,9 @@ public class JASocketFactories extends JLPCActor {
             throws Exception {
         return JAFactory.newActor(this, actorType);
     }
+
+    public Actor newActor(String actorType, Mailbox mailbox)
+            throws Exception {
+        return JAFactory.newActor(this, actorType, mailbox);
+    }
 }
