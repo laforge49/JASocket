@@ -7,6 +7,7 @@ import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.jid.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.AgentChannel;
 import org.agilewiki.jasocket.server.AgentChannelManager;
+import org.agilewiki.jasocket.server.OpenAgentChannel;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 public class EchoAgentTest extends TestCase {
@@ -17,8 +18,8 @@ public class EchoAgentTest extends TestCase {
         AgentChannelManager agentChannelManager = new AgentChannelManager();
         agentChannelManager.initialize(mailboxFactory.createMailbox(), factory);
         agentChannelManager.openServerSocket(8888);
-        AgentChannel agentChannel = agentChannelManager.localAgentChannel(8888);
         JAFuture future = new JAFuture();
+        AgentChannel agentChannel = (new OpenAgentChannel(8888)).send(future, agentChannelManager);
         factory.registerActorFactory(EchoAgentFactory.fac);
         EchoAgent echoAgent0 = (EchoAgent) factory.newActor("EchoAgent", mailboxFactory.createMailbox());
         echoAgent0.setValue("Hello");

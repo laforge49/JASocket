@@ -7,6 +7,7 @@ import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.jid.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.AgentChannel;
 import org.agilewiki.jasocket.server.AgentChannelManager;
+import org.agilewiki.jasocket.server.OpenAgentChannel;
 
 public class ExceptionAgentTest extends TestCase {
     public void test() throws Exception {
@@ -16,8 +17,8 @@ public class ExceptionAgentTest extends TestCase {
         AgentChannelManager agentChannelManager = new AgentChannelManager();
         agentChannelManager.initialize(mailboxFactory.createMailbox(), factory);
         agentChannelManager.openServerSocket(8888);
-        AgentChannel agentChannel = agentChannelManager.localAgentChannel(8888);
         JAFuture future = new JAFuture();
+        AgentChannel agentChannel = (new OpenAgentChannel(8888)).send(future, agentChannelManager);
         factory.registerActorFactory(ExceptionAgentFactory.fac);
         ExceptionAgent echoAgent0 = (ExceptionAgent) factory.newActor("ExceptionAgent", mailboxFactory.createMailbox());
         try {

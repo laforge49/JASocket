@@ -48,11 +48,12 @@ import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 
 public class AgentChannelManager extends JLPCActor {
     ServerSocketChannel serverSocketChannel;
-    ThreadFactory threadFactory;
+    final ThreadFactory threadFactory = threadFactory();
     Thread thread;
     public int maxPacketSize = 100000;
     ConcurrentDupMap<String, AgentChannel> agentChannels = new ConcurrentDupMap<String, AgentChannel>();
@@ -77,33 +78,40 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public void removeLocalResource(String name, RP rp) throws Exception {
+        Jid removed = localResources.remove(name);
+        rp.processResponse(removed);
         RemoveResourceNameAgent agent = (RemoveResourceNameAgent)
                 JAFactory.newActor(this, JASocketFactories.REMOVE_RESOURCE_NAME_AGENT_FACTORY);
         agent.setResourceName(name);
-        rp.processResponse(localResources.remove(name));
         shipAgentEventToAll(agent);
     }
 
     public void putLocalResource(String name, Jid jid, RP rp) throws Exception {
+        Jid added = localResources.put(name, jid);
+        rp.processResponse(added);
         AddResourceNameAgent agent = (AddResourceNameAgent)
                 JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY);
         agent.setResourceName(name);
-        rp.processResponse(localResources.put(name, jid));
         shipAgentEventToAll(agent);
     }
 
-    public AgentChannel localAgentChannel(int port)
-            throws Exception {
-        InetAddress inetAddress = InetAddress.getLocalHost();
-        return agentChannel(new InetSocketAddress(inetAddress, port));
+    private void shareResourceNames(AgentChannel agentChannel) throws Exception {
+        Iterator<String> it = localResources.keySet().iterator();
+        while (it.hasNext()) {
+            String name = it.next();
+            AddResourceNameAgent agent = (AddResourceNameAgent)
+                    JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY);
+            agent.setResourceName(name);
+            ShipAgent shipAgent = new ShipAgent(agent);
+            shipAgent.sendEvent(this, agentChannel);
+        }
+    }
+
+    protected ThreadFactory threadFactory() {
+        return new JAThreadFactory();
     }
 
     public AgentChannel agentChannel(InetSocketAddress inetSocketAddress)
-            throws Exception {
-        return agentChannel(inetSocketAddress, new JAThreadFactory());
-    }
-
-    public AgentChannel agentChannel(InetSocketAddress inetSocketAddress, ThreadFactory threadFactory)
             throws Exception {
         InetAddress inetAddress = inetSocketAddress.getAddress();
         String remoteAddress = inetAddress.getHostAddress() + ":" + inetSocketAddress.getPort();
@@ -114,6 +122,7 @@ public class AgentChannelManager extends JLPCActor {
         agentChannel.initialize(getMailboxFactory().createMailbox(), this);
         agentChannel.open(inetSocketAddress, maxPacketSize, this, threadFactory);
         agentChannels.add(agentChannel.getRemoteAddress(), agentChannel);
+        shareResourceNames(agentChannel);
         return agentChannel;
     }
 
@@ -124,12 +133,6 @@ public class AgentChannelManager extends JLPCActor {
 
     public void openServerSocket(InetSocketAddress inetSocketAddress)
             throws Exception {
-        openServerSocket(inetSocketAddress, new JAThreadFactory());
-    }
-
-    public void openServerSocket(InetSocketAddress inetSocketAddress, ThreadFactory threadFactory)
-            throws Exception {
-        this.threadFactory = threadFactory;
         serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.setOption(StandardSocketOptions.SO_RCVBUF, maxPacketSize);
         serverSocketChannel.bind(inetSocketAddress);
@@ -148,6 +151,7 @@ public class AgentChannelManager extends JLPCActor {
             AgentChannel agentChannel = createServerOpened();
             agentChannel.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
             agentChannels.add(agentChannel.getRemoteAddress(), agentChannel);
+            shareResourceNames(agentChannel);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
