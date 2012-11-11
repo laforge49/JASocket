@@ -34,6 +34,8 @@ import org.agilewiki.jasocket.concurrent.ConcurrentDupMap;
 import org.agilewiki.jasocket.jid.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.AddResourceNameAgent;
 import org.agilewiki.jasocket.jid.agent.AgentChannel;
+import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jasocket.jid.agent.RemoveResourceNameAgent;
 import org.agilewiki.jid.Jid;
 
 import java.net.InetAddress;
@@ -60,14 +62,7 @@ public class AgentChannelManager extends JLPCActor {
         return localResources.get(name);
     }
 
-    public void removeLocalResource(String name, RP rp) throws Exception {
-        rp.processResponse(localResources.remove(name));
-    }
-
-    public void putLocalResource(String name, Jid jid, RP rp) throws Exception {
-        AddResourceNameAgent agent = (AddResourceNameAgent)
-                JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY);
-        agent.setResourceName(name);
+    protected void shipAgentEventToAll(AgentJid agent) throws Exception {
         ShipAgent shipAgent = new ShipAgent(agent);
         Iterator<String> ksit = agentProtocols.keySet().iterator();
         while (ksit.hasNext()) {
@@ -79,7 +74,22 @@ public class AgentChannelManager extends JLPCActor {
                 shipAgent.sendEvent(this, agentChannel);
             }
         }
+    }
+
+    public void removeLocalResource(String name, RP rp) throws Exception {
+        RemoveResourceNameAgent agent = (RemoveResourceNameAgent)
+                JAFactory.newActor(this, JASocketFactories.REMOVE_RESOURCE_NAME_AGENT_FACTORY);
+        agent.setResourceName(name);
+        rp.processResponse(localResources.remove(name));
+        shipAgentEventToAll(agent);
+    }
+
+    public void putLocalResource(String name, Jid jid, RP rp) throws Exception {
+        AddResourceNameAgent agent = (AddResourceNameAgent)
+                JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY);
+        agent.setResourceName(name);
         rp.processResponse(localResources.put(name, jid));
+        shipAgentEventToAll(agent);
     }
 
     public AgentChannel localAgentProtocol(int port)
