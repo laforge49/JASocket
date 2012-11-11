@@ -55,7 +55,7 @@ public class AgentChannelManager extends JLPCActor {
     ThreadFactory threadFactory;
     Thread thread;
     public int maxPacketSize = 100000;
-    ConcurrentDupMap<String, AgentChannel> agentProtocols = new ConcurrentDupMap<String, AgentChannel>();
+    ConcurrentDupMap<String, AgentChannel> agentChannels = new ConcurrentDupMap<String, AgentChannel>();
     protected HashMap<String, Jid> localResources = new HashMap<String, Jid>();
 
     public Jid getLocalResource(String name) {
@@ -64,10 +64,10 @@ public class AgentChannelManager extends JLPCActor {
 
     protected void shipAgentEventToAll(AgentJid agent) throws Exception {
         ShipAgent shipAgent = new ShipAgent(agent);
-        Iterator<String> ksit = agentProtocols.keySet().iterator();
+        Iterator<String> ksit = agentChannels.keySet().iterator();
         while (ksit.hasNext()) {
             String remoteAddress = ksit.next();
-            Set<AgentChannel> agentChannelSet = agentProtocols.getSet(remoteAddress);
+            Set<AgentChannel> agentChannelSet = agentChannels.getSet(remoteAddress);
             Iterator<AgentChannel> acit = agentChannelSet.iterator();
             while (acit.hasNext()) {
                 AgentChannel agentChannel = acit.next();
@@ -107,13 +107,13 @@ public class AgentChannelManager extends JLPCActor {
             throws Exception {
         InetAddress inetAddress = inetSocketAddress.getAddress();
         String remoteAddress = inetAddress.getHostAddress() + ":" + inetSocketAddress.getPort();
-        AgentChannel agentChannel = agentProtocols.getAny(remoteAddress);
+        AgentChannel agentChannel = agentChannels.getAny(remoteAddress);
         if (agentChannel != null)
             return agentChannel;
         agentChannel = new AgentChannel();
         agentChannel.initialize(getMailboxFactory().createMailbox(), this);
         agentChannel.open(inetSocketAddress, maxPacketSize, this, threadFactory);
-        agentProtocols.add(agentChannel.getRemoteAddress(), agentChannel);
+        agentChannels.add(agentChannel.getRemoteAddress(), agentChannel);
         return agentChannel;
     }
 
@@ -147,7 +147,7 @@ public class AgentChannelManager extends JLPCActor {
         try {
             AgentChannel agentChannel = createServerOpened();
             agentChannel.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
-            agentProtocols.add(agentChannel.getRemoteAddress(), agentChannel);
+            agentChannels.add(agentChannel.getRemoteAddress(), agentChannel);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -163,7 +163,7 @@ public class AgentChannelManager extends JLPCActor {
 
     public void closeAll() {
         close();
-        Set<String> remoteAddresses = agentProtocols.keySet();
+        Set<String> remoteAddresses = agentChannels.keySet();
         if (remoteAddresses.isEmpty()) {
             return;
         }
@@ -171,7 +171,7 @@ public class AgentChannelManager extends JLPCActor {
         while (sit.hasNext()) {
             String remoteAddress = sit.next();
             while (true) {
-                AgentChannel agentChannel = agentProtocols.getAny(remoteAddress);
+                AgentChannel agentChannel = agentChannels.getAny(remoteAddress);
                 if (agentChannel == null)
                     break;
                 agentChannel.close();
@@ -180,7 +180,7 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public void closed(AgentChannel agentChannel) {
-        agentProtocols.remove(agentChannel.getRemoteAddress(), agentChannel);
+        agentChannels.remove(agentChannel.getRemoteAddress(), agentChannel);
     }
 
     class Acceptor implements Runnable {
