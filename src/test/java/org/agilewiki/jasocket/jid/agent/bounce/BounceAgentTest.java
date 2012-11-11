@@ -16,7 +16,7 @@ public class BounceAgentTest extends TestCase {
         AgentChannelManager agentChannelManager = new AgentChannelManager();
         agentChannelManager.initialize(mailboxFactory.createMailbox(), factory);
         agentChannelManager.openServerSocket(8888);
-        AgentChannel agentChannel = agentChannelManager.localAgentProtocol(8888);
+        AgentChannel agentChannel = agentChannelManager.localAgentChannel(8888);
         JAFuture future = new JAFuture();
         factory.registerActorFactory(BounceAgentFactory.fac);
         BounceAgent bounceAgent3 = (BounceAgent) factory.newActor("BounceAgent", mailboxFactory.createMailbox());

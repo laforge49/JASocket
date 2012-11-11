@@ -92,18 +92,18 @@ public class AgentChannelManager extends JLPCActor {
         shipAgentEventToAll(agent);
     }
 
-    public AgentChannel localAgentProtocol(int port)
+    public AgentChannel localAgentChannel(int port)
             throws Exception {
         InetAddress inetAddress = InetAddress.getLocalHost();
-        return agentProtocol(new InetSocketAddress(inetAddress, port));
+        return agentChannel(new InetSocketAddress(inetAddress, port));
     }
 
-    public AgentChannel agentProtocol(InetSocketAddress inetSocketAddress)
+    public AgentChannel agentChannel(InetSocketAddress inetSocketAddress)
             throws Exception {
-        return agentProtocol(inetSocketAddress, new JAThreadFactory());
+        return agentChannel(inetSocketAddress, new JAThreadFactory());
     }
 
-    public AgentChannel agentProtocol(InetSocketAddress inetSocketAddress, ThreadFactory threadFactory)
+    public AgentChannel agentChannel(InetSocketAddress inetSocketAddress, ThreadFactory threadFactory)
             throws Exception {
         InetAddress inetAddress = inetSocketAddress.getAddress();
         String remoteAddress = inetAddress.getHostAddress() + ":" + inetSocketAddress.getPort();
