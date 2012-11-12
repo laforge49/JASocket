@@ -37,6 +37,7 @@ import org.agilewiki.jasocket.jid.agent.AgentChannel;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.jid.agent.RemoveResourceNameAgent;
 import org.agilewiki.jid.Jid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -77,22 +78,22 @@ public class AgentChannelManager extends JLPCActor {
         }
     }
 
-    public void removeLocalResource(String name, RP rp) throws Exception {
+    public Jid removeLocalResource(String name) throws Exception {
         Jid removed = localResources.remove(name);
-        rp.processResponse(removed);
         RemoveResourceNameAgent agent = (RemoveResourceNameAgent)
-                JAFactory.newActor(this, JASocketFactories.REMOVE_RESOURCE_NAME_AGENT_FACTORY);
+                JAFactory.newActor(this, JASocketFactories.REMOVE_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
         agent.setResourceName(name);
         shipAgentEventToAll(agent);
+        return removed;
     }
 
-    public void putLocalResource(String name, Jid jid, RP rp) throws Exception {
+    public Jid putLocalResource(String name, Jid jid) throws Exception {
         Jid added = localResources.put(name, jid);
-        rp.processResponse(added);
         AddResourceNameAgent agent = (AddResourceNameAgent)
-                JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY);
+                JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
         agent.setResourceName(name);
         shipAgentEventToAll(agent);
+        return added;
     }
 
     private void shareResourceNames(AgentChannel agentChannel) throws Exception {
@@ -100,7 +101,7 @@ public class AgentChannelManager extends JLPCActor {
         while (it.hasNext()) {
             String name = it.next();
             AddResourceNameAgent agent = (AddResourceNameAgent)
-                    JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY);
+                    JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
             agent.setResourceName(name);
             ShipAgent shipAgent = new ShipAgent(agent);
             shipAgent.sendEvent(this, agentChannel);
@@ -121,7 +122,8 @@ public class AgentChannelManager extends JLPCActor {
         agentChannel = new AgentChannel();
         agentChannel.initialize(getMailboxFactory().createMailbox(), this);
         agentChannel.open(inetSocketAddress, maxPacketSize, this, threadFactory);
-        agentChannels.add(agentChannel.getRemoteAddress(), agentChannel);
+        remoteAddress = agentChannel.getRemoteAddress();
+        agentChannels.add(remoteAddress, agentChannel);
         shareResourceNames(agentChannel);
         return agentChannel;
     }
@@ -150,7 +152,8 @@ public class AgentChannelManager extends JLPCActor {
         try {
             AgentChannel agentChannel = createServerOpened();
             agentChannel.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
-            agentChannels.add(agentChannel.getRemoteAddress(), agentChannel);
+            String remoteAddress = agentChannel.getRemoteAddress();
+            agentChannels.add(remoteAddress, agentChannel);
             shareResourceNames(agentChannel);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -183,8 +186,9 @@ public class AgentChannelManager extends JLPCActor {
         }
     }
 
-    public void closed(AgentChannel agentChannel) {
+    public void agentChannelClosed(AgentChannel agentChannel, RP rp) throws Exception {
         agentChannels.remove(agentChannel.getRemoteAddress(), agentChannel);
+        rp.processResponse(null);
     }
 
     class Acceptor implements Runnable {

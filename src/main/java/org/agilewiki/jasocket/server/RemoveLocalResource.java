@@ -43,6 +43,6 @@ public class RemoveLocalResource extends Request<Jid, AgentChannelManager> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentChannelManager) targetActor).removeLocalResource(name, rp);
+        rp.processResponse(((AgentChannelManager) targetActor).removeLocalResource(name));
     }
 }

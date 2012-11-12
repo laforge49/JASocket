@@ -37,6 +37,7 @@ import org.agilewiki.jasocket.jid.ExceptionJid;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.RemoteException;
 import org.agilewiki.jasocket.jid.TransportJid;
+import org.agilewiki.jasocket.server.AgentChannelClosed;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 import org.agilewiki.jid.CopyJID;
 import org.agilewiki.jid.Jid;
@@ -105,8 +106,10 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
     }
 
     public void close() {
-        agentChannelManager.closed(this);
         agentSocket.close();
+        try {
+            (new AgentChannelClosed(this)).sendEvent(agentChannelManager);
+        } catch (Exception ex) {}
     }
 
     protected void gotEvent(Jid jid) throws Exception {
