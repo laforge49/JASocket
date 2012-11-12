@@ -95,14 +95,13 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         remoteAddress = agentSocket.getRemoteAddress();
     }
 
-    public String serverOpen(SocketChannel socketChannel, int maxPacketSize, AgentChannelManager agentChannelManager, ThreadFactory threadFactory)
+    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, AgentChannelManager agentChannelManager, ThreadFactory threadFactory)
             throws Exception {
         this.agentChannelManager = agentChannelManager;
         agentSocket = new AgentSocket();
         agentSocket.setAgentChannel(this);
         agentSocket.initialize(getMailboxFactory().createAsyncMailbox());
         agentSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
-        return agentSocket.getRemoteAddress();
     }
 
     public void setClientAddress(String remoteAddress) throws Exception {

@@ -163,8 +163,7 @@ public class AgentChannelManager extends JLPCActor {
     public void acceptSocket(SocketChannel socketChannel) throws Exception {
         AgentChannel agentChannel = new AgentChannel();
         agentChannel.initialize(getMailbox(), this);
-        String remoteAddress = agentChannel.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
-        //setClientAddress(agentChannel, remoteAddress);
+        agentChannel.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
     }
 
     public void setClientAddress(AgentChannel agentChannel, String remoteAddress) throws Exception {
