@@ -28,7 +28,7 @@ import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jid.collection.flenc.AppJidFactory;
 import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
-public class RemoveResourceNameAgentFactory  extends AppJidFactory {
+public class RemoveResourceNameAgentFactory extends AppJidFactory {
     public final static RemoveResourceNameAgentFactory fac = new RemoveResourceNameAgentFactory();
 
     public RemoveResourceNameAgentFactory() {

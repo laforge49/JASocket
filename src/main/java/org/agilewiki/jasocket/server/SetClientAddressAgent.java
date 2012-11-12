@@ -21,28 +21,25 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.jid.agent;
+package org.agilewiki.jasocket.server;
 
-import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.jid.agent.AgentChannel;
+import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class AddRemoteResourceName extends Request<Object, AgentChannel> {
-    private String name;
+public class SetClientAddressAgent extends AgentJid {
+    private StringJid getStringJid() throws Exception {
+        return (StringJid) _iGet(0);
+    }
 
-    public AddRemoteResourceName(String name) {
-        this.name = name;
+    public void setRemoteAddress(String remoteAddress) throws Exception {
+        getStringJid().setValue(remoteAddress);
     }
 
     @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof AgentChannel;
-    }
-
-    @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentChannel) targetActor).addRemoteResourceName(name);
-        rp.processResponse(null);
+    public void start(RP rp) throws Exception {
+        AgentChannel agentChannel = (AgentChannel) getParent();
+        (new SetClientAddress(agentChannel, getStringJid().getValue())).send(this, this, rp);
     }
 }

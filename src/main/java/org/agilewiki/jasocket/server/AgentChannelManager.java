@@ -37,10 +37,10 @@ import org.agilewiki.jasocket.jid.agent.AgentChannel;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.jid.agent.RemoveResourceNameAgent;
 import org.agilewiki.jid.Jid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.StandardSocketOptions;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ClosedChannelException;
@@ -49,7 +49,6 @@ import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 
 public class AgentChannelManager extends JLPCActor {
@@ -59,6 +58,21 @@ public class AgentChannelManager extends JLPCActor {
     public int maxPacketSize = 100000;
     ConcurrentDupMap<String, AgentChannel> agentChannels = new ConcurrentDupMap<String, AgentChannel>();
     protected HashMap<String, Jid> localResources = new HashMap<String, Jid>();
+    String agentChannelManagerAddress;
+
+    public String agentChannelManagerAddress() throws Exception {
+        if (agentChannelManagerAddress == null) {
+            ServerSocket serverSocket = serverSocketChannel.socket();
+            String host = serverSocket.getInetAddress().getHostAddress();
+            int port = serverSocket.getLocalPort();
+            agentChannelManagerAddress = host + ":" + port;
+        }
+        return agentChannelManagerAddress;
+    }
+
+    public boolean isAgentChannelManagerAddress(String address) throws Exception {
+        return agentChannelManagerAddress().equals(address);
+    }
 
     public Jid getLocalResource(String name) {
         return localResources.get(name);
@@ -123,6 +137,10 @@ public class AgentChannelManager extends JLPCActor {
         agentChannel.initialize(getMailboxFactory().createMailbox(), this);
         agentChannel.open(inetSocketAddress, maxPacketSize, this, threadFactory);
         remoteAddress = agentChannel.getRemoteAddress();
+        SetClientAddressAgent agent = (SetClientAddressAgent)
+                JAFactory.newActor(this, JASocketFactories.SET_CLIENT_ADDRESS_AGENT_FACTORY, getMailbox());
+        agent.setRemoteAddress(remoteAddress);
+        (new ShipAgent(agent)).sendEvent(this, agentChannel);
         agentChannels.add(remoteAddress, agentChannel);
         shareResourceNames(agentChannel);
         return agentChannel;
@@ -142,22 +160,17 @@ public class AgentChannelManager extends JLPCActor {
         thread.start();
     }
 
-    protected AgentChannel createServerOpened() throws Exception {
+    public void acceptSocket(SocketChannel socketChannel) throws Exception {
         AgentChannel agentChannel = new AgentChannel();
         agentChannel.initialize(getMailbox(), this);
-        return agentChannel;
+        String remoteAddress = agentChannel.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
+        //setClientAddress(agentChannel, remoteAddress);
     }
 
-    public void acceptSocket(SocketChannel socketChannel) {
-        try {
-            AgentChannel agentChannel = createServerOpened();
-            agentChannel.serverOpen(socketChannel, maxPacketSize, this, threadFactory);
-            String remoteAddress = agentChannel.getRemoteAddress();
-            agentChannels.add(remoteAddress, agentChannel);
-            shareResourceNames(agentChannel);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    public void setClientAddress(AgentChannel agentChannel, String remoteAddress) throws Exception {
+        agentChannel.setClientAddress(remoteAddress);
+        agentChannels.add(remoteAddress, agentChannel);
+        shareResourceNames(agentChannel);
     }
 
     public void close() {
@@ -187,7 +200,9 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public void agentChannelClosed(AgentChannel agentChannel, RP rp) throws Exception {
-        agentChannels.remove(agentChannel.getRemoteAddress(), agentChannel);
+        String remoteAddress = agentChannel.getRemoteAddress();
+        if (remoteAddress != null)
+            agentChannels.remove(remoteAddress, agentChannel);
         rp.processResponse(null);
     }
 

@@ -55,7 +55,7 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
     private AgentSocket agentSocket;
     private AgentChannelManager agentChannelManager;
     private boolean client;
-    String remoteAddress;
+    public String remoteAddress;
     protected HashSet<String> remoteResourceNames = new HashSet<String>();
 
     public void addRemoteResourceName(String name) {
@@ -95,21 +95,26 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         remoteAddress = agentSocket.getRemoteAddress();
     }
 
-    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, AgentChannelManager agentChannelManager, ThreadFactory threadFactory)
+    public String serverOpen(SocketChannel socketChannel, int maxPacketSize, AgentChannelManager agentChannelManager, ThreadFactory threadFactory)
             throws Exception {
         this.agentChannelManager = agentChannelManager;
         agentSocket = new AgentSocket();
         agentSocket.setAgentChannel(this);
         agentSocket.initialize(getMailboxFactory().createAsyncMailbox());
         agentSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
-        remoteAddress = agentSocket.getRemoteAddress();
+        return agentSocket.getRemoteAddress();
+    }
+
+    public void setClientAddress(String remoteAddress) throws Exception {
+        this.remoteAddress = remoteAddress;
     }
 
     public void close() {
         agentSocket.close();
         try {
             (new AgentChannelClosed(this)).sendEvent(agentChannelManager);
-        } catch (Exception ex) {}
+        } catch (Exception ex) {
+        }
     }
 
     protected void gotEvent(Jid jid) throws Exception {
