@@ -28,7 +28,6 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.resourceListener.ResourceListener;
-import org.agilewiki.jid.Jid;
 
 public class SubscribeResourceNotifications extends Request<Boolean, AgentChannelManager> {
     private ResourceListener resourceListener;

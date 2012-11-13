@@ -37,7 +37,6 @@ import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.resourceListener.ResourceAdded;
 import org.agilewiki.jasocket.resourceListener.ResourceListener;
 import org.agilewiki.jasocket.resourceListener.ResourceRemoved;
-import org.agilewiki.jid.Jid;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -140,7 +139,7 @@ public class AgentChannelManager extends JLPCActor {
         resourceNames.add(address + " " + name);
         ResourceAdded resourceAdded = new ResourceAdded(address, name);
         Iterator<ResourceListener> it = resourceListeners.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             resourceAdded.sendEvent(this, it.next());
         }
     }
@@ -149,7 +148,7 @@ public class AgentChannelManager extends JLPCActor {
         resourceNames.remove(address + " " + name);
         ResourceRemoved resourceRemoved = new ResourceRemoved(address, name);
         Iterator<ResourceListener> it = resourceListeners.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             resourceRemoved.sendEvent(this, it.next());
         }
     }
