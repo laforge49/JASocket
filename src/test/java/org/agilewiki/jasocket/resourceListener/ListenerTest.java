@@ -44,7 +44,17 @@ public class ListenerTest extends TestCase {
         (new PutLocalResource("1b", new StringJid())).send(future, agentChannelManager1);
         Thread.sleep(100);
 
+        System.out.println("\nregister local resources 0b and 1b, again");
+        (new PutLocalResource("0b", new StringJid())).send(future, agentChannelManager0);
+        (new PutLocalResource("1b", new StringJid())).send(future, agentChannelManager1);
+        Thread.sleep(100);
+
         System.out.println("\nunregister local resources 0a and 1a");
+        (new RemoveLocalResource("0a")).send(future, agentChannelManager0);
+        (new RemoveLocalResource("1a")).send(future, agentChannelManager1);
+        Thread.sleep(100);
+
+        System.out.println("\nunregister local resources 0a and 1a, again");
         (new RemoveLocalResource("0a")).send(future, agentChannelManager0);
         (new RemoveLocalResource("1a")).send(future, agentChannelManager1);
         Thread.sleep(100);
