@@ -21,22 +21,29 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.jid.agent;
+package org.agilewiki.jasocket.server;
 
+import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.jid.agent.AgentChannel;
 
-public class AddResourceNameAgent extends AgentJid {
-    private StringJid getStringJid() throws Exception {
-        return (StringJid) _iGet(0);
-    }
+public class AddRemoteResourceName extends Request<Object, AgentChannel> {
+    private String name;
 
-    public void setResourceName(String name) throws Exception {
-        getStringJid().setValue(name);
+    public AddRemoteResourceName(String name) {
+        this.name = name;
     }
 
     @Override
-    public void start(RP rp) throws Exception {
-        (new AddRemoteResourceName(getStringJid().getValue())).send(this, this, rp);
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof AgentChannel;
+    }
+
+    @Override
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        ((AgentChannel) targetActor).addRemoteResourceName(name);
+        rp.processResponse(null);
     }
 }

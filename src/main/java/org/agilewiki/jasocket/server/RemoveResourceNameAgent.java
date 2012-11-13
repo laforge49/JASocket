@@ -21,22 +21,23 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.jid.agent;
+package org.agilewiki.jasocket.server;
 
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jid.collection.flenc.AppJidFactory;
-import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
+import org.agilewiki.jactor.RP;
+import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class RemoveResourceNameAgentFactory extends AppJidFactory {
-    public final static RemoveResourceNameAgentFactory fac = new RemoveResourceNameAgentFactory();
+public class RemoveResourceNameAgent extends AgentJid {
+    private StringJid getStringJid() throws Exception {
+        return (StringJid) _iGet(0);
+    }
 
-    public RemoveResourceNameAgentFactory() {
-        super(JASocketFactories.REMOVE_RESOURCE_NAME_AGENT_FACTORY, StringJidFactory.fac);
+    public void setResourceName(String name) throws Exception {
+        getStringJid().setValue(name);
     }
 
     @Override
-    protected JLPCActor instantiateActor() throws Exception {
-        return new RemoveResourceNameAgent();
+    public void start(RP rp) throws Exception {
+        (new RemoveRemoteResourceName(getStringJid().getValue())).send(this, this, rp);
     }
 }

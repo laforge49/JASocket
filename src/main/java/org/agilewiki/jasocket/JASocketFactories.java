@@ -30,8 +30,8 @@ import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
-import org.agilewiki.jasocket.jid.agent.AddResourceNameAgentFactory;
-import org.agilewiki.jasocket.jid.agent.RemoveResourceNameAgentFactory;
+import org.agilewiki.jasocket.server.AddResourceNameAgentFactory;
+import org.agilewiki.jasocket.server.RemoveResourceNameAgentFactory;
 import org.agilewiki.jasocket.server.SetClientAddressAgentFactory;
 import org.agilewiki.jid.JidFactories;
 

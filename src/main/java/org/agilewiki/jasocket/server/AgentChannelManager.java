@@ -32,10 +32,8 @@ import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.concurrent.ConcurrentDupMap;
 import org.agilewiki.jasocket.jid.ShipAgent;
-import org.agilewiki.jasocket.jid.agent.AddResourceNameAgent;
 import org.agilewiki.jasocket.jid.agent.AgentChannel;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jasocket.jid.agent.RemoveResourceNameAgent;
 import org.agilewiki.jid.Jid;
 
 import java.net.InetAddress;
