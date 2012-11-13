@@ -34,6 +34,7 @@ import org.agilewiki.jasocket.concurrent.ConcurrentDupMap;
 import org.agilewiki.jasocket.jid.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.AgentChannel;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jasocket.resourceListener.ResourceListener;
 import org.agilewiki.jid.Jid;
 
 import java.net.InetAddress;
@@ -59,6 +60,15 @@ public class AgentChannelManager extends JLPCActor {
     protected HashMap<String, Jid> localResources = new HashMap<String, Jid>();
     String agentChannelManagerAddress;
     private HashSet<String> resourceNames = new HashSet<String>();
+    private HashSet<ResourceListener> resourceListeners = new HashSet<ResourceListener>();
+
+    public boolean subscribeResourceNotifications(ResourceListener resourceListener) {
+        return resourceListeners.add(resourceListener);
+    }
+
+    public boolean unsubscribeResourceNotifications(ResourceListener resourceListener) {
+        return resourceListeners.remove(resourceListener);
+    }
 
     public String agentChannelManagerAddress() throws Exception {
         if (agentChannelManagerAddress == null) {
