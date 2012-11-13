@@ -23,10 +23,28 @@
  */
 package org.agilewiki.jasocket.resourceListener;
 
-import org.agilewiki.jactor.lpc.TargetActor;
+import org.agilewiki.jactor.Actor;
+import org.agilewiki.jactor.RP;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jactor.lpc.Request;
 
-public interface ResourceListener extends TargetActor {
-    public void resourceAdded(String address, String name);
+public class ResourceRemoved extends Request<Object, ResourceListener> {
+    private String address;
+    private String name;
 
-    public void resourceRemoved(String address, String name);
+    public ResourceRemoved(String address, String name) {
+        this.address = address;
+        this.name = name;
+    }
+
+    @Override
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof ResourceListener;
+    }
+
+    @Override
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        ((ResourceListener) targetActor).resourceRemoved(address, name);
+        rp.processResponse(null);
+    }
 }
