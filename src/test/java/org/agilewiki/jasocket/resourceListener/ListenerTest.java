@@ -5,10 +5,7 @@ import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.jid.agent.AgentChannel;
-import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jasocket.server.OpenAgentChannel;
-import org.agilewiki.jasocket.server.PutLocalResource;
-import org.agilewiki.jasocket.server.SubscribeResourceNotifications;
+import org.agilewiki.jasocket.server.*;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 public class ListenerTest extends TestCase {
@@ -47,9 +44,15 @@ public class ListenerTest extends TestCase {
         (new PutLocalResource("1b", new StringJid())).send(future, agentChannelManager1);
         Thread.sleep(100);
 
+        System.out.println("\nunregister local resources 0a and 1a");
+        (new RemoveLocalResource("0a")).send(future, agentChannelManager0);
+        (new RemoveLocalResource("1a")).send(future, agentChannelManager1);
+        Thread.sleep(100);
+
         System.out.println("\nshutdown");
         agentChannelManager0.closeAll();
         agentChannelManager1.closeAll();
+        Thread.sleep(100);
         mailboxFactory.close();
     }
 }
