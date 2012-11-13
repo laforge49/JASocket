@@ -15,20 +15,24 @@ public class EchoAgentTest extends TestCase {
         JAMailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(10);
         JASocketFactories factory = new JASocketFactories();
         factory.initialize();
-        AgentChannelManager agentChannelManager = new AgentChannelManager();
-        agentChannelManager.initialize(mailboxFactory.createMailbox(), factory);
-        agentChannelManager.openServerSocket(8888);
+        AgentChannelManager agentChannelManager0 = new AgentChannelManager();
+        agentChannelManager0.initialize(mailboxFactory.createMailbox(), factory);
+        agentChannelManager0.openServerSocket(8880);
+        AgentChannelManager agentChannelManager1 = new AgentChannelManager();
+        agentChannelManager1.initialize(mailboxFactory.createMailbox(), factory);
+        agentChannelManager1.openServerSocket(8881);
         JAFuture future = new JAFuture();
-        AgentChannel agentChannel = (new OpenAgentChannel(8888)).send(future, agentChannelManager);
+        AgentChannel agentChannel01 = (new OpenAgentChannel(8881)).send(future, agentChannelManager0);
         factory.registerActorFactory(EchoAgentFactory.fac);
-        EchoAgent echoAgent0 = (EchoAgent) factory.newActor("EchoAgent", mailboxFactory.createMailbox());
-        echoAgent0.setValue("Hello");
-        StringJid rsp = (StringJid) (new ShipAgent(echoAgent0)).send(future, agentChannel);
+        EchoAgent echoAgent = (EchoAgent) factory.newActor("EchoAgent", mailboxFactory.createMailbox());
+        echoAgent.setValue("Hello");
+        StringJid rsp = (StringJid) (new ShipAgent(echoAgent)).send(future, agentChannel01);
         System.out.println(rsp.getValue());
-        echoAgent0.setValue("world!");
-        rsp = (StringJid) (new ShipAgent(echoAgent0)).send(future, agentChannel);
+        echoAgent.setValue("world!");
+        rsp = (StringJid) (new ShipAgent(echoAgent)).send(future, agentChannel01);
         System.out.println(rsp.getValue());
-        agentChannelManager.closeAll();
+        agentChannelManager0.closeAll();
+        agentChannelManager1.closeAll();
         mailboxFactory.close();
     }
 }

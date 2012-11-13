@@ -14,19 +14,24 @@ public class ExceptionAgentTest extends TestCase {
         JAMailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(10);
         JASocketFactories factory = new JASocketFactories();
         factory.initialize();
-        AgentChannelManager agentChannelManager = new AgentChannelManager();
-        agentChannelManager.initialize(mailboxFactory.createMailbox(), factory);
-        agentChannelManager.openServerSocket(8888);
+        AgentChannelManager agentChannelManager0 = new AgentChannelManager();
+        agentChannelManager0.initialize(mailboxFactory.createMailbox(), factory);
+        agentChannelManager0.openServerSocket(8880);
+        AgentChannelManager agentChannelManager1 = new AgentChannelManager();
+        agentChannelManager1.initialize(mailboxFactory.createMailbox(), factory);
+        agentChannelManager1.openServerSocket(8881);
         JAFuture future = new JAFuture();
-        AgentChannel agentChannel = (new OpenAgentChannel(8888)).send(future, agentChannelManager);
+        AgentChannel agentChannel01 = (new OpenAgentChannel(8881)).send(future, agentChannelManager0);
         factory.registerActorFactory(ExceptionAgentFactory.fac);
-        ExceptionAgent echoAgent0 = (ExceptionAgent) factory.newActor("ExceptionAgent", mailboxFactory.createMailbox());
+        ExceptionAgent echoAgent = (ExceptionAgent)
+                factory.newActor("ExceptionAgent", mailboxFactory.createMailbox());
         try {
-            (new ShipAgent(echoAgent0)).send(future, agentChannel);
+            (new ShipAgent(echoAgent)).send(future, agentChannel01);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
-        agentChannelManager.closeAll();
+        agentChannelManager0.closeAll();
+        agentChannelManager1.closeAll();
         mailboxFactory.close();
     }
 }

@@ -14,16 +14,20 @@ public class BounceAgentTest extends TestCase {
         JAMailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(10);
         JASocketFactories factory = new JASocketFactories();
         factory.initialize();
-        AgentChannelManager agentChannelManager = new AgentChannelManager();
-        agentChannelManager.initialize(mailboxFactory.createMailbox(), factory);
-        agentChannelManager.openServerSocket(8888);
+        AgentChannelManager agentChannelManager0 = new AgentChannelManager();
+        agentChannelManager0.initialize(mailboxFactory.createMailbox(), factory);
+        agentChannelManager0.openServerSocket(8880);
+        AgentChannelManager agentChannelManager1 = new AgentChannelManager();
+        agentChannelManager1.initialize(mailboxFactory.createMailbox(), factory);
+        agentChannelManager1.openServerSocket(8881);
         JAFuture future = new JAFuture();
-        AgentChannel agentChannel = (new OpenAgentChannel(8888)).send(future, agentChannelManager);
+        AgentChannel agentChannel01 = (new OpenAgentChannel(8881)).send(future, agentChannelManager0);
         factory.registerActorFactory(BounceAgentFactory.fac);
         BounceAgent bounceAgent3 = (BounceAgent) factory.newActor("BounceAgent", mailboxFactory.createMailbox());
         bounceAgent3.setCounter(3);
-        (new ShipAgent(bounceAgent3)).send(future, agentChannel);
-        agentChannelManager.closeAll();
+        (new ShipAgent(bounceAgent3)).send(future, agentChannel01);
+        agentChannelManager0.closeAll();
+        agentChannelManager1.closeAll();
         mailboxFactory.close();
     }
 }
