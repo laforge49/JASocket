@@ -53,10 +53,13 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
     HashMap<Long, RP> rps = new HashMap<Long, RP>();
     long requestId = 0;
     private AgentSocket agentSocket;
-    private AgentChannelManager agentChannelManager;
     private boolean client;
     public String remoteAddress;
     protected HashSet<String> remoteResourceNames = new HashSet<String>();
+
+    public AgentChannelManager agentChannelManager() {
+        return (AgentChannelManager) getParent();
+    }
 
     public void addRemoteResourceName(String name) {
         remoteResourceNames.add(name);
@@ -84,9 +87,8 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         close();
     }
 
-    public void open(InetSocketAddress inetSocketAddress, int maxPacketSize, AgentChannelManager agentChannelManager, ThreadFactory threadFactory)
+    public void open(InetSocketAddress inetSocketAddress, int maxPacketSize, ThreadFactory threadFactory)
             throws Exception {
-        this.agentChannelManager = agentChannelManager;
         agentSocket = new AgentSocket();
         agentSocket.setAgentChannel(this);
         agentSocket.initialize(getMailboxFactory().createAsyncMailbox());
@@ -95,9 +97,8 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         remoteAddress = agentSocket.getRemoteAddress();
     }
 
-    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, AgentChannelManager agentChannelManager, ThreadFactory threadFactory)
+    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
             throws Exception {
-        this.agentChannelManager = agentChannelManager;
         agentSocket = new AgentSocket();
         agentSocket.setAgentChannel(this);
         agentSocket.initialize(getMailboxFactory().createAsyncMailbox());
@@ -111,7 +112,7 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
     public void close() {
         agentSocket.close();
         try {
-            (new AgentChannelClosed(this)).sendEvent(agentChannelManager);
+            (new AgentChannelClosed(this)).sendEvent(agentChannelManager());
         } catch (Exception ex) {
         }
     }

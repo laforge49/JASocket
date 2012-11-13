@@ -38,6 +38,6 @@ public class AddResourceNameAgent extends AgentJid {
 
     @Override
     public void start(RP rp) throws Exception {
-        (new AddRemoteResourceName(getStringJid().getValue())).send(this, this, rp);
+        (new AddRemoteResourceName(getStringJid().getValue())).send(this, agentChannel(), rp);
     }
 }

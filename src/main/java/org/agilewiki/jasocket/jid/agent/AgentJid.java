@@ -24,11 +24,20 @@
 package org.agilewiki.jasocket.jid.agent;
 
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jasocket.server.AgentChannelManager;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.collection.flenc.AppJid;
 
 abstract public class AgentJid extends AppJid {
     abstract public void start(RP<Jid> rp) throws Exception;
+
+    public AgentChannel agentChannel() {
+        return (AgentChannel) getParent();
+    }
+
+    public AgentChannelManager agentChannelManager() {
+        return agentChannel().agentChannelManager();
+    }
 
     public boolean async() {
         return true;

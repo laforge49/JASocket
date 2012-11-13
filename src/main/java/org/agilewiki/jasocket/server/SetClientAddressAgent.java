@@ -24,7 +24,6 @@
 package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.jid.agent.AgentChannel;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
@@ -39,7 +38,6 @@ public class SetClientAddressAgent extends AgentJid {
 
     @Override
     public void start(RP rp) throws Exception {
-        AgentChannel agentChannel = (AgentChannel) getParent();
-        (new SetClientAddress(agentChannel, getStringJid().getValue())).send(this, this, rp);
+        (new SetClientAddress(agentChannel(), getStringJid().getValue())).send(this, agentChannelManager(), rp);
     }
 }
