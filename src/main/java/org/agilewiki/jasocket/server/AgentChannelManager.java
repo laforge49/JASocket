@@ -45,6 +45,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
@@ -57,6 +58,7 @@ public class AgentChannelManager extends JLPCActor {
     ConcurrentDupMap<String, AgentChannel> agentChannels = new ConcurrentDupMap<String, AgentChannel>();
     protected HashMap<String, Jid> localResources = new HashMap<String, Jid>();
     String agentChannelManagerAddress;
+    private HashSet<String> resourceNames = new HashSet<String>();
 
     public String agentChannelManagerAddress() throws Exception {
         if (agentChannelManagerAddress == null) {
@@ -96,6 +98,7 @@ public class AgentChannelManager extends JLPCActor {
                 JAFactory.newActor(this, JASocketFactories.REMOVE_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
         agent.setResourceName(name);
         shipAgentEventToAll(agent);
+        removeResourceName(agentChannelManagerAddress() + " " + name);
         return removed;
     }
 
@@ -105,7 +108,16 @@ public class AgentChannelManager extends JLPCActor {
                 JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
         agent.setResourceName(name);
         shipAgentEventToAll(agent);
+        addResourceName(agentChannelManagerAddress() + " " + name);
         return added;
+    }
+
+    public void addResourceName(String name) {
+        resourceNames.add(name);
+    }
+
+    public void removeResourceName(String name) {
+        resourceNames.remove(name);
     }
 
     private void shareResourceNames(AgentChannel agentChannel) throws Exception {

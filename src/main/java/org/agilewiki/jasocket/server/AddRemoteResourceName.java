@@ -27,9 +27,8 @@ import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.jid.agent.AgentChannel;
 
-public class AddRemoteResourceName extends Request<Object, AgentChannel> {
+public class AddRemoteResourceName extends Request<Object, AgentChannelManager> {
     private String name;
 
     public AddRemoteResourceName(String name) {
@@ -38,12 +37,12 @@ public class AddRemoteResourceName extends Request<Object, AgentChannel> {
 
     @Override
     public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof AgentChannel;
+        return targetActor instanceof AgentChannelManager;
     }
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentChannel) targetActor).addRemoteResourceName(name);
+        ((AgentChannelManager) targetActor).addResourceName(name);
         rp.processResponse(null);
     }
 }
