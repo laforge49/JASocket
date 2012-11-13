@@ -210,8 +210,24 @@ public class AgentChannelManager extends JLPCActor {
 
     public void agentChannelClosed(AgentChannel agentChannel, RP rp) throws Exception {
         String remoteAddress = agentChannel.remoteAddress();
-        if (remoteAddress != null)
+        if (remoteAddress != null) {
             agentChannels.remove(remoteAddress, agentChannel);
+            HashSet<String> channelResources = new HashSet<String>();
+            Iterator<String> it = resourceNames.iterator();
+            String prefix = remoteAddress + " ";
+            int offset = prefix.length();
+            while (it.hasNext()) {
+                String name = it.next();
+                if (name.startsWith(prefix)) {
+                    channelResources.add(name.substring(offset));
+                }
+            }
+            it = channelResources.iterator();
+            while (it.hasNext()) {
+                String name = it.next();
+                removeResourceName(remoteAddress, name);
+            }
+        }
         rp.processResponse(null);
     }
 
