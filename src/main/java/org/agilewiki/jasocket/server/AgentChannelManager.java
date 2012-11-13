@@ -34,7 +34,9 @@ import org.agilewiki.jasocket.concurrent.ConcurrentDupMap;
 import org.agilewiki.jasocket.jid.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.AgentChannel;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jasocket.resourceListener.ResourceAdded;
 import org.agilewiki.jasocket.resourceListener.ResourceListener;
+import org.agilewiki.jasocket.resourceListener.ResourceRemoved;
 import org.agilewiki.jid.Jid;
 
 import java.net.InetAddress;
@@ -62,8 +64,20 @@ public class AgentChannelManager extends JLPCActor {
     private HashSet<String> resourceNames = new HashSet<String>();
     private HashSet<ResourceListener> resourceListeners = new HashSet<ResourceListener>();
 
-    public boolean subscribeResourceNotifications(ResourceListener resourceListener) {
-        return resourceListeners.add(resourceListener);
+    public boolean subscribeResourceNotifications(ResourceListener resourceListener) throws Exception {
+        boolean subscribed = resourceListeners.add(resourceListener);
+        if (subscribed) {
+            Iterator<String> it = resourceNames.iterator();
+            while (it.hasNext()) {
+                String resourceName = it.next();
+                int p = resourceName.indexOf(" ");
+                String address = resourceName.substring(0, p);
+                String name = resourceName.substring(p + 1);
+                ResourceAdded resourceAdded = new ResourceAdded(address, name);
+                resourceAdded.sendEvent(this, resourceListener);
+            }
+        }
+        return subscribed;
     }
 
     public boolean unsubscribeResourceNotifications(ResourceListener resourceListener) {
@@ -122,12 +136,22 @@ public class AgentChannelManager extends JLPCActor {
         return added;
     }
 
-    public void addResourceName(String address, String name) {
+    public void addResourceName(String address, String name) throws Exception {
         resourceNames.add(address + " " + name);
+        ResourceAdded resourceAdded = new ResourceAdded(address, name);
+        Iterator<ResourceListener> it = resourceListeners.iterator();
+        while(it.hasNext()) {
+            resourceAdded.sendEvent(this, it.next());
+        }
     }
 
-    public void removeResourceName(String address, String name) {
+    public void removeResourceName(String address, String name) throws Exception {
         resourceNames.remove(address + " " + name);
+        ResourceRemoved resourceRemoved = new ResourceRemoved(address, name);
+        Iterator<ResourceListener> it = resourceListeners.iterator();
+        while(it.hasNext()) {
+            resourceRemoved.sendEvent(this, it.next());
+        }
     }
 
     private void shareResourceNames(AgentChannel agentChannel) throws Exception {
