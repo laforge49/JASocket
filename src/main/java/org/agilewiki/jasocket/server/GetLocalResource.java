@@ -29,7 +29,7 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jid.Jid;
 
-public class GetLocalResource extends Request<Jid, AgentChannelManager> {
+public class GetLocalResource extends Request<JLPCActor, AgentChannelManager> {
     private String name;
 
     public GetLocalResource(String name) {

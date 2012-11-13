@@ -29,7 +29,7 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jid.Jid;
 
-public class RemoveLocalResource extends Request<Jid, AgentChannelManager> {
+public class RemoveLocalResource extends Request<JLPCActor, AgentChannelManager> {
     private String name;
 
     public RemoveLocalResource(String name) {

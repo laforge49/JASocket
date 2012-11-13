@@ -59,7 +59,7 @@ public class AgentChannelManager extends JLPCActor {
     Thread thread;
     public int maxPacketSize = 100000;
     ConcurrentDupMap<String, AgentChannel> agentChannels = new ConcurrentDupMap<String, AgentChannel>();
-    protected HashMap<String, Jid> localResources = new HashMap<String, Jid>();
+    protected HashMap<String, JLPCActor> localResources = new HashMap<String, JLPCActor>();
     String agentChannelManagerAddress;
     private HashSet<String> resourceNames = new HashSet<String>();
     private HashSet<ResourceListener> resourceListeners = new HashSet<ResourceListener>();
@@ -98,7 +98,7 @@ public class AgentChannelManager extends JLPCActor {
         return agentChannelManagerAddress().equals(address);
     }
 
-    public Jid getLocalResource(String name) {
+    public JLPCActor getLocalResource(String name) {
         return localResources.get(name);
     }
 
@@ -116,8 +116,8 @@ public class AgentChannelManager extends JLPCActor {
         }
     }
 
-    public Jid removeLocalResource(String name) throws Exception {
-        Jid removed = localResources.remove(name);
+    public JLPCActor removeLocalResource(String name) throws Exception {
+        JLPCActor removed = localResources.remove(name);
         RemoveResourceNameAgent agent = (RemoveResourceNameAgent)
                 JAFactory.newActor(this, JASocketFactories.REMOVE_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
         agent.setResourceName(name);
@@ -126,8 +126,8 @@ public class AgentChannelManager extends JLPCActor {
         return removed;
     }
 
-    public Jid putLocalResource(String name, Jid jid) throws Exception {
-        Jid added = localResources.put(name, jid);
+    public JLPCActor putLocalResource(String name, JLPCActor resource) throws Exception {
+        JLPCActor added = localResources.put(name, resource);
         AddResourceNameAgent agent = (AddResourceNameAgent)
                 JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
         agent.setResourceName(name);
