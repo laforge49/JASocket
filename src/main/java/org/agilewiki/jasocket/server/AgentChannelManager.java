@@ -98,7 +98,7 @@ public class AgentChannelManager extends JLPCActor {
                 JAFactory.newActor(this, JASocketFactories.REMOVE_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
         agent.setResourceName(name);
         shipAgentEventToAll(agent);
-        removeResourceName(agentChannelManagerAddress() + " " + name);
+        removeResourceName(agentChannelManagerAddress(), name);
         return removed;
     }
 
@@ -108,16 +108,16 @@ public class AgentChannelManager extends JLPCActor {
                 JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
         agent.setResourceName(name);
         shipAgentEventToAll(agent);
-        addResourceName(agentChannelManagerAddress() + " " + name);
+        addResourceName(agentChannelManagerAddress(), name);
         return added;
     }
 
-    public void addResourceName(String name) {
-        resourceNames.add(name);
+    public void addResourceName(String address, String name) {
+        resourceNames.add(address + " " + name);
     }
 
-    public void removeResourceName(String name) {
-        resourceNames.remove(name);
+    public void removeResourceName(String address, String name) {
+        resourceNames.remove(address + " " + name);
     }
 
     private void shareResourceNames(AgentChannel agentChannel) throws Exception {
@@ -146,7 +146,7 @@ public class AgentChannelManager extends JLPCActor {
         agentChannel = new AgentChannel();
         agentChannel.initialize(getMailboxFactory().createMailbox(), this);
         agentChannel.open(inetSocketAddress, maxPacketSize, threadFactory);
-        remoteAddress = agentChannel.getRemoteAddress();
+        remoteAddress = agentChannel.remoteAddress();
         SetClientAddressAgent agent = (SetClientAddressAgent)
                 JAFactory.newActor(this, JASocketFactories.SET_CLIENT_ADDRESS_AGENT_FACTORY, getMailbox());
         agent.setRemoteAddress(remoteAddress);
@@ -209,7 +209,7 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public void agentChannelClosed(AgentChannel agentChannel, RP rp) throws Exception {
-        String remoteAddress = agentChannel.getRemoteAddress();
+        String remoteAddress = agentChannel.remoteAddress();
         if (remoteAddress != null)
             agentChannels.remove(remoteAddress, agentChannel);
         rp.processResponse(null);

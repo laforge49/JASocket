@@ -29,9 +29,11 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
 public class AddRemoteResourceName extends Request<Object, AgentChannelManager> {
+    private String address;
     private String name;
 
-    public AddRemoteResourceName(String name) {
+    public AddRemoteResourceName(String address, String name) {
+        this.address = address;
         this.name = name;
     }
 
@@ -42,7 +44,7 @@ public class AddRemoteResourceName extends Request<Object, AgentChannelManager> 
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentChannelManager) targetActor).addResourceName(name);
+        ((AgentChannelManager) targetActor).addResourceName(address, name);
         rp.processResponse(null);
     }
 }

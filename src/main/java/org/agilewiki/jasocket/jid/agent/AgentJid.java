@@ -35,6 +35,10 @@ abstract public class AgentJid extends AppJid {
         return (AgentChannel) getParent();
     }
 
+    public String remoteAddress() {
+        return agentChannel().remoteAddress();
+    }
+
     public AgentChannelManager agentChannelManager() {
         return agentChannel().agentChannelManager();
     }

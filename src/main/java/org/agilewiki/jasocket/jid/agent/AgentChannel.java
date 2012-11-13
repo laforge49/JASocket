@@ -63,7 +63,7 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         return client;
     }
 
-    public String getRemoteAddress() {
+    public String remoteAddress() {
         return remoteAddress;
     }
 
