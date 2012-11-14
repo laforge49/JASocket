@@ -46,10 +46,7 @@ import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadFactory;
 
 public class AgentChannelManager extends JLPCActor {
@@ -62,6 +59,22 @@ public class AgentChannelManager extends JLPCActor {
     String agentChannelManagerAddress;
     private HashSet<String> resourceNames = new HashSet<String>();
     private HashSet<ResourceListener> resourceListeners = new HashSet<ResourceListener>();
+
+    public List<String> locateResource(String name) {
+        Iterator<String> it = resourceNames.iterator();
+        List<String> addresses = new ArrayList<String>();
+        String postfix = " " + name;
+        while (it.hasNext()) {
+            String rn = it.next();
+            if (rn.endsWith(postfix)) {
+                int pos = rn.indexOf(" ");
+                if (pos + postfix.length() == rn.length()) {
+                    addresses.add(rn.substring(0, pos));
+                }
+            }
+        }
+        return addresses;
+    }
 
     public boolean subscribeResourceNotifications(ResourceListener resourceListener) throws Exception {
         boolean subscribed = resourceListeners.add(resourceListener);
@@ -131,6 +144,7 @@ public class AgentChannelManager extends JLPCActor {
         JLPCActor added = localResources.get(name);
         if (added != null)
             return false;
+        localResources.put(name, resource);
         AddResourceNameAgent agent = (AddResourceNameAgent)
                 JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
         agent.setResourceName(name);
@@ -140,8 +154,10 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public void addResourceName(String address, String name) throws Exception {
-        if (!resourceNames.add(address + " " + name))
+        String rn = address + " " + name;
+        if (!resourceNames.add(rn))
             return;
+        resourceNames.add(rn);
         ResourceAdded resourceAdded = new ResourceAdded(address, name);
         Iterator<ResourceListener> it = resourceListeners.iterator();
         while (it.hasNext()) {

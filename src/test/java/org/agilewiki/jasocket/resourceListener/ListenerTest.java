@@ -62,7 +62,6 @@ public class ListenerTest extends TestCase {
         System.out.println("\nshutdown");
         agentChannelManager0.closeAll();
         agentChannelManager1.closeAll();
-        Thread.sleep(100);
         mailboxFactory.close();
     }
 }
