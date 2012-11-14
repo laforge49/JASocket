@@ -115,7 +115,7 @@ public class AgentChannelManager extends JLPCActor {
         }
     }
 
-    public JLPCActor removeLocalResource(String name) throws Exception {
+    public JLPCActor unregisterResource(String name) throws Exception {
         JLPCActor removed = localResources.remove(name);
         if (removed == null)
             return null;
@@ -127,7 +127,7 @@ public class AgentChannelManager extends JLPCActor {
         return removed;
     }
 
-    public JLPCActor putLocalResource(String name, JLPCActor resource) throws Exception {
+    public JLPCActor registerResource(String name, JLPCActor resource) throws Exception {
         JLPCActor added = localResources.put(name, resource);
         if (added != null)
             return added;

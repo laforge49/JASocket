@@ -28,13 +28,11 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
-public class PutLocalResource extends Request<JLPCActor, AgentChannelManager> {
+public class UnregisterResource extends Request<JLPCActor, AgentChannelManager> {
     private String name;
-    private JLPCActor resource;
 
-    public PutLocalResource(String name, JLPCActor resource) {
+    public UnregisterResource(String name) {
         this.name = name;
-        this.resource = resource;
     }
 
     @Override
@@ -44,6 +42,6 @@ public class PutLocalResource extends Request<JLPCActor, AgentChannelManager> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).putLocalResource(name, resource));
+        rp.processResponse(((AgentChannelManager) targetActor).unregisterResource(name));
     }
 }

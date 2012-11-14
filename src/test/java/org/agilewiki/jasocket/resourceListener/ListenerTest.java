@@ -22,8 +22,8 @@ public class ListenerTest extends TestCase {
         agentChannelManager1.openServerSocket(8881);
 
         System.out.println("\nregister local resources 0a and 1a");
-        (new PutLocalResource("0a", new StringJid())).send(future, agentChannelManager0);
-        (new PutLocalResource("1a", new StringJid())).send(future, agentChannelManager1);
+        (new RegisterResource("0a", new StringJid())).send(future, agentChannelManager0);
+        (new RegisterResource("1a", new StringJid())).send(future, agentChannelManager1);
 
         System.out.println("\nadd listeners");
         Listener listener0 = new Listener();
@@ -40,23 +40,23 @@ public class ListenerTest extends TestCase {
         Thread.sleep(100);
 
         System.out.println("\nregister local resources 0b and 1b");
-        (new PutLocalResource("0b", new StringJid())).send(future, agentChannelManager0);
-        (new PutLocalResource("1b", new StringJid())).send(future, agentChannelManager1);
+        (new RegisterResource("0b", new StringJid())).send(future, agentChannelManager0);
+        (new RegisterResource("1b", new StringJid())).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nregister local resources 0b and 1b, again");
-        (new PutLocalResource("0b", new StringJid())).send(future, agentChannelManager0);
-        (new PutLocalResource("1b", new StringJid())).send(future, agentChannelManager1);
+        (new RegisterResource("0b", new StringJid())).send(future, agentChannelManager0);
+        (new RegisterResource("1b", new StringJid())).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nunregister local resources 0a and 1a");
-        (new RemoveLocalResource("0a")).send(future, agentChannelManager0);
-        (new RemoveLocalResource("1a")).send(future, agentChannelManager1);
+        (new UnregisterResource("0a")).send(future, agentChannelManager0);
+        (new UnregisterResource("1a")).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nunregister local resources 0a and 1a, again");
-        (new RemoveLocalResource("0a")).send(future, agentChannelManager0);
-        (new RemoveLocalResource("1a")).send(future, agentChannelManager1);
+        (new UnregisterResource("0a")).send(future, agentChannelManager0);
+        (new UnregisterResource("1a")).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nshutdown");
