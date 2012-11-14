@@ -117,6 +117,8 @@ public class AgentChannelManager extends JLPCActor {
 
     public JLPCActor removeLocalResource(String name) throws Exception {
         JLPCActor removed = localResources.remove(name);
+        if (removed == null)
+            return null;
         RemoveResourceNameAgent agent = (RemoveResourceNameAgent)
                 JAFactory.newActor(this, JASocketFactories.REMOVE_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
         agent.setResourceName(name);
@@ -127,16 +129,19 @@ public class AgentChannelManager extends JLPCActor {
 
     public JLPCActor putLocalResource(String name, JLPCActor resource) throws Exception {
         JLPCActor added = localResources.put(name, resource);
+        if (added != null)
+            return added;
         AddResourceNameAgent agent = (AddResourceNameAgent)
                 JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
         agent.setResourceName(name);
         shipAgentEventToAll(agent);
         addResourceName(agentChannelManagerAddress(), name);
-        return added;
+        return null;
     }
 
     public void addResourceName(String address, String name) throws Exception {
-        resourceNames.add(address + " " + name);
+        if (!resourceNames.add(address + " " + name))
+            return;
         ResourceAdded resourceAdded = new ResourceAdded(address, name);
         Iterator<ResourceListener> it = resourceListeners.iterator();
         while (it.hasNext()) {
@@ -145,7 +150,8 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public void removeResourceName(String address, String name) throws Exception {
-        resourceNames.remove(address + " " + name);
+        if (!resourceNames.remove(address + " " + name))
+            return;
         ResourceRemoved resourceRemoved = new ResourceRemoved(address, name);
         Iterator<ResourceListener> it = resourceListeners.iterator();
         while (it.hasNext()) {
