@@ -127,16 +127,16 @@ public class AgentChannelManager extends JLPCActor {
         return removed;
     }
 
-    public JLPCActor registerResource(String name, JLPCActor resource) throws Exception {
-        JLPCActor added = localResources.put(name, resource);
+    public boolean registerResource(String name, JLPCActor resource) throws Exception {
+        JLPCActor added = localResources.get(name);
         if (added != null)
-            return added;
+            return false;
         AddResourceNameAgent agent = (AddResourceNameAgent)
                 JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
         agent.setResourceName(name);
         shipAgentEventToAll(agent);
         addResourceName(agentChannelManagerAddress(), name);
-        return null;
+        return true;
     }
 
     public void addResourceName(String address, String name) throws Exception {

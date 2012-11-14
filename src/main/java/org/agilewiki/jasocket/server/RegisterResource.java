@@ -28,7 +28,7 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
-public class RegisterResource extends Request<JLPCActor, AgentChannelManager> {
+public class RegisterResource extends Request<Boolean, AgentChannelManager> {
     private String name;
     private JLPCActor resource;
 
