@@ -120,6 +120,10 @@ public class AgentChannelManager extends JLPCActor {
     public void copyResource(String address, String name, RP rp) throws Exception {
         if (agentChannelManagerAddress().equals(address)) {
             Jid resource = (Jid) getLocalResource(name);
+            if (resource == null) {
+                rp.processResponse(null);
+                return;
+            }
             Mailbox mailbox = null;
             if (resource instanceof AgentJid) {
                 AgentJid agent = (AgentJid) resource;
@@ -220,7 +224,7 @@ public class AgentChannelManager extends JLPCActor {
     public AgentChannel agentChannel(String address) throws Exception {
         int i = address.indexOf(":");
         String host = address.substring(0, i);
-        int port = Integer.getInteger(address.substring(i + 1));
+        int port = Integer.valueOf(address.substring(i + 1));
         InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
         return agentChannel(inetSocketAddress);
     }

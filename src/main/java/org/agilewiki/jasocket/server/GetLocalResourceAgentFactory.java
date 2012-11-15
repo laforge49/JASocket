@@ -37,6 +37,6 @@ public class GetLocalResourceAgentFactory extends AppJidFactory {
 
     @Override
     protected JLPCActor instantiateActor() throws Exception {
-        return new AddResourceNameAgent();
+        return new GetLocalResourceAgent();
     }
 }
