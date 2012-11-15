@@ -24,6 +24,7 @@
 package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.Actor;
+import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.factory.JAFactory;
@@ -37,6 +38,8 @@ import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.resourceListener.ResourceAdded;
 import org.agilewiki.jasocket.resourceListener.ResourceListener;
 import org.agilewiki.jasocket.resourceListener.ResourceRemoved;
+import org.agilewiki.jid.CopyJID;
+import org.agilewiki.jid.Jid;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -114,6 +117,29 @@ public class AgentChannelManager extends JLPCActor {
         return localResources.get(name);
     }
 
+    public void copyResource(String address, String name, RP rp) throws Exception {
+        if (agentChannelManagerAddress().equals(address)) {
+            Jid resource = (Jid) getLocalResource(name);
+            Mailbox mailbox = null;
+            if (resource instanceof AgentJid) {
+                AgentJid agent = (AgentJid) resource;
+                if (agent.async())
+                    mailbox = getMailboxFactory().createAsyncMailbox();
+                else
+                    mailbox = getMailboxFactory().createMailbox();
+            } else {
+                mailbox = getMailboxFactory().createMailbox();
+            }
+            (new CopyJID(mailbox)).send(this, resource, rp);
+            return;
+        }
+        GetLocalResourceAgent agent = (GetLocalResourceAgent)
+                JAFactory.newActor(this, JASocketFactories.GET_LOCAL_RESOURCE_AGENT_FACTORY, getMailbox());
+        agent.setResourceName(name);
+        AgentChannel agentChannel = agentChannel(address);
+        (new ShipAgent(agent)).send(this, agentChannel, rp);
+    }
+
     protected void shipAgentEventToAll(AgentJid agent) throws Exception {
         ShipAgent shipAgent = new ShipAgent(agent);
         Iterator<String> ksit = agentChannels.keySet().iterator();
@@ -189,6 +215,14 @@ public class AgentChannelManager extends JLPCActor {
 
     protected ThreadFactory threadFactory() {
         return new JAThreadFactory();
+    }
+
+    public AgentChannel agentChannel(String address) throws Exception {
+        int i = address.indexOf(":");
+        String host = address.substring(0, i);
+        int port = Integer.getInteger(address.substring(i + 1));
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
+        return agentChannel(inetSocketAddress);
     }
 
     public AgentChannel agentChannel(InetSocketAddress inetSocketAddress)

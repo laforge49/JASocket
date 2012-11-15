@@ -31,6 +31,7 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jasocket.server.AddResourceNameAgentFactory;
+import org.agilewiki.jasocket.server.GetLocalResourceAgentFactory;
 import org.agilewiki.jasocket.server.RemoveResourceNameAgentFactory;
 import org.agilewiki.jasocket.server.SetClientAddressAgentFactory;
 import org.agilewiki.jid.JidFactories;
@@ -40,7 +41,8 @@ public class JASocketFactories extends JLPCActor {
     public final static String TRANSPORT_FACTORY = "transportJid";
     public final static String ADD_RESOURCE_NAME_AGENT_FACTORY = "addResourceNameAgent";
     public final static String REMOVE_RESOURCE_NAME_AGENT_FACTORY = "removeResourceNameAgent";
-    public final static String SET_CLIENT_ADDRESS_AGENT_FACTORY = "setClientAddressAgentFactory";
+    public final static String SET_CLIENT_ADDRESS_AGENT_FACTORY = "setClientAddressAgent";
+    public final static String GET_LOCAL_RESOURCE_AGENT_FACTORY = "getLocalResourceAgent";
 
     @Override
     public void initialize(Mailbox mailbox, Actor parent, ActorFactory actorFactory)
@@ -56,6 +58,7 @@ public class JASocketFactories extends JLPCActor {
         registerActorFactory(AddResourceNameAgentFactory.fac);
         registerActorFactory(RemoveResourceNameAgentFactory.fac);
         registerActorFactory(SetClientAddressAgentFactory.fac);
+        registerActorFactory(GetLocalResourceAgentFactory.fac);
     }
 
     public void registerActorFactory(ActorFactory actorFactory) throws Exception {
