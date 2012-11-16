@@ -62,7 +62,6 @@ public class AgentChannelManager extends JLPCActor {
     String agentChannelManagerAddress;
     private HashSet<String> resourceNames = new HashSet<String>();
     private HashSet<ResourceListener> resourceListeners = new HashSet<ResourceListener>();
-    public boolean fullConnectivity = true;
 
     public List<String> locateResource(String name) {
         Iterator<String> it = resourceNames.iterator();
@@ -222,22 +221,6 @@ public class AgentChannelManager extends JLPCActor {
         return new JAThreadFactory();
     }
 
-    protected void connectAll(String remoteAddress) throws Exception {
-        if (!fullConnectivity)
-            return;
-        ConnectAgent agent = (ConnectAgent)
-                JAFactory.newActor(this, JASocketFactories.CONNECT_AGENT_FACTORY, getMailbox());
-        ShipAgent shipAgent = new ShipAgent(agent);
-        Iterator<String> it = agentChannels.keySet().iterator();
-        while (it.hasNext()) {
-            String address = it.next();
-            if (!remoteAddress.equals(address)) {
-                AgentChannel channel = agentChannel(address);
-                shipAgent.sendEvent(this, channel);
-            }
-        }
-    }
-
     public AgentChannel agentChannel(String address) throws Exception {
         int i = address.indexOf(":");
         String host = address.substring(0, i);
@@ -263,7 +246,6 @@ public class AgentChannelManager extends JLPCActor {
         (new ShipAgent(agent)).sendEvent(this, agentChannel);
         agentChannels.add(remoteAddress, agentChannel);
         shareResourceNames(agentChannel);
-        connectAll(remoteAddress);
         return agentChannel;
     }
 
@@ -291,7 +273,6 @@ public class AgentChannelManager extends JLPCActor {
         agentChannel.setClientAddress(remoteAddress);
         agentChannels.add(remoteAddress, agentChannel);
         shareResourceNames(agentChannel);
-        connectAll(remoteAddress);
     }
 
     public void close() {
