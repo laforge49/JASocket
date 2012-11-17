@@ -67,6 +67,11 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         return remoteAddress;
     }
 
+    public int remotePort() {
+        int i = remoteAddress.indexOf(':');
+        return Integer.valueOf(remoteAddress.substring(i + 1));
+    }
+
     public void writeBytes(byte[] bytes) throws Exception {
         (new WriteBytes(bytes)).sendEvent(this, agentSocket);
     }
@@ -95,8 +100,8 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         agentSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
     }
 
-    public void setClientAddress(String remoteAddress) throws Exception {
-        this.remoteAddress = remoteAddress;
+    public void setClientPort(int port) throws Exception {
+        this.remoteAddress = agentSocket.getRemoteHostAddress() + ":" + port;
     }
 
     public void close() {

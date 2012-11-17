@@ -25,19 +25,19 @@ package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jid.scalar.flens.integer.IntegerJid;
 
-public class SetClientAddressAgent extends AgentJid {
-    private StringJid getStringJid() throws Exception {
-        return (StringJid) _iGet(0);
+public class SetClientPortAgent extends AgentJid {
+    private IntegerJid getIntegerJid() throws Exception {
+        return (IntegerJid) _iGet(0);
     }
 
-    public void setRemoteAddress(String remoteAddress) throws Exception {
-        getStringJid().setValue(remoteAddress);
+    public void setRemotePort(int port) throws Exception {
+        getIntegerJid().setValue(port);
     }
 
     @Override
     public void start(RP rp) throws Exception {
-        (new SetClientAddress(agentChannel(), getStringJid().getValue())).send(this, agentChannelManager(), rp);
+        (new SetClientPort(agentChannel(), getIntegerJid().getValue())).send(this, agentChannelManager(), rp);
     }
 }

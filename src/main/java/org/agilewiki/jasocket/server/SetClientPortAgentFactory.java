@@ -26,17 +26,17 @@ package org.agilewiki.jasocket.server;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jid.collection.flenc.AppJidFactory;
-import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
+import org.agilewiki.jid.scalar.flens.integer.IntegerJidFactory;
 
-public class SetClientAddressAgentFactory extends AppJidFactory {
-    public final static SetClientAddressAgentFactory fac = new SetClientAddressAgentFactory();
+public class SetClientPortAgentFactory extends AppJidFactory {
+    public final static SetClientPortAgentFactory fac = new SetClientPortAgentFactory();
 
-    public SetClientAddressAgentFactory() {
-        super(JASocketFactories.SET_CLIENT_ADDRESS_AGENT_FACTORY, StringJidFactory.fac);
+    public SetClientPortAgentFactory() {
+        super(JASocketFactories.SET_CLIENT_PORT_AGENT_FACTORY, IntegerJidFactory.fac);
     }
 
     @Override
     protected JLPCActor instantiateActor() throws Exception {
-        return new SetClientAddressAgent();
+        return new SetClientPortAgent();
     }
 }

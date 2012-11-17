@@ -29,13 +29,13 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.jid.agent.AgentChannel;
 
-public class SetClientAddress extends Request<Object, AgentChannelManager> {
+public class SetClientPort extends Request<Object, AgentChannelManager> {
     private AgentChannel agentChannel;
-    private String remoteAddress;
+    private int port;
 
-    public SetClientAddress(AgentChannel agentChannel, String remoteAddress) {
+    public SetClientPort(AgentChannel agentChannel, int port) {
         this.agentChannel = agentChannel;
-        this.remoteAddress = remoteAddress;
+        this.port = port;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class SetClientAddress extends Request<Object, AgentChannelManager> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentChannelManager) targetActor).setClientAddress(agentChannel, remoteAddress);
+        ((AgentChannelManager) targetActor).setClientPort(agentChannel, port);
         rp.processResponse(null);
     }
 }
