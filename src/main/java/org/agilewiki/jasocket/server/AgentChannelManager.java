@@ -109,6 +109,12 @@ public class AgentChannelManager extends JLPCActor {
         return agentChannelManagerAddress;
     }
 
+    public int agentChannelManagerPort() throws Exception {
+        String address = agentChannelManagerAddress();
+        int pos = address.indexOf(':');
+        return Integer.valueOf(address.substring(pos+1));
+    }
+
     public boolean isAgentChannelManagerAddress(String address) throws Exception {
         return agentChannelManagerAddress().equals(address);
     }
@@ -241,7 +247,7 @@ public class AgentChannelManager extends JLPCActor {
         agentChannel.open(inetSocketAddress, maxPacketSize, threadFactory);
         SetClientPortAgent agent = (SetClientPortAgent)
                 JAFactory.newActor(this, JASocketFactories.SET_CLIENT_PORT_AGENT_FACTORY, getMailbox());
-        agent.setRemotePort(agentChannel.remotePort());
+        agent.setRemotePort(agentChannelManagerPort());
         (new ShipAgent(agent)).sendEvent(this, agentChannel);
         agentChannels.add(agentChannel.remoteAddress(), agentChannel);
         shareResourceNames(agentChannel);

@@ -37,13 +37,12 @@ public class DiscoveryTest extends TestCase {
         Thread t = new Thread() {
             @Override
             public void run() {
-                ByteBuffer in = ByteBuffer.allocate(20);
+                ByteBuffer in = ByteBuffer.allocate(4);
                 try {
-                    dc.receive(in);
+                    SocketAddress sa = dc.receive(in);
                     in.flip();
                     byte[] bytes = new byte[in.limit()];
-                    in.get(bytes);
-                    System.out.println(new String(bytes));
+                    System.out.println(in.getInt());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -54,13 +53,12 @@ public class DiscoveryTest extends TestCase {
         Thread t1 = new Thread() {
             @Override
             public void run() {
-                ByteBuffer in = ByteBuffer.allocate(20);
+                ByteBuffer in = ByteBuffer.allocate(4);
                 try {
-                    dc1.receive(in);
+                    SocketAddress sa = dc1.receive(in);
                     in.flip();
                     byte[] bytes = new byte[in.limit()];
-                    in.get(bytes);
-                    System.out.println(new String(bytes));
+                    System.out.println(in.getInt());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -70,8 +68,10 @@ public class DiscoveryTest extends TestCase {
 
         Thread.sleep(100);
 
-        ByteBuffer bb2 = ByteBuffer.wrap("hi".getBytes());
-        dc.send(bb2, new InetSocketAddress(group, port));
+        ByteBuffer bb = ByteBuffer.allocate(4);
+        bb.putInt(4400);
+        bb.flip();
+        dc.send(bb, new InetSocketAddress(group, port));
 
         Thread.sleep(100);
         dc.close();
