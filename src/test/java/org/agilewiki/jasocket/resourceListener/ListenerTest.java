@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.jid.agent.AgentChannel;
 import org.agilewiki.jasocket.server.*;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
@@ -36,7 +37,8 @@ public class ListenerTest extends TestCase {
         (new SubscribeResourceNotifications(listener1)).send(future, agentChannelManager1);
 
         System.out.println("\nopen channel");
-        AgentChannel agentChannel01 = (new OpenAgentChannel(8881)).send(future, agentChannelManager0);
+        new Discovery(agentChannelManager0);
+        new Discovery(agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nregister local resources 0b and 1b");
