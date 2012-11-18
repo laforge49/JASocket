@@ -36,8 +36,6 @@ public class LocateResourceTest extends TestCase {
             System.out.println(it.next());
         }
 
-        agentChannelManager0.closeAll();
-        agentChannelManager1.closeAll();
         mailboxFactory.close();
     }
 }

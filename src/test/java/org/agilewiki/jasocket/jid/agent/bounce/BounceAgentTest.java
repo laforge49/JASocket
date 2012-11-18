@@ -26,8 +26,6 @@ public class BounceAgentTest extends TestCase {
         BounceAgent bounceAgent3 = (BounceAgent) factory.newActor("BounceAgent", mailboxFactory.createMailbox());
         bounceAgent3.setCounter(3);
         (new ShipAgent(bounceAgent3)).send(future, agentChannel01);
-        agentChannelManager0.closeAll();
-        agentChannelManager1.closeAll();
         mailboxFactory.close();
     }
 }

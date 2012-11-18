@@ -54,8 +54,6 @@ import java.util.concurrent.ThreadFactory;
 
 public class AgentChannelManager extends JLPCActor {
     ServerSocketChannel serverSocketChannel;
-    final ThreadFactory threadFactory = threadFactory();
-    Thread thread;
     public int maxPacketSize = 100000;
     ConcurrentDupMap<String, AgentChannel> agentChannels = new ConcurrentDupMap<String, AgentChannel>();
     protected HashMap<String, JLPCActor> localResources = new HashMap<String, JLPCActor>();
@@ -112,7 +110,7 @@ public class AgentChannelManager extends JLPCActor {
     public int agentChannelManagerPort() throws Exception {
         String address = agentChannelManagerAddress();
         int pos = address.indexOf(':');
-        return Integer.valueOf(address.substring(pos+1));
+        return Integer.valueOf(address.substring(pos + 1));
     }
 
     public boolean isAgentChannelManagerAddress(String address) throws Exception {
@@ -244,7 +242,7 @@ public class AgentChannelManager extends JLPCActor {
             return agentChannel;
         agentChannel = new AgentChannel();
         agentChannel.initialize(getMailboxFactory().createMailbox(), this);
-        agentChannel.open(inetSocketAddress, maxPacketSize, threadFactory);
+        agentChannel.open(inetSocketAddress, maxPacketSize);
         SetClientPortAgent agent = (SetClientPortAgent)
                 JAFactory.newActor(this, JASocketFactories.SET_CLIENT_PORT_AGENT_FACTORY, getMailbox());
         agent.setRemotePort(agentChannelManagerPort());
@@ -264,14 +262,13 @@ public class AgentChannelManager extends JLPCActor {
         serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.setOption(StandardSocketOptions.SO_RCVBUF, maxPacketSize);
         serverSocketChannel.bind(inetSocketAddress);
-        thread = threadFactory.newThread(new Acceptor());
-        thread.start();
+        getMailboxFactory().getThreadManager().process(new Acceptor());
     }
 
     public void acceptSocket(SocketChannel socketChannel) throws Exception {
         AgentChannel agentChannel = new AgentChannel();
         agentChannel.initialize(getMailbox(), this);
-        agentChannel.serverOpen(socketChannel, maxPacketSize, threadFactory);
+        agentChannel.serverOpen(socketChannel, maxPacketSize);
     }
 
     public void setClientPort(AgentChannel agentChannel, int port) throws Exception {
@@ -282,7 +279,6 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public void close() {
-        thread.interrupt();
         try {
             serverSocketChannel.close();
         } catch (Exception ex) {

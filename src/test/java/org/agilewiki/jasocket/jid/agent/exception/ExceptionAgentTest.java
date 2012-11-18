@@ -30,8 +30,6 @@ public class ExceptionAgentTest extends TestCase {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
-        agentChannelManager0.closeAll();
-        agentChannelManager1.closeAll();
         mailboxFactory.close();
     }
 }

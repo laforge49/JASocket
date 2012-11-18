@@ -31,8 +31,6 @@ public class EchoAgentTest extends TestCase {
         echoAgent.setValue("world!");
         rsp = (StringJid) (new ShipAgent(echoAgent)).send(future, agentChannel01);
         System.out.println(rsp.getValue());
-        agentChannelManager0.closeAll();
-        agentChannelManager1.closeAll();
         mailboxFactory.close();
     }
 }

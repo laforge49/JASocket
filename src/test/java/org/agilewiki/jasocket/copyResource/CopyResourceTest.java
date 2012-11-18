@@ -42,8 +42,6 @@ public class CopyResourceTest extends TestCase {
         StringJid sj3 = (StringJid) (new CopyResource(address0, "hi")).send(future, agentChannelManager1);
         System.out.println(sj1.getValue());
 
-        agentChannelManager0.closeAll();
-        agentChannelManager1.closeAll();
         mailboxFactory.close();
     }
 }

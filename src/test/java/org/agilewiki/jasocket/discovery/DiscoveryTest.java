@@ -9,16 +9,9 @@ import java.nio.channels.DatagramChannel;
 public class DiscoveryTest extends TestCase {
     public void test() throws Exception {
         // Select the appropriate network interface
-        /*
-        Enumeration<NetworkInterface> nie = NetworkInterface.getNetworkInterfaces ();
-        while (nie.hasMoreElements()) {
-            NetworkInterface ni = nie.nextElement();
-            System.out.println(ni);
-        }
-        */
-        NetworkInterface interf = NetworkInterface.getByName("eth3");
+        NetworkInterface interf = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
 
-        //Select a multicasting IP address
+        //Select a multicasting IP address and port
         InetAddress group = InetAddress.getByName("225.0.0.100");
         int port = 8887;
 

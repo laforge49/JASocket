@@ -46,7 +46,6 @@ import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
-import java.util.concurrent.ThreadFactory;
 
 public class AgentChannel extends JLPCActor implements SocketProtocol {
     HashMap<Long, RP> rps = new HashMap<Long, RP>();
@@ -82,22 +81,22 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         close();
     }
 
-    public void open(InetSocketAddress inetSocketAddress, int maxPacketSize, ThreadFactory threadFactory)
+    public void open(InetSocketAddress inetSocketAddress, int maxPacketSize)
             throws Exception {
         agentSocket = new AgentSocket();
         agentSocket.setAgentChannel(this);
         agentSocket.initialize(getMailboxFactory().createAsyncMailbox());
-        agentSocket.clientOpen(inetSocketAddress, maxPacketSize, threadFactory);
+        agentSocket.clientOpen(inetSocketAddress, maxPacketSize);
         client = true;
         remoteAddress = agentSocket.getRemoteAddress();
     }
 
-    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
+    public void serverOpen(SocketChannel socketChannel, int maxPacketSize)
             throws Exception {
         agentSocket = new AgentSocket();
         agentSocket.setAgentChannel(this);
         agentSocket.initialize(getMailboxFactory().createAsyncMailbox());
-        agentSocket.serverOpen(socketChannel, maxPacketSize, threadFactory);
+        agentSocket.serverOpen(socketChannel, maxPacketSize);
     }
 
     public void setClientPort(int port) throws Exception {

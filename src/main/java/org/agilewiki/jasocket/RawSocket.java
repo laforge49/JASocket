@@ -25,7 +25,6 @@ package org.agilewiki.jasocket;
 
 import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
@@ -33,33 +32,24 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.ThreadFactory;
 
 abstract public class RawSocket extends SocketWriter {
     int maxPacketSize;
-    Thread readerThread;
 
     @Override
     public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize)
             throws Exception {
-        clientOpen(inetSocketAddress, maxPacketSize, new JAThreadFactory());
-    }
-
-    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize, ThreadFactory threadFactory)
-            throws Exception {
         super.clientOpen(inetSocketAddress, maxPacketSize);
         this.maxPacketSize = maxPacketSize;
-        readerThread = threadFactory.newThread(new Reader());
-        readerThread.start();
+        getMailboxFactory().getThreadManager().process(new Reader());
     }
 
-    public void serverOpen(SocketChannel socketChannel, int maxPacketSize, ThreadFactory threadFactory)
+    public void serverOpen(SocketChannel socketChannel, int maxPacketSize)
             throws Exception {
         writeBuffer = ByteBuffer.allocateDirect(maxPacketSize);
         this.socketChannel = socketChannel;
         this.maxPacketSize = maxPacketSize;
-        readerThread = threadFactory.newThread(new Reader());
-        readerThread.start();
+        getMailboxFactory().getThreadManager().process(new Reader());
     }
 
     protected abstract void receiveByteBuffer(ByteBuffer byteBuffer) throws Exception;
