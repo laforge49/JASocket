@@ -78,7 +78,7 @@ abstract public class SocketWriter extends JLPCActor implements ExceptionProcess
             try {
                 (new ProcessException(ex)).sendEvent(exceptionProcessor);
             } catch (Exception x) {
-                x.printStackTrace();
+                getMailboxFactory().logException(false, "sendEvent threw unhandled exception", x);
             }
         }
     }

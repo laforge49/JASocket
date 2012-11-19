@@ -71,7 +71,7 @@ abstract public class RawSocket extends SocketWriter {
                 try {
                     (new ProcessException(ex)).sendEvent(exceptionProcessor);
                 } catch (Exception x) {
-                    x.printStackTrace();
+                    getMailboxFactory().logException(false, "RawSocket threw unhandled exception", x);
                 }
             }
         }

@@ -82,6 +82,6 @@ public class AgentSocket extends RawSocket {
 
     @Override
     public void processException(Exception exception) {
-        exception.printStackTrace();
+        getMailboxFactory().logException(false, "AgentSocket threw unhandled exception", exception);
     }
 }

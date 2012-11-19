@@ -25,6 +25,7 @@ package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.Mailbox;
+import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.factory.JAFactory;
@@ -340,7 +341,9 @@ public class AgentChannelManager extends JLPCActor {
             } catch (ClosedByInterruptException cbie) {
             } catch (ClosedChannelException cce) {
             } catch (Exception ex) {
-                ex.printStackTrace();
+                MailboxFactory mailboxFactory = getMailboxFactory();
+                mailboxFactory.logException(true, "Server socket accept process threw unexpected exception", ex);
+                mailboxFactory.close();
                 System.exit(1);
             }
         }

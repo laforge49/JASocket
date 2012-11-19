@@ -85,7 +85,7 @@ public class Discovery {
                     } catch (ClosedChannelException cce) {
                         return;
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        agentChannelManager.getMailboxFactory().logException(false, "Discovery receiver threw unexpected exception", e);
                         return;
                     }
                 }
@@ -103,7 +103,7 @@ public class Discovery {
                     try {
                         datagramChannel.send(byteBuffer, inetSocketAddress);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        agentChannelManager.getMailboxFactory().logException(false, "Discovery sender threw unexpected exception", e);
                         agentChannelManager.getMailboxFactory().close();
                         return;
                     }
