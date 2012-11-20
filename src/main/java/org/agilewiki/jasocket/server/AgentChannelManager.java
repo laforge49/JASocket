@@ -62,6 +62,10 @@ public class AgentChannelManager extends JLPCActor {
     private HashSet<String> resourceNames = new HashSet<String>();
     private HashSet<ResourceListener> resourceListeners = new HashSet<ResourceListener>();
 
+    public Set<String> channels() {
+        return agentChannels.keySet();
+    }
+
     public List<String> locateResource(String name) {
         Iterator<String> it = resourceNames.iterator();
         List<String> addresses = new ArrayList<String>();

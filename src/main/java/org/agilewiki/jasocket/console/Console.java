@@ -24,35 +24,59 @@
 package org.agilewiki.jasocket.console;
 
 import org.agilewiki.jactor.JAMailboxFactory;
+import org.agilewiki.jactor.factory.ActorFactory;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.discovery.Discovery;
+import org.agilewiki.jasocket.server.AgentChannelManager;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
 
 public class Console {
-    BufferedReader inbr;
-    TreeMap<String, Command> commands = new TreeMap<String, Command>();
-    String[] args;
+    protected BufferedReader inbr;
+    protected TreeMap<String, Command> commands = new TreeMap<String, Command>();
+    protected String[] args;
+    protected JASocketFactories factory;
+    protected AgentChannelManager agentChannelManager;
 
-    String input() throws IOException {
-        return inbr.readLine();
-    }
-
-    void cmd(String name, String description, String type) {
+    protected void cmd(String name, String description, String type) {
         commands.put(name, new Command(description, type));
     }
 
-    public void process(String[] args) throws Exception {
-        this.args = args;
-        cmd("help", "Displays this list of commands", "");
-        cmd("exit", "Exit (only) this console", "");
-        System.out.println("\n*** JASocket Test Console***\n");
-        JAMailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(100);
+    protected void cmd(String name, String description, ActorFactory actorFactory) throws Exception {
+        factory.registerActorFactory(actorFactory);
+        cmd(name, description, actorFactory.actorType);
+    }
+
+    protected void configure() {
+        cmd("help", "Displays this list of commands", (String) null);
+        cmd("exit", "Exit (only) this console", (String) null);
+        cmd("channels", "List all the open channels to other nodes in the cluster", (String) null);
+    }
+
+    protected int maxThreadCount() {
+        return 100;
+    }
+
+    protected void process(String[] args) throws Exception {
+        JAMailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(maxThreadCount());
         try {
+            this.args = args;
+            int port = 8880;
+            if (args.length > 0) {
+                port = Integer.valueOf(args[0]);
+            }
+            factory = new JASocketFactories();
+            factory.initialize();
+            configure();
+            agentChannelManager = new AgentChannelManager();
+            agentChannelManager.initialize(mailboxFactory.createMailbox(), factory);
+            agentChannelManager.openServerSocket(port);
+            new Discovery(agentChannelManager);
+            System.out.println("\n*** JASocket Test Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
             inbr = new BufferedReader(new InputStreamReader(System.in));
             while (true) {
                 System.out.print(">");
@@ -63,25 +87,44 @@ public class Console {
                     rem = in.substring(i + 1);
                     in = in.substring(0, i);
                 }
-                if (in.equals("exit"))
-                    return;
-                if (in.equals("help")) {
-                    Iterator<String> it = commands.keySet().iterator();
-                    while(it.hasNext()) {
-                        String name = it.next();
-                        Command cmd = commands.get(name);
-                        System.out.println(name + " - " + cmd.description());
-                    }
-                    continue;
-                }
                 Command cmd = commands.get(in);
                 if (cmd == null) {
-                    System.out.println("No such command: " + in + ". (Use the help command for more information.)");
+                    System.out.println("No such command: " + in + ". (Use the help command for a list of commands.)");
+                    continue;
+                }
+                String type = cmd.type();
+                if (type == null) {
+                    if (in.equals("exit"))
+                        return;
+                    else if (in.equals("help"))
+                        help();
+                    else if (in.equals("channels"))
+                        channels();
                 }
             }
         } finally {
             mailboxFactory.close();
         }
+    }
+
+    protected void help() {
+        Iterator<String> it = commands.keySet().iterator();
+        while (it.hasNext()) {
+            String name = it.next();
+            Command c = commands.get(name);
+            System.out.println(name + " - " + c.description());
+        }
+    }
+
+    protected void channels() {
+        Iterator<String> it = agentChannelManager.channels().iterator();
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }
+    }
+
+    protected String input() throws IOException {
+        return inbr.readLine();
     }
 
     public static void main(String[] args) throws Exception {
