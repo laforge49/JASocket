@@ -66,6 +66,10 @@ public class AgentChannelManager extends JLPCActor {
         return agentChannels.keySet();
     }
 
+    public boolean isActive(String address) {
+        return agentChannels.getAny(address) != null;
+    }
+
     public List<String> locateResource(String name) {
         Iterator<String> it = resourceNames.iterator();
         List<String> addresses = new ArrayList<String>();

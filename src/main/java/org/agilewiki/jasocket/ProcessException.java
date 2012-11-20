@@ -42,7 +42,7 @@ public class ProcessException extends Request<Object, ExceptionProcessor> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((RawSocket) targetActor).processException(exception);
+        ((ExceptionProcessor) targetActor).processException(exception);
         rp.processResponse(null);
     }
 }

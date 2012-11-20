@@ -23,11 +23,14 @@
  */
 package org.agilewiki.jasocket.console;
 
+import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jactor.factory.ActorFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.AgentChannelManager;
+import org.agilewiki.jasocket.server.RegisterResource;
+import org.agilewiki.jid.Jid;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,6 +44,7 @@ public class Console {
     protected String[] args;
     protected JASocketFactories factory;
     protected AgentChannelManager agentChannelManager;
+    protected JAFuture future = new JAFuture();
 
     protected void cmd(String name, String description, String type) {
         commands.put(name, new Command(description, type));
@@ -55,6 +59,7 @@ public class Console {
         cmd("help", "Displays this list of commands", (String) null);
         cmd("exit", "Exit (only) this console", (String) null);
         cmd("channels", "List all the open channels to other nodes in the cluster", (String) null);
+        cmd("registerResource", "Register a resource with the given name", (String) null);
     }
 
     protected int maxThreadCount() {
@@ -100,6 +105,8 @@ public class Console {
                         help();
                     else if (in.equals("channels"))
                         channels();
+                    else if (in.equals("registerResource"))
+                        registerResource(rem);
                 }
             }
         } finally {
@@ -119,8 +126,25 @@ public class Console {
     protected void channels() {
         Iterator<String> it = agentChannelManager.channels().iterator();
         while (it.hasNext()) {
-            System.out.println(it.next());
+            String address = it.next();
+            if (agentChannelManager.isActive(address))
+                System.out.println(address);
         }
+    }
+
+    protected void registerResource(String rem) throws Exception {
+        int p = rem.indexOf(' ');
+        if (p > -1)
+            rem = rem.substring(0, p);
+        if (rem.length() == 0) {
+            System.out.println("missing resource name");
+            return;
+        }
+        boolean newResource = (new RegisterResource(rem, new Jid())).send(future, agentChannelManager);
+        if (newResource)
+            System.out.println("registered resource " + rem);
+        else
+            System.out.println("a resource named " + rem + " was already registred");
     }
 
     protected String input() throws IOException {

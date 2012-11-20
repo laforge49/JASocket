@@ -25,6 +25,7 @@ package org.agilewiki.jasocket;
 
 import org.agilewiki.jactor.lpc.JLPCActor;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
@@ -85,12 +86,9 @@ abstract public class SocketWriter extends JLPCActor implements ExceptionProcess
 
     void write() throws Exception {
         writeBuffer.flip();
-        try {
             while (writeBuffer.hasRemaining())
                 socketChannel.write(writeBuffer);
-        } catch (ClosedChannelException ex) {
-        }
-        writeBuffer.clear();
+            writeBuffer.clear();
     }
 
     public void close() {

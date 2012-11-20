@@ -77,7 +77,7 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
 
     @Override
     public void processException(Exception exception) {
-        getMailboxFactory().logException(false, "AgentChannel threw unhandled exception", exception);
+        //getMailboxFactory().logException(false, "AgentChannel threw unhandled exception", exception);
         close();
     }
 
