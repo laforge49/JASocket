@@ -24,15 +24,15 @@
 package org.agilewiki.jasocket;
 
 import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.jid.agent.AgentChannel;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 
 abstract public class SocketWriter extends JLPCActor implements ExceptionProcessor {
+    protected AgentChannel agentChannel;
     protected SocketChannel socketChannel;
     protected ByteBuffer writeBuffer;
     protected ExceptionProcessor exceptionProcessor = this;
@@ -85,10 +85,11 @@ abstract public class SocketWriter extends JLPCActor implements ExceptionProcess
     }
 
     void write() throws Exception {
+        agentChannel.sent();
         writeBuffer.flip();
-            while (writeBuffer.hasRemaining())
-                socketChannel.write(writeBuffer);
-            writeBuffer.clear();
+        while (writeBuffer.hasRemaining())
+            socketChannel.write(writeBuffer);
+        writeBuffer.clear();
     }
 
     public void close() {

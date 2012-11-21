@@ -61,8 +61,10 @@ abstract public class RawSocket extends SocketWriter {
                 while (true) {
                     ByteBuffer byteBuffer = ByteBuffer.allocate(maxPacketSize);
                     int i = socketChannel.read(byteBuffer);
-                    if (i == -1)
+                    if (i == -1) {
+                        agentChannel.close();
                         return;
+                    }
                     byteBuffer.flip();
                     (new ReceiveByteBuffer(byteBuffer)).sendEvent(RawSocket.this);
                 }

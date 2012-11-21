@@ -9,7 +9,11 @@ public class Command {
         this.type = type;
     }
 
-    public String description() {return description;}
+    public String description() {
+        return description;
+    }
 
-    public String type() {return type;}
+    public String type() {
+        return type;
+    }
 }

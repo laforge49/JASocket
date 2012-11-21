@@ -58,6 +58,16 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         return (AgentChannelManager) getParent();
     }
 
+    public void sent() {
+        if (remoteAddress != null)
+            agentChannelManager().sent(remoteAddress);
+    }
+
+    public void received() {
+        if (remoteAddress != null)
+            agentChannelManager().received(remoteAddress);
+    }
+
     public boolean isClient() {
         return client;
     }

@@ -5,8 +5,10 @@ import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.discovery.Discovery;
-import org.agilewiki.jasocket.jid.agent.AgentChannel;
-import org.agilewiki.jasocket.server.*;
+import org.agilewiki.jasocket.server.AgentChannelManager;
+import org.agilewiki.jasocket.server.RegisterResource;
+import org.agilewiki.jasocket.server.SubscribeResourceNotifications;
+import org.agilewiki.jasocket.server.UnregisterResource;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 public class ListenerTest extends TestCase {

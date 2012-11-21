@@ -51,6 +51,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 
 public class AgentChannelManager extends JLPCActor {
@@ -61,6 +62,16 @@ public class AgentChannelManager extends JLPCActor {
     String agentChannelManagerAddress;
     private HashSet<String> resourceNames = new HashSet<String>();
     private HashSet<ResourceListener> resourceListeners = new HashSet<ResourceListener>();
+    private Set<String> activeSenders = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    private Set<String> activeReceivers = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+
+    public void sent(String address) {
+        activeSenders.add(address);
+    }
+
+    public void received(String address) {
+        activeReceivers.add(address);
+    }
 
     public Set<String> channels() {
         return agentChannels.keySet();

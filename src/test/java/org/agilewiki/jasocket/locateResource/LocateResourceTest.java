@@ -7,7 +7,6 @@ import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 import org.agilewiki.jasocket.server.LocateResource;
-import org.agilewiki.jasocket.server.OpenAgentChannel;
 import org.agilewiki.jasocket.server.RegisterResource;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
