@@ -27,7 +27,6 @@ import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.concurrent.JAThreadFactory;
 import org.agilewiki.jactor.concurrent.ThreadManager;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
@@ -53,7 +52,6 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadFactory;
 
 public class AgentChannelManager extends JLPCActor {
     ServerSocketChannel serverSocketChannel;
@@ -316,8 +314,8 @@ public class AgentChannelManager extends JLPCActor {
         }
     }
 
-    protected ThreadFactory threadFactory() {
-        return new JAThreadFactory();
+    public AgentChannel getAgentChannel(String address) throws Exception {
+        return agentChannels.getAny(address);
     }
 
     public void agentChannel(String address, RP rp) throws Exception {

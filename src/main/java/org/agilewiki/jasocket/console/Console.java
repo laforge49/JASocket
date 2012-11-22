@@ -29,10 +29,9 @@ import org.agilewiki.jactor.factory.ActorFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.discovery.Discovery;
-import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jasocket.server.RegisterResource;
-import org.agilewiki.jasocket.server.Resources;
-import org.agilewiki.jasocket.server.UnregisterResource;
+import org.agilewiki.jasocket.jid.ShipAgent;
+import org.agilewiki.jasocket.jid.agent.AgentChannel;
+import org.agilewiki.jasocket.server.*;
 import org.agilewiki.jid.Jid;
 
 import java.io.BufferedReader;
@@ -66,6 +65,7 @@ public class Console {
         cmd("registerResource", "Register a resource with the given name", (String) null);
         cmd("unregisterResource", "Unregister a resource with the given name", (String) null);
         cmd("resources", "list all resources in the cluster", (String) null);
+        cmd("halt", "shut down the named node", (String) null);
     }
 
     protected int maxThreadCount() {
@@ -116,9 +116,10 @@ public class Console {
                         registerResource(rem);
                     else if (in.equals("unregisterResource"))
                         unregisterResource(rem);
-                    else if (in.equals("resources")) {
+                    else if (in.equals("resources"))
                         resources();
-                    }
+                    else if (in.equals("halt"))
+                        halt(rem);
                 }
             }
         } finally {
@@ -180,6 +181,24 @@ public class Console {
             System.out.println("unregistered resource " + rem);
         else
             System.out.println("a resource named " + rem + " was not registred");
+    }
+
+    protected void halt(String rem) throws Exception {
+        int p = rem.indexOf(' ');
+        if (p > -1)
+            rem = rem.substring(0, p);
+        if (rem.length() == 0) {
+            System.out.println("missing channel name");
+            return;
+        }
+        AgentChannel agentChannel = agentChannelManager.getAgentChannel(rem);
+        if (agentChannel == null) {
+            System.out.println("not an open channel: " + rem);
+            return;
+        }
+        HaltAgent haltAgent = (HaltAgent) factory.newActor(JASocketFactories.HALT_FACTORY, agentChannel.getMailbox());
+        ShipAgent shipAgent = new ShipAgent(haltAgent);
+        shipAgent.sendEvent(agentChannel);
     }
 
     protected String input() throws IOException {

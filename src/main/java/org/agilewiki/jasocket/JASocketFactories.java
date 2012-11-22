@@ -42,6 +42,7 @@ public class JASocketFactories extends JLPCActor {
     public final static String GET_LOCAL_RESOURCE_AGENT_FACTORY = "getLocalResourceAgent";
     public final static String CONNECT_AGENT_FACTORY = "connectAgent";
     public final static String KEEP_ALIVE_FACTORY = "keepAliveAgent";
+    public final static String HALT_FACTORY = "haltAgent";
 
     @Override
     public void initialize(Mailbox mailbox, Actor parent, ActorFactory actorFactory)
@@ -60,6 +61,7 @@ public class JASocketFactories extends JLPCActor {
         registerActorFactory(GetLocalResourceAgentFactory.fac);
         registerActorFactory(ConnectAgentFactory.fac);
         registerActorFactory(KeepAliveAgentFactory.fac);
+        registerActorFactory(HaltAgentFactory.fac);
     }
 
     public void registerActorFactory(ActorFactory actorFactory) throws Exception {
