@@ -110,7 +110,6 @@ public class AgentChannelManager extends JLPCActor {
                         String address = it.next();
                         AgentChannel agentChannel = agentChannels.getAny(address);
                         if (agentChannel != null) {
-                            System.out.println("timeout: " + address);
                             agentChannel.close();
                         }
                     }
@@ -136,7 +135,6 @@ public class AgentChannelManager extends JLPCActor {
                         String address = it.next();
                         AgentChannel agentChannel = agentChannels.getAny(address);
                         if (agentChannel != null) {
-                            System.out.println("keepAlive: " + address);
                             try {
                                 shipKeepAlive.sendEvent(agentChannel);
                             } catch (Exception e) {
@@ -147,6 +145,10 @@ public class AgentChannelManager extends JLPCActor {
                 }
             }
         });
+    }
+
+    public TreeSet<String> resources() {
+        return new TreeSet<String>(resourceNames);
     }
 
     public List<String> locateResource(String name) {
@@ -209,7 +211,7 @@ public class AgentChannelManager extends JLPCActor {
         return localResources.get(name);
     }
 
-    public void copyResource(String address, String name, RP rp) throws Exception {
+    public void copyResource(String address, String name, final RP rp) throws Exception {
         if (agentChannelManagerAddress().equals(address)) {
             Jid resource = (Jid) getLocalResource(name);
             if (resource == null) {
@@ -229,11 +231,16 @@ public class AgentChannelManager extends JLPCActor {
             (new CopyJID(mailbox)).send(this, resource, rp);
             return;
         }
-        GetLocalResourceAgent agent = (GetLocalResourceAgent)
+        final GetLocalResourceAgent agent = (GetLocalResourceAgent)
                 JAFactory.newActor(this, JASocketFactories.GET_LOCAL_RESOURCE_AGENT_FACTORY, getMailbox());
         agent.setResourceName(name);
-        AgentChannel agentChannel = agentChannel(address);
-        (new ShipAgent(agent)).send(this, agentChannel, rp);
+        agentChannel(address, new RP() {
+            @Override
+            public void processResponse(Object response) throws Exception {
+                (new ShipAgent(agent)).send(AgentChannelManager.this, (AgentChannel) response, rp);
+
+            }
+        });
     }
 
     protected void shipAgentEventToAll(AgentJid agent) throws Exception {
@@ -313,31 +320,38 @@ public class AgentChannelManager extends JLPCActor {
         return new JAThreadFactory();
     }
 
-    public AgentChannel agentChannel(String address) throws Exception {
+    public void agentChannel(String address, RP rp) throws Exception {
         int i = address.indexOf(":");
         String host = address.substring(0, i);
         int port = Integer.valueOf(address.substring(i + 1));
         InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
-        return agentChannel(inetSocketAddress);
+        agentChannel(inetSocketAddress, rp);
     }
 
-    public AgentChannel agentChannel(InetSocketAddress inetSocketAddress)
+    public void agentChannel(InetSocketAddress inetSocketAddress, final RP rp)
             throws Exception {
         InetAddress inetAddress = inetSocketAddress.getAddress();
-        String remoteAddress = inetAddress.getHostAddress() + ":" + inetSocketAddress.getPort();
-        AgentChannel agentChannel = agentChannels.getAny(remoteAddress);
-        if (agentChannel != null)
-            return agentChannel;
-        agentChannel = new AgentChannel();
+        final String remoteAddress = inetAddress.getHostAddress() + ":" + inetSocketAddress.getPort();
+        AgentChannel oldAgentChannel = agentChannels.getAny(remoteAddress);
+        if (oldAgentChannel != null) {
+            rp.processResponse(oldAgentChannel);
+            return;
+        }
+        final AgentChannel agentChannel = new AgentChannel();
         agentChannel.initialize(getMailboxFactory().createMailbox(), this);
         agentChannel.open(inetSocketAddress, maxPacketSize);
         SetClientPortAgent agent = (SetClientPortAgent)
                 JAFactory.newActor(this, JASocketFactories.SET_CLIENT_PORT_AGENT_FACTORY, getMailbox());
         agent.setRemotePort(agentChannelManagerPort());
-        (new ShipAgent(agent)).sendEvent(this, agentChannel);
-        agentChannels.add(agentChannel.remoteAddress(), agentChannel);
-        shareResourceNames(agentChannel);
-        return agentChannel;
+        (new ShipAgent(agent)).send(this, agentChannel, new RP<Jid>() {
+            @Override
+            public void processResponse(Jid response) throws Exception {
+                agentChannels.add(agentChannel.remoteAddress(), agentChannel);
+                AgentChannel someAgentChannel = agentChannels.getAny(remoteAddress);
+                shareResourceNames(someAgentChannel);
+                rp.processResponse(someAgentChannel);
+            }
+        });
     }
 
     public void openServerSocket(int port) throws Exception {

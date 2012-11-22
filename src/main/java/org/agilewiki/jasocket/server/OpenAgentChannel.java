@@ -40,6 +40,13 @@ public class OpenAgentChannel extends Request<AgentChannel, AgentChannelManager>
         this.inetSocketAddress = new InetSocketAddress(inetAddress, port);
     }
 
+    public OpenAgentChannel(String address) throws Exception {
+        int i = address.indexOf(":");
+        String host = address.substring(0, i);
+        int port = Integer.valueOf(address.substring(i + 1));
+        inetSocketAddress = new InetSocketAddress(host, port);
+    }
+
     public OpenAgentChannel(InetSocketAddress inetSocketAddress) {
         this.inetSocketAddress = inetSocketAddress;
     }
@@ -51,6 +58,6 @@ public class OpenAgentChannel extends Request<AgentChannel, AgentChannelManager>
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).agentChannel(inetSocketAddress));
+        ((AgentChannelManager) targetActor).agentChannel(inetSocketAddress, rp);
     }
 }

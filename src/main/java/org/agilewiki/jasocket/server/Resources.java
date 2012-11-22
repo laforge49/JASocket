@@ -23,21 +23,23 @@
  */
 package org.agilewiki.jasocket.server;
 
+import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jactor.lpc.Request;
 
-public class ConnectAgent extends AgentJid {
-    private StringJid getStringJid() throws Exception {
-        return (StringJid) _iGet(0);
-    }
+import java.util.TreeSet;
 
-    public void setAddress(String name) throws Exception {
-        getStringJid().setValue(name);
+public class Resources extends Request<TreeSet<String>, AgentChannelManager> {
+    public final static Resources req = new Resources();
+
+    @Override
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof AgentChannelManager;
     }
 
     @Override
-    public void start(RP rp) throws Exception {
-        (new OpenAgentChannel(getStringJid().getValue())).send(this, agentChannelManager(), rp);
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        rp.processResponse(((AgentChannelManager) targetActor).resources());
     }
 }

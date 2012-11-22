@@ -30,6 +30,7 @@ import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 import org.agilewiki.jasocket.server.RegisterResource;
+import org.agilewiki.jasocket.server.Resources;
 import org.agilewiki.jid.Jid;
 
 import java.io.BufferedReader;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class Console {
     protected BufferedReader inbr;
@@ -60,6 +62,7 @@ public class Console {
         cmd("exit", "Exit (only) this console", (String) null);
         cmd("channels", "List all the open channels to other nodes in the cluster", (String) null);
         cmd("registerResource", "Register a resource with the given name", (String) null);
+        cmd("resources", "list all resources in the cluster", (String) null);
     }
 
     protected int maxThreadCount() {
@@ -108,10 +111,21 @@ public class Console {
                         channels();
                     else if (in.equals("registerResource"))
                         registerResource(rem);
+                    else if (in.equals("resources")) {
+                        resources();
+                    }
                 }
             }
         } finally {
             mailboxFactory.close();
+        }
+    }
+
+    protected void resources() throws Exception {
+        TreeSet<String> resources = Resources.req.send(future, agentChannelManager);
+        Iterator<String> it = resources.iterator();
+        while (it.hasNext()) {
+            System.out.println(it.next());
         }
     }
 
