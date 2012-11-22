@@ -81,6 +81,7 @@ public class Console {
             agentChannelManager.initialize(mailboxFactory.createMailbox(), factory);
             agentChannelManager.openServerSocket(port);
             new Discovery(agentChannelManager);
+            agentChannelManager.startKeepAlive(5000, 2000);
             System.out.println("\n*** JASocket Test Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
             inbr = new BufferedReader(new InputStreamReader(System.in));
             while (true) {

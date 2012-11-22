@@ -65,6 +65,7 @@ abstract public class RawSocket extends SocketWriter {
                         agentChannel.close();
                         return;
                     }
+                    agentChannel.received();
                     byteBuffer.flip();
                     (new ReceiveByteBuffer(byteBuffer)).sendEvent(RawSocket.this);
                 }

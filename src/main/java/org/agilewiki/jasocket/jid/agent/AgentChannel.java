@@ -58,14 +58,14 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         return (AgentChannelManager) getParent();
     }
 
-    public void sent() {
-        if (remoteAddress != null)
-            agentChannelManager().sent(remoteAddress);
-    }
-
     public void received() {
         if (remoteAddress != null)
             agentChannelManager().received(remoteAddress);
+    }
+
+    public void sent() {
+        if (remoteAddress != null)
+            agentChannelManager().sent(remoteAddress);
     }
 
     public boolean isClient() {
@@ -87,7 +87,6 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
 
     @Override
     public void processException(Exception exception) {
-        //getMailboxFactory().logException(false, "AgentChannel threw unhandled exception", exception);
         close();
     }
 

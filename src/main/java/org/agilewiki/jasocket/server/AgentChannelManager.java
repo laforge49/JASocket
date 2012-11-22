@@ -28,6 +28,7 @@ import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.concurrent.JAThreadFactory;
+import org.agilewiki.jactor.concurrent.ThreadManager;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
@@ -62,15 +63,15 @@ public class AgentChannelManager extends JLPCActor {
     String agentChannelManagerAddress;
     private HashSet<String> resourceNames = new HashSet<String>();
     private HashSet<ResourceListener> resourceListeners = new HashSet<ResourceListener>();
-    private Set<String> activeSenders = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
-    private Set<String> activeReceivers = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
-
-    public void sent(String address) {
-        activeSenders.add(address);
-    }
+    private Set<String> inactiveReceivers = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    private Set<String> inactiveSenders = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     public void received(String address) {
-        activeReceivers.add(address);
+        inactiveReceivers.remove(address);
+    }
+
+    public void sent(String address) {
+        inactiveSenders.remove(address);
     }
 
     public Set<String> channels() {
@@ -79,6 +80,73 @@ public class AgentChannelManager extends JLPCActor {
 
     public boolean isActive(String address) {
         return agentChannels.getAny(address) != null;
+    }
+
+    public void resetActive(Set<String> set) {
+        set.clear();
+        Iterator<String> it = agentChannels.keySet().iterator();
+        while (it.hasNext()) {
+            String address = it.next();
+            if (isActive(address))
+                set.add(address);
+        }
+    }
+
+    public void startKeepAlive(final long readTimeout, final long keepaliveTimeout) throws Exception {
+        final ThreadManager threadManager = getMailboxFactory().getThreadManager();
+
+        threadManager.process(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    resetActive(inactiveReceivers);
+                    try {
+                        Thread.sleep(readTimeout);
+                    } catch (InterruptedException e) {
+                        return;
+                    }
+                    Iterator<String> it = inactiveReceivers.iterator();
+                    while (it.hasNext()) {
+                        String address = it.next();
+                        AgentChannel agentChannel = agentChannels.getAny(address);
+                        if (agentChannel != null) {
+                            System.out.println("timeout: " + address);
+                            agentChannel.close();
+                        }
+                    }
+                }
+            }
+        });
+
+        KeepAliveAgent keepAliveAgent = (KeepAliveAgent)
+                JAFactory.newActor(this, JASocketFactories.KEEP_ALIVE_FACTORY, getMailbox());
+        final ShipAgent shipKeepAlive = new ShipAgent(keepAliveAgent);
+        threadManager.process(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    resetActive(inactiveSenders);
+                    try {
+                        Thread.sleep(keepaliveTimeout);
+                    } catch (InterruptedException e) {
+                        return;
+                    }
+                    Iterator<String> it = inactiveSenders.iterator();
+                    while (it.hasNext()) {
+                        String address = it.next();
+                        AgentChannel agentChannel = agentChannels.getAny(address);
+                        if (agentChannel != null) {
+                            System.out.println("keepAlive: " + address);
+                            try {
+                                shipKeepAlive.sendEvent(agentChannel);
+                            } catch (Exception e) {
+                                threadManager.logException(false, "shipping keepalive", e);
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public List<String> locateResource(String name) {
@@ -327,6 +395,7 @@ public class AgentChannelManager extends JLPCActor {
         String remoteAddress = agentChannel.remoteAddress();
         if (remoteAddress != null) {
             agentChannels.remove(remoteAddress, agentChannel);
+            inactiveSenders.remove(remoteAddress);
             HashSet<String> channelResources = new HashSet<String>();
             Iterator<String> it = resourceNames.iterator();
             String prefix = remoteAddress + " ";
