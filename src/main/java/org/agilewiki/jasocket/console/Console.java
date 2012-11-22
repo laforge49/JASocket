@@ -26,11 +26,13 @@ package org.agilewiki.jasocket.console;
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jactor.factory.ActorFactory;
+import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 import org.agilewiki.jasocket.server.RegisterResource;
 import org.agilewiki.jasocket.server.Resources;
+import org.agilewiki.jasocket.server.UnregisterResource;
 import org.agilewiki.jid.Jid;
 
 import java.io.BufferedReader;
@@ -62,6 +64,7 @@ public class Console {
         cmd("exit", "Exit (only) this console", (String) null);
         cmd("channels", "List all the open channels to other nodes in the cluster", (String) null);
         cmd("registerResource", "Register a resource with the given name", (String) null);
+        cmd("unregisterResource", "Unregister a resource with the given name", (String) null);
         cmd("resources", "list all resources in the cluster", (String) null);
     }
 
@@ -111,6 +114,8 @@ public class Console {
                         channels();
                     else if (in.equals("registerResource"))
                         registerResource(rem);
+                    else if (in.equals("unregisterResource"))
+                        unregisterResource(rem);
                     else if (in.equals("resources")) {
                         resources();
                     }
@@ -160,6 +165,21 @@ public class Console {
             System.out.println("registered resource " + rem);
         else
             System.out.println("a resource named " + rem + " was already registred");
+    }
+
+    protected void unregisterResource(String rem) throws Exception {
+        int p = rem.indexOf(' ');
+        if (p > -1)
+            rem = rem.substring(0, p);
+        if (rem.length() == 0) {
+            System.out.println("missing resource name");
+            return;
+        }
+        JLPCActor oldResource = (new UnregisterResource(rem)).send(future, agentChannelManager);
+        if (oldResource != null)
+            System.out.println("unregistered resource " + rem);
+        else
+            System.out.println("a resource named " + rem + " was not registred");
     }
 
     protected String input() throws IOException {
