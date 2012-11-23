@@ -31,4 +31,9 @@ public class KeepAliveAgent extends AgentJid {
     public void start(RP rp) throws Exception {
         rp.processResponse(null);
     }
+
+    @Override
+    public boolean async() {
+        return false;
+    }
 }

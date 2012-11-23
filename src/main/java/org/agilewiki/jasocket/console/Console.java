@@ -43,30 +43,11 @@ import java.util.TreeSet;
 
 public class Console {
     protected BufferedReader inbr;
-    protected TreeMap<String, Command> commands = new TreeMap<String, Command>();
+    protected Commands commands;
     protected String[] args;
     protected JASocketFactories factory;
     protected AgentChannelManager agentChannelManager;
     protected JAFuture future = new JAFuture();
-
-    protected void cmd(String name, String description, String type) {
-        commands.put(name, new Command(description, type));
-    }
-
-    protected void cmd(String name, String description, ActorFactory actorFactory) throws Exception {
-        factory.registerActorFactory(actorFactory);
-        cmd(name, description, actorFactory.actorType);
-    }
-
-    protected void configure() {
-        cmd("help", "Displays this list of commands", (String) null);
-        cmd("exit", "Exit (only) this console", (String) null);
-        cmd("channels", "List all the open channels to other nodes in the cluster", (String) null);
-        cmd("registerResource", "Register a resource with the given name", (String) null);
-        cmd("unregisterResource", "Unregister a resource with the given name", (String) null);
-        cmd("resources", "list all resources in the cluster", (String) null);
-        cmd("halt", "shut down the named node", (String) null);
-    }
 
     protected int maxThreadCount() {
         return 100;
@@ -82,10 +63,12 @@ public class Console {
             }
             factory = new JASocketFactories();
             factory.initialize();
-            configure();
+            commands = new Commands();
+            commands.initialize(factory);
             agentChannelManager = new AgentChannelManager();
             agentChannelManager.initialize(mailboxFactory.createMailbox(), factory);
             agentChannelManager.openServerSocket(port);
+            agentChannelManager.commands = commands;
             new Discovery(agentChannelManager);
             agentChannelManager.startKeepAlive(5000, 2000);
             System.out.println("\n*** JASocket Test Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
@@ -136,7 +119,7 @@ public class Console {
     }
 
     protected void help() {
-        Iterator<String> it = commands.keySet().iterator();
+        Iterator<String> it = commands.iterator();
         while (it.hasNext()) {
             String name = it.next();
             Command c = commands.get(name);

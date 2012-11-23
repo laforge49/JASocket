@@ -24,6 +24,7 @@
 package org.agilewiki.jasocket.jid.agent;
 
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jasocket.console.Commands;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.collection.flenc.AppJid;
@@ -41,6 +42,10 @@ abstract public class AgentJid extends AppJid {
 
     public AgentChannelManager agentChannelManager() {
         return agentChannel().agentChannelManager();
+    }
+
+    public Commands commands() {
+        return agentChannelManager().commands;
     }
 
     public boolean async() {
