@@ -28,6 +28,8 @@ import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.factory.ActorFactory;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.console.EvalAgentFactory;
+import org.agilewiki.jasocket.console.HaltAgentFactory;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jasocket.server.*;
@@ -43,6 +45,7 @@ public class JASocketFactories extends JLPCActor {
     public final static String CONNECT_AGENT_FACTORY = "connectAgent";
     public final static String KEEP_ALIVE_FACTORY = "keepAliveAgent";
     public final static String HALT_FACTORY = "haltAgent";
+    public final static String EVAL_FACTORY = "evalAgent";
 
     @Override
     public void initialize(Mailbox mailbox, Actor parent, ActorFactory actorFactory)
@@ -62,6 +65,7 @@ public class JASocketFactories extends JLPCActor {
         registerActorFactory(ConnectAgentFactory.fac);
         registerActorFactory(KeepAliveAgentFactory.fac);
         registerActorFactory(HaltAgentFactory.fac);
+        registerActorFactory(EvalAgentFactory.fac);
     }
 
     public void registerActorFactory(ActorFactory actorFactory) throws Exception {
@@ -79,5 +83,10 @@ public class JASocketFactories extends JLPCActor {
     public Actor newActor(String actorType, Mailbox mailbox)
             throws Exception {
         return JAFactory.newActor(this, actorType, mailbox);
+    }
+
+    public Actor newActor(String actorType, Mailbox mailbox, Actor parent)
+            throws Exception {
+        return JAFactory.newActor(this, actorType, mailbox, parent);
     }
 }

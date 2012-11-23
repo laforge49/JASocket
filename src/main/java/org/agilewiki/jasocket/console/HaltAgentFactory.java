@@ -21,33 +21,21 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.jid.agent;
+package org.agilewiki.jasocket.console;
 
-import org.agilewiki.jactor.Actor;
-import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jid.Jid;
-import org.agilewiki.jid.collection.flenc.AppJid;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
 
-abstract public class AgentJid extends AppJid {
-    abstract public void start(RP<Jid> rp) throws Exception;
+public class HaltAgentFactory extends AppJidFactory {
+    public final static HaltAgentFactory fac = new HaltAgentFactory();
 
-    public AgentChannel agentChannel() {
-        return (AgentChannel) getParent();
+    public HaltAgentFactory() {
+        super(JASocketFactories.HALT_FACTORY);
     }
 
-    public String remoteAddress() {
-        return agentChannel().remoteAddress();
-    }
-
-    public AgentChannelManager agentChannelManager() {
-        Actor parent = getParent();
-        if (parent instanceof AgentChannelManager)
-            return (AgentChannelManager) parent;
-        return agentChannel().agentChannelManager();
-    }
-
-    public boolean async() {
-        return true;
+    @Override
+    protected JLPCActor instantiateActor() throws Exception {
+        return new HaltAgent();
     }
 }
