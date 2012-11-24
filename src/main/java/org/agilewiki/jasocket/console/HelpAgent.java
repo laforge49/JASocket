@@ -26,10 +26,17 @@ package org.agilewiki.jasocket.console;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 
-public class HaltAgent extends ConsoleAgent {
+import java.util.Iterator;
+
+public class HelpAgent extends ConsoleAgent {
     @Override
-    public void start(RP rp) throws Exception {
-        getMailboxFactory().close();
-        System.exit(0);
+    public void process(RP rp) throws Exception {
+        Iterator<String> it = commandIterator();
+        while (it.hasNext()) {
+            String name = it.next();
+            Command c = getCommand(name);
+            println(name + " - " + c.description());
+        }
+        rp.processResponse(out);
     }
 }

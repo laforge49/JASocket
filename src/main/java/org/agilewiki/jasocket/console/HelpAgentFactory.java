@@ -23,13 +23,20 @@
  */
 package org.agilewiki.jasocket.console;
 
-import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
-public class HaltAgent extends ConsoleAgent {
+public class HelpAgentFactory extends AppJidFactory {
+    public final static HelpAgentFactory fac = new HelpAgentFactory();
+
+    public HelpAgentFactory() {
+        super(JASocketFactories.HELP_FACTORY, StringJidFactory.fac);
+    }
+
     @Override
-    public void start(RP rp) throws Exception {
-        getMailboxFactory().close();
-        System.exit(0);
+    protected JLPCActor instantiateActor() throws Exception {
+        return new HelpAgent();
     }
 }

@@ -30,6 +30,7 @@ import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.jid.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.AgentChannel;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.RegisterResource;
 import org.agilewiki.jasocket.server.Resources;
 import org.agilewiki.jasocket.server.UnregisterResource;
@@ -93,13 +94,7 @@ public class EvalAgent extends AgentJid {
         }
         String type = cmd.type();
         if (type == null) {
-            if (in.equals("exit")) {
-                rp.processResponse(out);
-                getMailboxFactory().close();
-                System.exit(0);
-            } else if (in.equals("help"))
-                help(rem, rp);
-            else if (in.equals("channels"))
+            if (in.equals("channels"))
                 channels(rem, rp);
             else if (in.equals("registerResource"))
                 registerResource(rem, rp);
@@ -109,6 +104,10 @@ public class EvalAgent extends AgentJid {
                 resources(rem, rp);
             else if (in.equals("halt"))
                 halt(rem, rp);
+        } else {
+            ConsoleAgent agent = (ConsoleAgent) JAFactory.newActor(this, type, getMailbox(), agentChannelManager());
+            agent.setCommandLine(rem);
+            StartAgent.req.send(this, agent, rp);
         }
     }
 
@@ -123,16 +122,6 @@ public class EvalAgent extends AgentJid {
                 rp.processResponse(out);
             }
         });
-    }
-
-    protected void help(String rem, RP rp) throws Exception {
-        Iterator<String> it = commandIterator();
-        while (it.hasNext()) {
-            String name = it.next();
-            Command c = getCommand(name);
-            println(name + " - " + c.description());
-        }
-        rp.processResponse(out);
     }
 
     protected void channels(String rem, RP rp) throws Exception {

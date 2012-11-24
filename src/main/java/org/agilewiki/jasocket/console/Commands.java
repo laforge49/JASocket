@@ -28,6 +28,7 @@ import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.factory.ActorFactory;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.JASocketFactories;
 
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -65,12 +66,12 @@ public class Commands extends JLPCActor {
     }
 
     protected void configure() throws Exception {
-        cmd("help", "Displays this list of commands");
-        cmd("exit", "Exit (only) this console");
+        cmd("help", "Displays this list of commands", JASocketFactories.HELP_FACTORY);
         cmd("channels", "List all the open channels to other nodes in the cluster");
         cmd("registerResource", "Register a resource with the given name");
         cmd("unregisterResource", "Unregister a resource with the given name");
         cmd("resources", "list all resources in the cluster");
         cmd("halt", "shut down the named node");
+        cmd("exit", "Exit (only) the local node", JASocketFactories.HALT_FACTORY);
     }
 }

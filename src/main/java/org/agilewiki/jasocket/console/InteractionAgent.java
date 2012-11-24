@@ -43,15 +43,19 @@ public class InteractionAgent extends AgentJid {
 
     @Override
     public void start(RP rp) throws Exception {
-        System.out.println("\n*** JASocket Test Console " + agentChannelManager().agentChannelManagerAddress() + " ***\n");
+        System.out.println(
+                "\n*** JASocket Test Console " + agentChannelManager().agentChannelManagerAddress() + " ***\n");
         inbr = new BufferedReader(new InputStreamReader(System.in));
         (new JAIterator() {
             @Override
             protected void process(final RP responseProcessor) throws Exception {
                 System.out.print(">");
                 String in = input();
-                EvalAgent evalAgent = (EvalAgent)
-                        JAFactory.newActor(InteractionAgent.this, JASocketFactories.EVAL_FACTORY, getMailbox(), agentChannelManager());
+                EvalAgent evalAgent = (EvalAgent) JAFactory.newActor(
+                        InteractionAgent.this,
+                        JASocketFactories.EVAL_FACTORY,
+                        getMailbox(),
+                        agentChannelManager());
                 evalAgent.setEvalString(in);
                 setExceptionHandler(new ExceptionHandler() {
                     @Override

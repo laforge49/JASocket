@@ -24,12 +24,43 @@
 package org.agilewiki.jasocket.console;
 
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jid.JidFactories;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class HaltAgent extends ConsoleAgent {
-    @Override
+import java.util.Iterator;
+
+abstract public class ConsoleAgent extends AgentJid {
+    BListJid<StringJid> out;
+
+    protected void setCommandLine(String commandLine) {}
+
+    protected Commands commands() {
+        return agentChannelManager().commands;
+    }
+
+    protected Command getCommand(String name) {
+        return commands().get(name);
+    }
+
+    protected Iterator<String> commandIterator() {
+        return commands().iterator();
+    }
+
+    protected void println(String v) throws Exception {
+        out.iAdd(-1);
+        StringJid sj = out.iGet(-1);
+        sj.setValue(v);
+    }
+
+    protected void process(RP rp) throws Exception {
+
+    }
+
     public void start(RP rp) throws Exception {
-        getMailboxFactory().close();
-        System.exit(0);
+        out = (BListJid<StringJid>) JAFactory.newActor(this, JidFactories.STRING_BLIST_JID_TYPE, getMailbox());
+        process(rp);
     }
 }
