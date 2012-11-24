@@ -25,69 +25,77 @@ package org.agilewiki.jasocket.console;
 
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
+import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class Console {
-    protected BufferedReader inbr;
+    protected MailboxFactory mailboxFactory;
+    protected int port;
     protected String[] args;
     protected JASocketFactories factory;
+    protected Commands commands;
     protected AgentChannelManager agentChannelManager;
 
-    protected int maxThreadCount() {
-        return 100;
+    protected void initializeMailboxFactory() throws Exception {
+        mailboxFactory = JAMailboxFactory.newMailboxFactory(100);
     }
 
-    protected void process(String[] args) throws Exception {
-        JAMailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(maxThreadCount());
-        try {
-            this.args = args;
-            int port = 8880;
-            if (args.length > 0) {
-                port = Integer.valueOf(args[0]);
-            }
-            factory = new JASocketFactories();
-            factory.initialize();
-            Commands commands = new Commands();
-            commands.initialize(factory);
-            agentChannelManager = new AgentChannelManager();
-            agentChannelManager.initialize(mailboxFactory.createMailbox(), factory);
-            agentChannelManager.openServerSocket(port);
-            agentChannelManager.commands = commands;
-            new Discovery(agentChannelManager);
-            agentChannelManager.startKeepAlive(5000, 2000);
-            System.out.println("\n*** JASocket Test Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
-            inbr = new BufferedReader(new InputStreamReader(System.in));
-            JAFuture future = new JAFuture();
-            while (true) {
-                System.out.print(">");
-                String in = input();
-                EvalAgent evalAgent = (EvalAgent)
-                        factory.newActor(JASocketFactories.EVAL_FACTORY, agentChannelManager.getMailbox(), agentChannelManager);
-                evalAgent.setEvalString(in);
-                BListJid<StringJid> out = (BListJid) StartAgent.req.send(future, evalAgent);
-                int s = out.size();
-                int i = 0;
-                while (i < s) {
-                    System.out.println(out.iGet(i).getValue());
-                    i += 1;
-                }
-            }
-        } finally {
-            mailboxFactory.close();
+    protected void initializePort() throws Exception {
+        port = 8880;
+        if (args.length > 0) {
+            port = Integer.valueOf(args[0]);
         }
     }
 
-    protected String input() throws IOException {
-        return inbr.readLine();
+    protected void initializeFactory() throws Exception {
+        factory = new JASocketFactories();
+        factory.initialize();
+    }
+
+    protected void initializeCommands() throws Exception {
+        commands = new Commands();
+        commands.initialize(factory);
+    }
+
+    protected void initializeAgentChannelManager() throws Exception {
+        agentChannelManager = new AgentChannelManager();
+        agentChannelManager.initialize(mailboxFactory.createMailbox(), factory);
+        agentChannelManager.openServerSocket(port);
+        agentChannelManager.commands = commands;
+    }
+
+    protected void initializeDiscovery() throws Exception {
+        new Discovery(agentChannelManager);
+    }
+
+    protected void initializeKeepAlive() throws Exception {
+        agentChannelManager.startKeepAlive(5000, 2000);
+    }
+
+    protected void startInteraction() throws Exception {
+        InteractionAgent agent = new InteractionAgent();
+        agent.initialize(mailboxFactory.createMailbox(), agentChannelManager);
+        JAFuture future = new JAFuture();
+        StartAgent.req.send(future, agent);
+    }
+
+    protected void process(String[] args) throws Exception {
+        this.args = args;
+        initializeMailboxFactory();
+        try {
+            initializePort();
+            initializeFactory();
+            initializeCommands();
+            initializeAgentChannelManager();
+            initializeDiscovery();
+            initializeKeepAlive();
+            startInteraction();
+        } finally {
+            mailboxFactory.close();
+        }
     }
 
     public static void main(String[] args) throws Exception {
