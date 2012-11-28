@@ -30,7 +30,7 @@ import org.agilewiki.jactor.lpc.Request;
 
 import java.nio.ByteBuffer;
 
-class ReceiveByteBuffer extends Request<Object, RawSocket> {
+class ReceiveByteBuffer extends Request<Object, AgentSocket> {
     ByteBuffer byteBuffer;
 
     public ReceiveByteBuffer(ByteBuffer byteBuffer) {
@@ -39,12 +39,12 @@ class ReceiveByteBuffer extends Request<Object, RawSocket> {
 
     @Override
     public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof RawSocket;
+        return targetActor instanceof AgentSocket;
     }
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((RawSocket) targetActor).receiveByteBuffer(byteBuffer);
+        ((AgentSocket) targetActor).receiveByteBuffer(byteBuffer);
         rp.processResponse(null);
     }
 }

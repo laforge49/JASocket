@@ -23,24 +23,35 @@
  */
 package org.agilewiki.jasocket.agentSocket;
 
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.ExceptionProcessor;
+import org.agilewiki.jasocket.ProcessException;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.ReceiveBytes;
 
+import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SocketChannel;
 
-public class AgentSocket extends RawSocket {
+public class AgentSocket extends JLPCActor implements ExceptionProcessor {
     byte[] lengthBytes = new byte[4];
     int lengthIndex = 0;
     int length;
     byte[] bytes = null;
     int bytesIndex;
+    int maxPacketSize;
+    AgentChannel agentChannel;
+    SocketChannel socketChannel;
+    ByteBuffer writeBuffer;
+    ExceptionProcessor exceptionProcessor = this;
 
     public void setAgentChannel(AgentChannel agentChannel) {
         this.agentChannel = agentChannel;
         exceptionProcessor = agentChannel;
     }
 
-    @Override
     protected void receiveByteBuffer(ByteBuffer byteBuffer) throws Exception {
         while (byteBuffer.remaining() > 0) {
             if (bytes == null)
@@ -83,5 +94,102 @@ public class AgentSocket extends RawSocket {
     @Override
     public void processException(Exception exception) {
         getMailboxFactory().logException(false, "AgentSocket threw unhandled exception", exception);
+    }
+
+    public void clientOpen(InetSocketAddress inetSocketAddress, int maxPacketSize)
+            throws Exception {
+        writeBuffer = ByteBuffer.allocateDirect(maxPacketSize);
+        socketChannel = SocketChannel.open();
+        socketChannel.configureBlocking(true);
+        socketChannel.setOption(StandardSocketOptions.SO_RCVBUF, maxPacketSize);
+        socketChannel.setOption(StandardSocketOptions.SO_SNDBUF, maxPacketSize);
+        socketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
+        socketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
+        socketChannel.connect(inetSocketAddress);
+        this.maxPacketSize = maxPacketSize;
+        getMailboxFactory().getThreadManager().process(new Reader());
+    }
+
+    public void serverOpen(SocketChannel socketChannel, int maxPacketSize)
+            throws Exception {
+        writeBuffer = ByteBuffer.allocateDirect(maxPacketSize);
+        this.socketChannel = socketChannel;
+        this.maxPacketSize = maxPacketSize;
+        getMailboxFactory().getThreadManager().process(new Reader());
+    }
+
+    class Reader implements Runnable {
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    ByteBuffer byteBuffer = ByteBuffer.allocate(maxPacketSize);
+                    int i = socketChannel.read(byteBuffer);
+                    if (i == -1) {
+                        agentChannel.close();
+                        return;
+                    }
+                    agentChannel.received();
+                    byteBuffer.flip();
+                    (new ReceiveByteBuffer(byteBuffer)).sendEvent(AgentSocket.this);
+                }
+            } catch (ClosedChannelException cce) {
+            } catch (Exception ex) {
+                try {
+                    (new ProcessException(ex)).sendEvent(exceptionProcessor);
+                } catch (Exception x) {
+                    getMailboxFactory().logException(false, "AgentSocket threw unhandled exception", x);
+                }
+            }
+        }
+    }
+
+    public String getRemoteAddress() throws Exception {
+        InetSocketAddress inetSocketAddress = (InetSocketAddress) socketChannel.getRemoteAddress();
+        return getRemoteHostAddress() + ":" + inetSocketAddress.getPort();
+    }
+
+    public String getRemoteHostAddress() throws Exception {
+        InetSocketAddress inetSocketAddress = (InetSocketAddress) socketChannel.getRemoteAddress();
+        return inetSocketAddress.getAddress().getHostAddress();
+    }
+
+    public void writeBytes(byte[] bytes) throws Exception {
+        try {
+            int i = 0;
+            while (i < bytes.length) {
+                int l = bytes.length - i;
+                int r = writeBuffer.remaining();
+                if (l > r)
+                    l = r;
+                writeBuffer.put(bytes, i, l);
+                i += l;
+                if (!writeBuffer.hasRemaining())
+                    write();
+            }
+            if (writeBuffer.position() > 0 && getMailbox().isEmpty())
+                write();
+        } catch (Exception ex) {
+            try {
+                (new ProcessException(ex)).sendEvent(exceptionProcessor);
+            } catch (Exception x) {
+                getMailboxFactory().logException(false, "sendEvent threw unhandled exception", x);
+            }
+        }
+    }
+
+    void write() throws Exception {
+        agentChannel.sent();
+        writeBuffer.flip();
+        while (writeBuffer.hasRemaining())
+            socketChannel.write(writeBuffer);
+        writeBuffer.clear();
+    }
+
+    public void close() {
+        try {
+            socketChannel.close();
+        } catch (Exception ex) {
+        }
     }
 }

@@ -27,7 +27,6 @@ import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.agentSocket.RawSocket;
 
 public class ProcessException extends Request<Object, ExceptionProcessor> {
     Exception exception;
@@ -38,7 +37,7 @@ public class ProcessException extends Request<Object, ExceptionProcessor> {
 
     @Override
     public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof RawSocket;
+        return targetActor instanceof ExceptionProcessor;
     }
 
     @Override
