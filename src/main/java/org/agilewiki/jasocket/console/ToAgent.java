@@ -23,12 +23,11 @@
  */
 package org.agilewiki.jasocket.console;
 
-import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jasocket.jid.ShipAgent;
-import org.agilewiki.jasocket.jid.agent.AgentChannel;
+import org.agilewiki.jasocket.agentChannel.AgentChannel;
+import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jid.Jid;
 

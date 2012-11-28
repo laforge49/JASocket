@@ -21,36 +21,28 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.jid.agent;
+package org.agilewiki.jasocket.agentChannel;
 
+import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.agentChannel.AgentChannel;
-import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jid.Jid;
-import org.agilewiki.jid.collection.flenc.AppJid;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jactor.lpc.Request;
 
-abstract public class AgentJid extends AppJid {
-    abstract public void start(RP<Jid> rp) throws Exception;
+public class ReceiveBytes extends Request<Object, AgentChannel> {
+    byte[] bytes;
 
-    protected AgentChannel agentChannel() {
-        return (AgentChannel) getParent();
+    public ReceiveBytes(byte[] bytes) {
+        this.bytes = bytes;
     }
 
-    protected String remoteAddress() {
-        return agentChannel().remoteAddress();
+    @Override
+    public boolean isTargetType(Actor actor) {
+        return actor instanceof AgentChannel;
     }
 
-    protected boolean isLocal() {
-        return getParent() instanceof AgentChannelManager;
-    }
-
-    protected AgentChannelManager agentChannelManager() {
-        if (isLocal())
-            return (AgentChannelManager) getParent();
-        return agentChannel().agentChannelManager();
-    }
-
-    public boolean async() {
-        return true;
+    @Override
+    public void processRequest(JLPCActor jlpcActor, RP rp) throws Exception {
+        ((AgentChannel) jlpcActor).receiveBytes(bytes);
+        rp.processResponse(null);
     }
 }

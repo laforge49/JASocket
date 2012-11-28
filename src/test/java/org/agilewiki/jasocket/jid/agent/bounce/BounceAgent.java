@@ -1,7 +1,7 @@
 package org.agilewiki.jasocket.jid.agent.bounce;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.jid.ShipAgent;
+import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.scalar.flens.integer.IntegerJid;

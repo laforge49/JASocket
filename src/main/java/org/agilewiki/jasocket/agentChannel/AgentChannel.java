@@ -21,7 +21,7 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.jid.agent;
+package org.agilewiki.jasocket.agentChannel;
 
 import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.ExceptionHandler;
@@ -29,14 +29,16 @@ import org.agilewiki.jactor.JANoResponse;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.AgentSocket;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.SocketProtocol;
-import org.agilewiki.jasocket.WriteBytes;
+import org.agilewiki.jasocket.agentSocket.AgentSocket;
+import org.agilewiki.jasocket.agentSocket.WriteBytes;
 import org.agilewiki.jasocket.jid.ExceptionJid;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.RemoteException;
 import org.agilewiki.jasocket.jid.TransportJid;
+import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.AgentChannelClosed;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 import org.agilewiki.jid.CopyJID;

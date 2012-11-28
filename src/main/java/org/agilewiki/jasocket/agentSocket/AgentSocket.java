@@ -21,9 +21,10 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket;
+package org.agilewiki.jasocket.agentSocket;
 
-import org.agilewiki.jasocket.jid.agent.AgentChannel;
+import org.agilewiki.jasocket.agentChannel.AgentChannel;
+import org.agilewiki.jasocket.agentChannel.ReceiveBytes;
 
 import java.nio.ByteBuffer;
 

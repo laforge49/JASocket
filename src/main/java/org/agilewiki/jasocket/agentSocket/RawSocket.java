@@ -21,12 +21,9 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket;
+package org.agilewiki.jasocket.agentSocket;
 
-import org.agilewiki.jactor.Actor;
-import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.ProcessException;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -78,24 +75,5 @@ abstract public class RawSocket extends SocketWriter {
                 }
             }
         }
-    }
-}
-
-class ReceiveByteBuffer extends Request<Object, RawSocket> {
-    ByteBuffer byteBuffer;
-
-    public ReceiveByteBuffer(ByteBuffer byteBuffer) {
-        this.byteBuffer = byteBuffer;
-    }
-
-    @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof RawSocket;
-    }
-
-    @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((RawSocket) targetActor).receiveByteBuffer(byteBuffer);
-        rp.processResponse(null);
     }
 }
