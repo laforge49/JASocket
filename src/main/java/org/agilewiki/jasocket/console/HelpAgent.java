@@ -24,7 +24,6 @@
 package org.agilewiki.jasocket.console;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.jid.agent.AgentJid;
 
 import java.util.Iterator;
 

@@ -24,7 +24,6 @@
 package org.agilewiki.jasocket.console;
 
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jid.collection.flenc.AppJidFactory;
 import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 

@@ -25,22 +25,13 @@ package org.agilewiki.jasocket.console;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jasocket.jid.ShipAgent;
-import org.agilewiki.jasocket.jid.agent.AgentChannel;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
-import org.agilewiki.jasocket.server.RegisterResource;
-import org.agilewiki.jasocket.server.Resources;
-import org.agilewiki.jasocket.server.UnregisterResource;
-import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.JidFactories;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.util.Iterator;
-import java.util.TreeSet;
 
 public class EvalAgent extends AgentJid {
     BListJid<StringJid> out;
@@ -96,86 +87,8 @@ public class EvalAgent extends AgentJid {
             return;
         }
         String type = cmd.type();
-        if (type == null) {
-            if (in.equals("channels"))
-                channels(rem, rp);
-            else if (in.equals("registerResource"))
-                registerResource(rem, rp);
-            else if (in.equals("unregisterResource"))
-                unregisterResource(rem, rp);
-            else if (in.equals("resources"))
-                resources(rem, rp);
-        } else {
-            ConsoleAgent agent = (ConsoleAgent) JAFactory.newActor(this, type, getMailboxFactory().createAsyncMailbox(), agentChannelManager());
-            agent.setCommandLineString(rem);
-            StartAgent.req.send(this, agent, rp);
-        }
-    }
-
-    protected void resources(String rem, final RP rp) throws Exception {
-        Resources.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {
-            @Override
-            public void processResponse(TreeSet<String> response) throws Exception {
-                Iterator<String> it = response.iterator();
-                while (it.hasNext()) {
-                    println(it.next());
-                }
-                rp.processResponse(out);
-            }
-        });
-    }
-
-    protected void channels(String rem, RP rp) throws Exception {
-        Iterator<String> it = agentChannelManager().channels().iterator();
-        while (it.hasNext()) {
-            String address = it.next();
-            if (agentChannelManager().isActive(address))
-                println(address);
-        }
-        rp.processResponse(out);
-    }
-
-    protected void registerResource(String rem, final RP rp) throws Exception {
-        int p = rem.indexOf(' ');
-        if (p > -1)
-            rem = rem.substring(0, p).trim();
-        if (rem.length() == 0) {
-            println("missing resource name");
-            rp.processResponse(out);
-            return;
-        }
-        final String r = rem;
-        (new RegisterResource(r, new Jid())).send(this, agentChannelManager(), new RP<Boolean>() {
-            @Override
-            public void processResponse(Boolean response) throws Exception {
-                if (response)
-                    println("registered resource " + r);
-                else
-                    println("a resource named " + r + " was already registred");
-                rp.processResponse(out);
-            }
-        });
-    }
-
-    protected void unregisterResource(String rem, final RP rp) throws Exception {
-        int p = rem.indexOf(' ');
-        if (p > -1)
-            rem = rem.substring(0, p).trim();
-        if (rem.length() == 0) {
-            println("missing resource name");
-            rp.processResponse(out);
-            return;
-        }
-        final String r = rem;
-        (new UnregisterResource(r)).send(this, agentChannelManager(), new RP<JLPCActor>() {
-            @Override
-            public void processResponse(JLPCActor response) throws Exception {
-                if (response != null)
-                    println("unregistered resource " + r);
-                else
-                    println("a resource named " + r + " was not registred");
-                rp.processResponse(out);
-            }
-        });
+        ConsoleAgent agent = (ConsoleAgent) JAFactory.newActor(this, type, getMailboxFactory().createAsyncMailbox(), agentChannelManager());
+        agent.setCommandLineString(rem);
+        StartAgent.req.send(this, agent, rp);
     }
 }

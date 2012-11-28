@@ -29,8 +29,6 @@ import org.agilewiki.jactor.factory.ActorFactory;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.console.EvalAgentFactory;
-import org.agilewiki.jasocket.console.HaltAgentFactory;
-import org.agilewiki.jasocket.console.HelpAgentFactory;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jasocket.server.*;
@@ -45,7 +43,6 @@ public class JASocketFactories extends JLPCActor {
     public final static String GET_LOCAL_RESOURCE_AGENT_FACTORY = "getLocalResourceAgent";
     public final static String CONNECT_AGENT_FACTORY = "connectAgent";
     public final static String KEEP_ALIVE_FACTORY = "keepAliveAgent";
-    public final static String HALT_FACTORY = "haltAgent";
     public final static String EVAL_FACTORY = "evalAgent";
 
     @Override
@@ -65,7 +62,6 @@ public class JASocketFactories extends JLPCActor {
         registerActorFactory(GetLocalResourceAgentFactory.fac);
         registerActorFactory(ConnectAgentFactory.fac);
         registerActorFactory(KeepAliveAgentFactory.fac);
-        registerActorFactory(HaltAgentFactory.fac);
         registerActorFactory(EvalAgentFactory.fac);
     }
 

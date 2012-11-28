@@ -23,7 +23,6 @@
  */
 package org.agilewiki.jasocket.jid.agent;
 
-import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 import org.agilewiki.jid.Jid;

@@ -121,7 +121,8 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
             RP rp = it.next();
             try {
                 rp.processResponse(new ClosedChannelException());
-            } catch (Exception x){}
+            } catch (Exception x) {
+            }
         }
         try {
             (new AgentChannelClosed(this)).sendEvent(agentChannelManager());
@@ -203,14 +204,14 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
 
     public void shipAgent(final AgentJid jid, final RP rp) throws Exception {
         try {
-        if (rp.isEvent()) {
-            write(true, -1, jid);
-        } else {
-            requestId += 1;
-            requestId %= 1000000000000000000L;
-            write(true, requestId, jid);
-            rps.put(requestId, rp);
-        }
+            if (rp.isEvent()) {
+                write(true, -1, jid);
+            } else {
+                requestId += 1;
+                requestId %= 1000000000000000000L;
+                write(true, requestId, jid);
+                rps.put(requestId, rp);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

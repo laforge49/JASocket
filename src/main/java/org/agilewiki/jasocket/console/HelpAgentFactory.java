@@ -24,9 +24,7 @@
 package org.agilewiki.jasocket.console;
 
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jid.collection.flenc.AppJidFactory;
-import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
 public class HelpAgentFactory extends AppJidFactory {
     public final static HelpAgentFactory fac = new HelpAgentFactory();

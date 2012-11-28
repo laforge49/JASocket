@@ -103,7 +103,7 @@ public class Console {
                     i += 1;
                 }
             } catch (Exception x) {
-                System.out.println(x);
+                x.printStackTrace();
             }
         }
     }

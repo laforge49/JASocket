@@ -24,42 +24,31 @@
 package org.agilewiki.jasocket.console;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.factory.JAFactory;
-import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jid.JidFactories;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jasocket.server.RegisterResource;
+import org.agilewiki.jid.Jid;
 
-import java.util.Iterator;
-
-abstract public class ConsoleAgent extends AgentJid {
-    BListJid<StringJid> out;
-
-    protected void setCommandLineString(String commandLine) throws Exception {
-    }
-
-    protected Commands commands() {
-        return agentChannelManager().commands;
-    }
-
-    protected Command getCommand(String name) {
-        return commands().get(name);
-    }
-
-    protected Iterator<String> commandIterator() {
-        return commands().iterator();
-    }
-
-    protected void println(String v) throws Exception {
-        out.iAdd(-1);
-        StringJid sj = out.iGet(-1);
-        sj.setValue(v);
-    }
-
-    abstract protected void process(RP rp) throws Exception;
-
-    public void start(RP rp) throws Exception {
-        out = (BListJid<StringJid>) JAFactory.newActor(this, JidFactories.STRING_BLIST_JID_TYPE, getMailbox());
-        process(rp);
+public class RegisterResourceAgent extends ConsoleStringAgent {
+    @Override
+    public void process(final RP rp) throws Exception {
+        String args = getCommandLineString();
+        int p = args.indexOf(' ');
+        if (p > -1)
+            args = args.substring(0, p).trim();
+        if (args.length() == 0) {
+            println("missing resource name");
+            rp.processResponse(out);
+            return;
+        }
+        final String name = args;
+        (new RegisterResource(name, new Jid())).send(this, agentChannelManager(), new RP<Boolean>() {
+            @Override
+            public void processResponse(Boolean response) throws Exception {
+                if (response)
+                    println("registered resource " + name);
+                else
+                    println("a resource named " + name + " was already registred");
+                rp.processResponse(out);
+            }
+        });
     }
 }

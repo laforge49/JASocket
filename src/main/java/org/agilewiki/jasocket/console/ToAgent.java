@@ -61,6 +61,7 @@ public class ToAgent extends ConsoleStringAgent {
             return;
         }
         ShipAgent shipAgent = new ShipAgent(evalAgent);
+        /*
         setExceptionHandler(new ExceptionHandler() {
             @Override
             public void process(Exception exception) throws Exception {
@@ -69,6 +70,7 @@ public class ToAgent extends ConsoleStringAgent {
                 rp.processResponse(out);
             }
         });
+        */
         shipAgent.send(this, agentChannel, new RP<Jid>() {
             @Override
             public void processResponse(Jid response) throws Exception {
