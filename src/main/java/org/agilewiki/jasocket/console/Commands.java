@@ -72,5 +72,6 @@ public class Commands extends JLPCActor {
         cmd("unregisterResource", "Unregister a resource with the given name", UnregisterResourceAgentFactory.fac);
         cmd("resources", "list all resources in the cluster", ResourcesAgentFactory.fac);
         cmd("halt", "Exit (only) the local node", HaltAgentFactory.fac);
+        cmd("exception", "Throws an exception", ExceptionAgentFactory.fac);
     }
 }
