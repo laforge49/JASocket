@@ -32,18 +32,21 @@ import org.agilewiki.jid.collection.flenc.AppJid;
 abstract public class AgentJid extends AppJid {
     abstract public void start(RP<Jid> rp) throws Exception;
 
-    public AgentChannel agentChannel() {
+    protected AgentChannel agentChannel() {
         return (AgentChannel) getParent();
     }
 
-    public String remoteAddress() {
+    protected String remoteAddress() {
         return agentChannel().remoteAddress();
     }
 
-    public AgentChannelManager agentChannelManager() {
-        Actor parent = getParent();
-        if (parent instanceof AgentChannelManager)
-            return (AgentChannelManager) parent;
+    protected boolean isLocal() {
+        return getParent() instanceof AgentChannelManager;
+    }
+
+    protected AgentChannelManager agentChannelManager() {
+        if (isLocal())
+            return (AgentChannelManager) getParent();
         return agentChannel().agentChannelManager();
     }
 

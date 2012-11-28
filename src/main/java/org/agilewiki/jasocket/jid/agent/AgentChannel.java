@@ -44,8 +44,10 @@ import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.scalar.vlens.actor.RootJid;
 
 import java.net.InetSocketAddress;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class AgentChannel extends JLPCActor implements SocketProtocol {
     HashMap<Long, RP> rps = new HashMap<Long, RP>();
@@ -114,6 +116,13 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
 
     public void close() {
         agentSocket.close();
+        Iterator<RP> it = rps.values().iterator();
+        while (it.hasNext()) {
+            RP rp = it.next();
+            try {
+                rp.processResponse(new ClosedChannelException());
+            } catch (Exception x){}
+        }
         try {
             (new AgentChannelClosed(this)).sendEvent(agentChannelManager());
         } catch (Exception ex) {
@@ -157,10 +166,11 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
     @Override
     public void receiveBytes(byte[] bytes) throws Exception {
         RootJid root = new RootJid();
-        if (bytes[0] == 1)
+        if (bytes[0] == 1) {
             root.initialize(getMailboxFactory().createAsyncMailbox(), this);
-        else
+        } else {
             root.initialize(getMailboxFactory().createMailbox(), this);
+        }
         root.load(bytes, 1, bytes.length - 1);
         TransportJid transport = (TransportJid) root.getValue();
         boolean requestFlag = transport.isRequest();
@@ -192,13 +202,17 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
     }
 
     public void shipAgent(final AgentJid jid, final RP rp) throws Exception {
+        try {
         if (rp.isEvent()) {
             write(true, -1, jid);
         } else {
             requestId += 1;
             requestId %= 1000000000000000000L;
-            rps.put(requestId, rp);
             write(true, requestId, jid);
+            rps.put(requestId, rp);
+        }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -206,7 +220,7 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         if (jid == null)
             writeCopy(requestFlag, id, jid);
         else
-            (new CopyJID()).send(this, jid, new RP<Actor>() {
+            (new CopyJID(getMailbox())).send(this, jid, new RP<Actor>() {
                 @Override
                 public void processResponse(Actor response) throws Exception {
                     writeCopy(requestFlag, id, (Jid) response);
@@ -223,10 +237,11 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         transport.setId(id);
         transport.setContent(jid);
         byte[] bytes = new byte[root.getSerializedLength() + 1];
-        if (requestFlag && ((AgentJid) jid).async())
+        if (requestFlag && ((AgentJid) jid).async()) {
             bytes[0] = 1;
-        else
+        } else {
             bytes[0] = 0;
+        }
         root.save(bytes, 1);
         writeBytes(bytes);
     }

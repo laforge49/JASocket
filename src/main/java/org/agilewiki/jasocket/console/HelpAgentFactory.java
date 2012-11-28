@@ -32,7 +32,7 @@ public class HelpAgentFactory extends AppJidFactory {
     public final static HelpAgentFactory fac = new HelpAgentFactory();
 
     public HelpAgentFactory() {
-        super(JASocketFactories.HELP_FACTORY, StringJidFactory.fac);
+        super("helpAgent");
     }
 
     @Override

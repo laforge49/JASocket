@@ -30,6 +30,12 @@ import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.AgentChannelManager;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Console {
     protected MailboxFactory mailboxFactory;
@@ -38,6 +44,7 @@ public class Console {
     protected JASocketFactories factory;
     protected Commands commands;
     protected AgentChannelManager agentChannelManager;
+    protected BufferedReader inbr;
 
     protected void initializeMailboxFactory() throws Exception {
         mailboxFactory = JAMailboxFactory.newMailboxFactory(100);
@@ -72,14 +79,33 @@ public class Console {
     }
 
     protected void initializeKeepAlive() throws Exception {
-        agentChannelManager.startKeepAlive(5000, 2000);
+        agentChannelManager.startKeepAlive(1000000, 100000);
     }
 
     protected void startInteraction() throws Exception {
-        InteractionAgent agent = new InteractionAgent();
-        agent.initialize(mailboxFactory.createMailbox(), agentChannelManager);
+        System.out.println("\n*** JASocket Test Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
+        inbr = new BufferedReader(new InputStreamReader(System.in));
         JAFuture future = new JAFuture();
-        StartAgent.req.send(future, agent);
+        while (true) {
+            System.out.print(">");
+            String in = input();
+            EvalAgent evalAgent = (EvalAgent) factory.newActor(
+                    JASocketFactories.EVAL_FACTORY,
+                    agentChannelManager.getMailboxFactory().createAsyncMailbox(),
+                    agentChannelManager);
+            evalAgent.setEvalString(in);
+            try {
+                BListJid<StringJid> out = (BListJid) StartAgent.req.send(future, evalAgent);
+                int s = out.size();
+                int i = 0;
+                while (i < s) {
+                    System.out.println(out.iGet(i).getValue());
+                    i += 1;
+                }
+            } catch (Exception x) {
+                System.out.println(x);
+            }
+        }
     }
 
     protected void process(String[] args) throws Exception {
@@ -96,6 +122,10 @@ public class Console {
         } finally {
             mailboxFactory.close();
         }
+    }
+
+    protected String input() throws IOException {
+        return inbr.readLine();
     }
 
     public static void main(String[] args) throws Exception {

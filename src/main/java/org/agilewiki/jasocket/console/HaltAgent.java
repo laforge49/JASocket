@@ -23,12 +23,16 @@
  */
 package org.agilewiki.jasocket.console;
 
+import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 
 public class HaltAgent extends ConsoleAgent {
     @Override
-    public void start(RP rp) throws Exception {
+    public void process(RP rp) throws Exception {
+        rp.processResponse(out);
+        getMailbox().sendPendingMessages();
+        Thread.sleep(100);
         getMailboxFactory().close();
         System.exit(0);
     }

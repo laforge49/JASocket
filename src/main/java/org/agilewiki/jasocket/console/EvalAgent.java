@@ -77,6 +77,9 @@ public class EvalAgent extends AgentJid {
 
     @Override
     public void start(RP rp) throws Exception {
+        if (!isLocal()) {
+            System.out.print("from " + agentChannel().remoteAddress + ">" + commandString() + "\n>");
+        }
         out = (BListJid<StringJid>) JAFactory.newActor(this, JidFactories.STRING_BLIST_JID_TYPE, getMailbox());
         String in = commandString().trim();
         int i = in.indexOf(' ');
@@ -102,11 +105,9 @@ public class EvalAgent extends AgentJid {
                 unregisterResource(rem, rp);
             else if (in.equals("resources"))
                 resources(rem, rp);
-            else if (in.equals("halt"))
-                halt(rem, rp);
         } else {
-            ConsoleAgent agent = (ConsoleAgent) JAFactory.newActor(this, type, getMailbox(), agentChannelManager());
-            agent.setCommandLine(rem);
+            ConsoleAgent agent = (ConsoleAgent) JAFactory.newActor(this, type, getMailboxFactory().createAsyncMailbox(), agentChannelManager());
+            agent.setCommandLineString(rem);
             StartAgent.req.send(this, agent, rp);
         }
     }
@@ -176,25 +177,5 @@ public class EvalAgent extends AgentJid {
                 rp.processResponse(out);
             }
         });
-    }
-
-    protected void halt(String rem, RP rp) throws Exception {
-        int p = rem.indexOf(' ');
-        if (p > -1)
-            rem = rem.substring(0, p);
-        if (rem.length() == 0) {
-            println("missing channel name");
-            rp.processResponse(out);
-            return;
-        }
-        AgentChannel agentChannel = agentChannelManager().getAgentChannel(rem);
-        if (agentChannel == null) {
-            println("not an open channel: " + rem);
-            return;
-        }
-        HaltAgent haltAgent = (HaltAgent) JAFactory.newActor(this, JASocketFactories.HALT_FACTORY, getMailbox());
-        ShipAgent shipAgent = new ShipAgent(haltAgent);
-        shipAgent.sendEvent(agentChannel);
-        rp.processResponse(out);
     }
 }

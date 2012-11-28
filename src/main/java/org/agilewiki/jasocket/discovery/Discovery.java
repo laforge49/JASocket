@@ -83,6 +83,8 @@ public class Discovery {
                     } catch (ClosedByInterruptException cbie) {
                         return;
                     } catch (ClosedChannelException cce) {
+                        System.out.println("Discovery exception");
+                        cce.printStackTrace();
                         return;
                     } catch (Exception e) {
                         agentChannelManager.getMailboxFactory().logException(false, "Discovery receiver threw unexpected exception", e);

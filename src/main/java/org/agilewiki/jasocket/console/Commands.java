@@ -66,12 +66,12 @@ public class Commands extends JLPCActor {
     }
 
     protected void configure() throws Exception {
-        cmd("help", "Displays this list of commands", JASocketFactories.HELP_FACTORY);
+        cmd("help", "Displays this list of commands", HelpAgentFactory.fac);
+        cmd("to", "Send a command to another node", ToAgentFactory.fac);
         cmd("channels", "List all the open channels to other nodes in the cluster");
         cmd("registerResource", "Register a resource with the given name");
         cmd("unregisterResource", "Unregister a resource with the given name");
         cmd("resources", "list all resources in the cluster");
-        cmd("halt", "shut down the named node");
-        cmd("exit", "Exit (only) the local node", JASocketFactories.HALT_FACTORY);
+        cmd("halt", "Exit (only) the local node", JASocketFactories.HALT_FACTORY);
     }
 }

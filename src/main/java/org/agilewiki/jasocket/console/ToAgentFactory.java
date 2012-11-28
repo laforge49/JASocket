@@ -23,42 +23,20 @@
  */
 package org.agilewiki.jasocket.console;
 
-import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.factory.JAFactory;
-import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jid.JidFactories;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
-import java.util.Iterator;
+public class ToAgentFactory extends AppJidFactory {
+    public final static ToAgentFactory fac = new ToAgentFactory();
 
-abstract public class ConsoleAgent extends AgentJid {
-    BListJid<StringJid> out;
-
-    protected void setCommandLineString(String commandLine) throws Exception {}
-
-    protected Commands commands() {
-        return agentChannelManager().commands;
+    public ToAgentFactory() {
+        super("toAgent", StringJidFactory.fac);
     }
 
-    protected Command getCommand(String name) {
-        return commands().get(name);
-    }
-
-    protected Iterator<String> commandIterator() {
-        return commands().iterator();
-    }
-
-    protected void println(String v) throws Exception {
-        out.iAdd(-1);
-        StringJid sj = out.iGet(-1);
-        sj.setValue(v);
-    }
-
-    abstract protected void process(RP rp) throws Exception;
-
-    public void start(RP rp) throws Exception {
-        out = (BListJid<StringJid>) JAFactory.newActor(this, JidFactories.STRING_BLIST_JID_TYPE, getMailbox());
-        process(rp);
+    @Override
+    protected JLPCActor instantiateActor() throws Exception {
+        return new ToAgent();
     }
 }

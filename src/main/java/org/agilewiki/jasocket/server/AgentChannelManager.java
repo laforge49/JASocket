@@ -338,7 +338,7 @@ public class AgentChannelManager extends JLPCActor {
             return;
         }
         final AgentChannel agentChannel = new AgentChannel();
-        agentChannel.initialize(getMailboxFactory().createMailbox(), this);
+        agentChannel.initialize(getMailboxFactory().createAsyncMailbox(), this);
         agentChannel.open(inetSocketAddress, maxPacketSize);
         SetClientPortAgent agent = (SetClientPortAgent)
                 JAFactory.newActor(this, JASocketFactories.SET_CLIENT_PORT_AGENT_FACTORY, getMailbox());
@@ -369,7 +369,7 @@ public class AgentChannelManager extends JLPCActor {
 
     public void acceptSocket(SocketChannel socketChannel) throws Exception {
         AgentChannel agentChannel = new AgentChannel();
-        agentChannel.initialize(getMailbox(), this);
+        agentChannel.initialize(getMailboxFactory().createAsyncMailbox(), this);
         agentChannel.serverOpen(socketChannel, maxPacketSize);
     }
 
