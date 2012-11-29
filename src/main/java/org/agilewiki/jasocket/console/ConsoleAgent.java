@@ -59,7 +59,8 @@ abstract public class ConsoleAgent extends AgentJid {
     abstract protected void process(RP rp) throws Exception;
 
     public void start(RP rp) throws Exception {
-        out = (BListJid<StringJid>) JAFactory.newActor(this, JidFactories.STRING_BLIST_JID_TYPE, getMailbox());
+        out = (BListJid<StringJid>) JAFactory.newActor(
+                this, JidFactories.STRING_BLIST_JID_TYPE, getMailboxFactory().createMailbox());
         process(rp);
     }
 }
