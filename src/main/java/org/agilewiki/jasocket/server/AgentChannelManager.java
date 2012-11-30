@@ -33,6 +33,7 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
+import org.agilewiki.jasocket.agentChannel.CloseChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.concurrent.ConcurrentDupMap;
 import org.agilewiki.jasocket.console.Commands;
@@ -110,7 +111,9 @@ public class AgentChannelManager extends JLPCActor {
                         String address = it.next();
                         AgentChannel agentChannel = agentChannels.getAny(address);
                         if (agentChannel != null) {
-                            agentChannel.close();
+                            try {
+                            CloseChannel.req.sendEvent(agentChannel);
+                            } catch (Exception x) {}
                         }
                     }
                 }
@@ -384,24 +387,6 @@ public class AgentChannelManager extends JLPCActor {
         try {
             serverSocketChannel.close();
         } catch (Exception ex) {
-        }
-    }
-
-    public void closeAll() {
-        close();
-        Set<String> remoteAddresses = agentChannels.keySet();
-        if (remoteAddresses.isEmpty()) {
-            return;
-        }
-        Iterator<String> sit = remoteAddresses.iterator();
-        while (sit.hasNext()) {
-            String remoteAddress = sit.next();
-            while (true) {
-                AgentChannel agentChannel = agentChannels.getAny(remoteAddress);
-                if (agentChannel == null)
-                    break;
-                agentChannel.close();
-            }
         }
     }
 

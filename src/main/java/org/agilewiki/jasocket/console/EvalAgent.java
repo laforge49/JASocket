@@ -87,7 +87,8 @@ public class EvalAgent extends AgentJid {
             return;
         }
         String type = cmd.type();
-        ConsoleAgent agent = (ConsoleAgent) JAFactory.newActor(this, type, getMailboxFactory().createAsyncMailbox(), agentChannelManager());
+        ConsoleAgent agent = (ConsoleAgent)
+                JAFactory.newActor(this, type, getMailboxFactory().createAsyncMailbox(), agentChannelManager());
         agent.setCommandLineString(rem);
         StartAgent.req.send(this, agent, rp);
     }

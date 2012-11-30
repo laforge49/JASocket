@@ -90,8 +90,8 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
     }
 
     @Override
-    public void processException(Exception exception) {
-        close();
+    public void processException(Exception exception) throws Exception {
+        CloseChannel.req.sendEvent(this);
     }
 
     public void open(InetSocketAddress inetSocketAddress, int maxPacketSize)
@@ -116,7 +116,7 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         this.remoteAddress = agentSocket.getRemoteHostAddress() + ":" + port;
     }
 
-    public void close() {
+    public void closeChannel() {
         agentSocket.close();
         Iterator<RP> it = rps.values().iterator();
         while (it.hasNext()) {
@@ -124,6 +124,8 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
             try {
                 rp.processResponse(new ClosedChannelException());
             } catch (Exception x) {
+                System.err.println("unhandled exception while aborting unsatisfied request");
+                x.printStackTrace();
             }
         }
         try {

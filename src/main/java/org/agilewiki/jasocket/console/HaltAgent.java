@@ -28,8 +28,10 @@ import org.agilewiki.jactor.RP;
 public class HaltAgent extends ConsoleAgent {
     @Override
     public void process(RP rp) throws Exception {
+        /*
         rp.processResponse(out);
         getMailbox().sendPendingMessages();
+        */
         getMailboxFactory().close();
         System.exit(0);
     }

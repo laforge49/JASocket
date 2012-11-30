@@ -23,6 +23,7 @@
  */
 package org.agilewiki.jasocket.console;
 
+import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;
@@ -60,16 +61,13 @@ public class ToAgent extends ConsoleStringAgent {
             return;
         }
         ShipAgent shipAgent = new ShipAgent(evalAgent);
-        /*
         setExceptionHandler(new ExceptionHandler() {
             @Override
             public void process(Exception exception) throws Exception {
-                System.err.println("ToAgent: exception caught");
-                println("an exception occurred");
+                println(exception.toString());
                 rp.processResponse(out);
             }
         });
-        */
         shipAgent.send(this, agentChannel, new RP<Jid>() {
             @Override
             public void processResponse(Jid response) throws Exception {

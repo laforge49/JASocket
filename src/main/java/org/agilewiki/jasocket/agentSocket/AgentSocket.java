@@ -27,6 +27,7 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.ExceptionProcessor;
 import org.agilewiki.jasocket.ProcessException;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
+import org.agilewiki.jasocket.agentChannel.CloseChannel;
 import org.agilewiki.jasocket.agentChannel.ReceiveBytes;
 
 import java.net.InetSocketAddress;
@@ -126,7 +127,7 @@ public class AgentSocket extends JLPCActor implements ExceptionProcessor {
                     ByteBuffer byteBuffer = ByteBuffer.allocate(maxPacketSize);
                     int i = socketChannel.read(byteBuffer);
                     if (i == -1) {
-                        agentChannel.close();
+                        CloseChannel.req.sendEvent(agentChannel);
                         return;
                     }
                     agentChannel.received();
