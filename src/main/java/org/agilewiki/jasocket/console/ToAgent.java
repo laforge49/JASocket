@@ -23,7 +23,6 @@
  */
 package org.agilewiki.jasocket.console;
 
-import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;

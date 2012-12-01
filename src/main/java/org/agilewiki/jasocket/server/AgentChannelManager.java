@@ -112,8 +112,9 @@ public class AgentChannelManager extends JLPCActor {
                         AgentChannel agentChannel = agentChannels.getAny(address);
                         if (agentChannel != null) {
                             try {
-                            CloseChannel.req.sendEvent(agentChannel);
-                            } catch (Exception x) {}
+                                CloseChannel.req.sendEvent(agentChannel);
+                            } catch (Exception x) {
+                            }
                         }
                     }
                 }
