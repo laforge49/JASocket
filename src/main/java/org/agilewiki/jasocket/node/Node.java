@@ -21,33 +21,23 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.console;
+package org.agilewiki.jasocket.node;
 
-import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.commands.Commands;
-import org.agilewiki.jasocket.commands.EvalAgent;
+import org.agilewiki.jasocket.commands.ConsoleCommands;
 import org.agilewiki.jasocket.discovery.Discovery;
-import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.channels.ClosedChannelException;
-
-public class Console {
+public class Node {
     protected MailboxFactory mailboxFactory;
     protected int port;
     protected String[] args;
     protected JASocketFactories factory;
     protected Commands commands;
     protected AgentChannelManager agentChannelManager;
-    protected BufferedReader inbr;
 
     protected void initializeMailboxFactory() throws Exception {
         mailboxFactory = JAMailboxFactory.newMailboxFactory(100);
@@ -85,55 +75,32 @@ public class Console {
         agentChannelManager.startKeepAlive(1000000, 100000);
     }
 
-    protected void startInteraction() throws Exception {
-        System.out.println("\n*** JASocket Test Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
-        inbr = new BufferedReader(new InputStreamReader(System.in));
-        JAFuture future = new JAFuture();
-        while (true) {
-            System.out.print(">");
-            String in = input();
-            EvalAgent evalAgent = (EvalAgent) factory.newActor(
-                    JASocketFactories.EVAL_FACTORY,
-                    agentChannelManager.getMailboxFactory().createAsyncMailbox(),
-                    agentChannelManager);
-            evalAgent.setEvalString(in);
-            try {
-                BListJid<StringJid> out = (BListJid) StartAgent.req.send(future, evalAgent);
-                int s = out.size();
-                int i = 0;
-                while (i < s) {
-                    System.out.println(out.iGet(i).getValue());
-                    i += 1;
-                }
-            } catch (ClosedChannelException x) {
-                System.out.println("closed channel exception");
-            } catch (Exception x) {
-                x.printStackTrace();
-            }
-        }
+    protected void initialize() throws Exception {
+        initializePort();
+        initializeFactory();
+        initializeCommands();
+        initializeAgentChannelManager();
+        initializeDiscovery();
+        initializeKeepAlive();
+    }
+
+    protected void start() throws Exception {
+        while (true)
+            Thread.sleep(1000000);
     }
 
     protected void process(String[] args) throws Exception {
         this.args = args;
         initializeMailboxFactory();
         try {
-            initializePort();
-            initializeFactory();
-            initializeCommands();
-            initializeAgentChannelManager();
-            initializeDiscovery();
-            initializeKeepAlive();
-            startInteraction();
+            initialize();
+            start();
         } finally {
             mailboxFactory.close();
         }
     }
 
-    protected String input() throws IOException {
-        return inbr.readLine();
-    }
-
     public static void main(String[] args) throws Exception {
-        (new Console()).process(args);
+        (new Node()).process(args);
     }
 }

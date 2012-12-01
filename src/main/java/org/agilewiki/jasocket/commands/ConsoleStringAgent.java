@@ -31,7 +31,7 @@ abstract public class ConsoleStringAgent extends ConsoleAgent {
     }
 
     @Override
-    protected void setCommandLineString(String commandLineString) throws Exception {
+    public void setCommandLineString(String commandLineString) throws Exception {
         getStringJid().setValue(commandLineString);
     }
 

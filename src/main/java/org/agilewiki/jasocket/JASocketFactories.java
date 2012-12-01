@@ -28,9 +28,9 @@ import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.factory.ActorFactory;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.commands.EvalAgentFactory;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
+import org.agilewiki.jasocket.jid.agent.EvalAgentFactory;
 import org.agilewiki.jasocket.server.*;
 import org.agilewiki.jid.JidFactories;
 

@@ -21,12 +21,13 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.commands;
+package org.agilewiki.jasocket.jid.agent;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
-import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jasocket.jid.agent.StartAgent;
+import org.agilewiki.jasocket.commands.Command;
+import org.agilewiki.jasocket.commands.Commands;
+import org.agilewiki.jasocket.commands.ConsoleAgent;
 import org.agilewiki.jid.JidFactories;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;

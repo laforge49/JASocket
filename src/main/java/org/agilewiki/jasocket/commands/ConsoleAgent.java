@@ -35,7 +35,7 @@ import java.util.Iterator;
 abstract public class ConsoleAgent extends AgentJid {
     BListJid<StringJid> out;
 
-    protected void setCommandLineString(String commandLine) throws Exception {
+    public void setCommandLineString(String commandLine) throws Exception {
     }
 
     protected Commands commands() {
