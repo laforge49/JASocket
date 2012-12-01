@@ -36,6 +36,7 @@ import org.agilewiki.jid.scalar.vlens.string.StringJid;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.channels.ClosedChannelException;
 
 public class Console {
     protected MailboxFactory mailboxFactory;
@@ -102,6 +103,8 @@ public class Console {
                     System.out.println(out.iGet(i).getValue());
                     i += 1;
                 }
+            } catch (ClosedChannelException x) {
+                System.out.println("closed channel exception");
             } catch (Exception x) {
                 x.printStackTrace();
             }

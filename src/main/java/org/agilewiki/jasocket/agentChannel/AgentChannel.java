@@ -124,13 +124,13 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
             try {
                 rp.processResponse(new ClosedChannelException());
             } catch (Exception x) {
-                System.err.println("unhandled exception while aborting unsatisfied request");
-                x.printStackTrace();
+                getMailboxFactory().logException(false, "unhandled exception while aborting unsatisfied request", x);
             }
         }
         try {
             (new AgentChannelClosed(this)).sendEvent(agentChannelManager());
         } catch (Exception ex) {
+            getMailboxFactory().logException(false, "exception when sending event AgentChannelClosed", ex);
         }
     }
 
