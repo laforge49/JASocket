@@ -21,21 +21,34 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.console;
+package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jasocket.server.RegisterResource;
+import org.agilewiki.jid.Jid;
 
-import java.util.Iterator;
-
-public class ChannelsAgent extends ConsoleAgent {
+public class RegisterResourceAgent extends ConsoleStringAgent {
     @Override
-    public void process(RP rp) throws Exception {
-        Iterator<String> it = agentChannelManager().channels().iterator();
-        while (it.hasNext()) {
-            String address = it.next();
-            if (agentChannelManager().isActive(address))
-                println(address);
+    public void process(final RP rp) throws Exception {
+        String args = getCommandLineString();
+        int p = args.indexOf(' ');
+        if (p > -1)
+            args = args.substring(0, p).trim();
+        if (args.length() == 0) {
+            println("missing resource name");
+            rp.processResponse(out);
+            return;
         }
-        rp.processResponse(out);
+        final String name = args;
+        (new RegisterResource(name, new Jid())).send(this, agentChannelManager(), new RP<Boolean>() {
+            @Override
+            public void processResponse(Boolean response) throws Exception {
+                if (response)
+                    println("registered resource " + name);
+                else
+                    println("a resource named " + name + " was already registred");
+                rp.processResponse(out);
+            }
+        });
     }
 }

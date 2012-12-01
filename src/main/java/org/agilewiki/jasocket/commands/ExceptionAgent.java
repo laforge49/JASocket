@@ -21,22 +21,13 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.console;
+package org.agilewiki.jasocket.commands;
 
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jid.collection.flenc.AppJidFactory;
-import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
+import org.agilewiki.jactor.RP;
 
-public class EvalAgentFactory extends AppJidFactory {
-    public final static EvalAgentFactory fac = new EvalAgentFactory();
-
-    public EvalAgentFactory() {
-        super(JASocketFactories.EVAL_FACTORY, StringJidFactory.fac);
-    }
-
+public class ExceptionAgent extends ConsoleAgent {
     @Override
-    protected JLPCActor instantiateActor() throws Exception {
-        return new EvalAgent();
+    public void process(RP rp) throws Exception {
+        throw new Exception("User-raised exception");
     }
 }

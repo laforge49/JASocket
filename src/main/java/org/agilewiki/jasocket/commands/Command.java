@@ -21,21 +21,22 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.console;
+package org.agilewiki.jasocket.commands;
 
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+public class Command {
+    private String description;
+    private String type;
 
-abstract public class ConsoleStringAgent extends ConsoleAgent {
-    private StringJid getStringJid() throws Exception {
-        return (StringJid) _iGet(0);
+    public Command(String description, String type) {
+        this.description = description;
+        this.type = type;
     }
 
-    @Override
-    protected void setCommandLineString(String commandLineString) throws Exception {
-        getStringJid().setValue(commandLineString);
+    public String description() {
+        return description;
     }
 
-    protected String getCommandLineString() throws Exception {
-        return getStringJid().getValue();
+    public String type() {
+        return type;
     }
 }

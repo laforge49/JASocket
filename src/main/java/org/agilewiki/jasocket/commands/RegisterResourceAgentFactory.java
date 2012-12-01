@@ -21,20 +21,21 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.console;
+package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
-public class ExceptionAgentFactory extends AppJidFactory {
-    public final static ExceptionAgentFactory fac = new ExceptionAgentFactory();
+public class RegisterResourceAgentFactory extends AppJidFactory {
+    public final static RegisterResourceAgentFactory fac = new RegisterResourceAgentFactory();
 
-    public ExceptionAgentFactory() {
-        super("exceptionAgent");
+    public RegisterResourceAgentFactory() {
+        super("registerResourceAgent", StringJidFactory.fac);
     }
 
     @Override
     protected JLPCActor instantiateActor() throws Exception {
-        return new ExceptionAgent();
+        return new RegisterResourceAgent();
     }
 }

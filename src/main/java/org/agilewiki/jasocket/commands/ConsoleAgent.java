@@ -21,13 +21,46 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.console;
+package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jactor.factory.JAFactory;
+import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jid.JidFactories;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class ExceptionAgent extends ConsoleAgent {
-    @Override
-    public void process(RP rp) throws Exception {
-        throw new Exception("User-raised exception");
+import java.util.Iterator;
+
+abstract public class ConsoleAgent extends AgentJid {
+    BListJid<StringJid> out;
+
+    protected void setCommandLineString(String commandLine) throws Exception {
+    }
+
+    protected Commands commands() {
+        return agentChannelManager().commands;
+    }
+
+    protected Command getCommand(String name) {
+        return commands().get(name);
+    }
+
+    protected Iterator<String> commandIterator() {
+        return commands().iterator();
+    }
+
+    protected void println(String v) throws Exception {
+        out.iAdd(-1);
+        StringJid sj = out.iGet(-1);
+        sj.setValue(v);
+    }
+
+    abstract protected void process(RP rp) throws Exception;
+
+    public void start(RP rp) throws Exception {
+        out = (BListJid<StringJid>) JAFactory.newActor(
+                this, JidFactories.STRING_BLIST_JID_TYPE, getMailboxFactory().createMailbox());
+        process(rp);
     }
 }

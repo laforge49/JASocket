@@ -21,20 +21,21 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.console;
+package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
-public class HaltAgentFactory extends AppJidFactory {
-    public final static HaltAgentFactory fac = new HaltAgentFactory();
+public class UnregisterResourceAgentFactory extends AppJidFactory {
+    public final static UnregisterResourceAgentFactory fac = new UnregisterResourceAgentFactory();
 
-    public HaltAgentFactory() {
-        super("haltAgent");
+    public UnregisterResourceAgentFactory() {
+        super("unregisterResourceAgent", StringJidFactory.fac);
     }
 
     @Override
     protected JLPCActor instantiateActor() throws Exception {
-        return new HaltAgent();
+        return new UnregisterResourceAgent();
     }
 }

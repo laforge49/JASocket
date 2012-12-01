@@ -21,24 +21,32 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.console;
+package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.server.Resources;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.server.UnregisterResource;
 
-import java.util.Iterator;
-import java.util.TreeSet;
-
-public class ResourcesAgent extends ConsoleAgent {
+public class UnregisterResourceAgent extends ConsoleStringAgent {
     @Override
     public void process(final RP rp) throws Exception {
-        Resources.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {
+        String args = getCommandLineString();
+        int p = args.indexOf(' ');
+        if (p > -1)
+            args = args.substring(0, p).trim();
+        if (args.length() == 0) {
+            println("missing resource name");
+            rp.processResponse(out);
+            return;
+        }
+        final String name = args;
+        (new UnregisterResource(name)).send(this, agentChannelManager(), new RP<JLPCActor>() {
             @Override
-            public void processResponse(TreeSet<String> response) throws Exception {
-                Iterator<String> it = response.iterator();
-                while (it.hasNext()) {
-                    println(it.next());
-                }
+            public void processResponse(JLPCActor response) throws Exception {
+                if (response != null)
+                    println("unregistered resource " + name);
+                else
+                    println("a resource named " + name + " was not registred");
                 rp.processResponse(out);
             }
         });

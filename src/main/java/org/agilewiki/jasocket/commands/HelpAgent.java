@@ -21,22 +21,21 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.console;
+package org.agilewiki.jasocket.commands;
 
-public class Command {
-    private String description;
-    private String type;
+import org.agilewiki.jactor.RP;
 
-    public Command(String description, String type) {
-        this.description = description;
-        this.type = type;
-    }
+import java.util.Iterator;
 
-    public String description() {
-        return description;
-    }
-
-    public String type() {
-        return type;
+public class HelpAgent extends ConsoleAgent {
+    @Override
+    public void process(RP rp) throws Exception {
+        Iterator<String> it = commandIterator();
+        while (it.hasNext()) {
+            String name = it.next();
+            Command c = getCommand(name);
+            println(name + " - " + c.description());
+        }
+        rp.processResponse(out);
     }
 }

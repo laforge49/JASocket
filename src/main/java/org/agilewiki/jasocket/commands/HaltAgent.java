@@ -21,20 +21,18 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.console;
+package org.agilewiki.jasocket.commands;
 
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jactor.RP;
 
-public class HelpAgentFactory extends AppJidFactory {
-    public final static HelpAgentFactory fac = new HelpAgentFactory();
-
-    public HelpAgentFactory() {
-        super("helpAgent");
-    }
-
+public class HaltAgent extends ConsoleAgent {
     @Override
-    protected JLPCActor instantiateActor() throws Exception {
-        return new HelpAgent();
+    public void process(RP rp) throws Exception {
+        /*
+        rp.processResponse(out);
+        getMailbox().sendPendingMessages();
+        */
+        getMailboxFactory().close();
+        System.exit(0);
     }
 }
