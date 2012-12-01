@@ -32,7 +32,7 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import java.util.Iterator;
 import java.util.TreeMap;
 
-public class Commands extends JLPCActor {
+abstract public class Commands extends JLPCActor {
     private TreeMap<String, Command> commands = new TreeMap<String, Command>();
     private JAFactory jaFactory;
 
@@ -64,14 +64,5 @@ public class Commands extends JLPCActor {
         cmd(name, description, actorFactory.actorType);
     }
 
-    protected void configure() throws Exception {
-        cmd("help", "Displays this list of commands", HelpAgentFactory.fac);
-        cmd("to", "Send a command to another node", ToAgentFactory.fac);
-        cmd("channels", "List all the open channels to other nodes in the cluster", ChannelsAgentFactory.fac);
-        cmd("registerResource", "Register a resource with the given name", RegisterResourceAgentFactory.fac);
-        cmd("unregisterResource", "Unregister a resource with the given name", UnregisterResourceAgentFactory.fac);
-        cmd("resources", "list all resources in the cluster", ResourcesAgentFactory.fac);
-        cmd("halt", "Exit (only) the local node", HaltAgentFactory.fac);
-        cmd("exception", "Throws an exception", ExceptionAgentFactory.fac);
-    }
+    abstract protected void configure() throws Exception;
 }

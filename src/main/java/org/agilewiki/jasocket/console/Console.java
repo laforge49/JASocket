@@ -21,12 +21,14 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.commands;
+package org.agilewiki.jasocket.console;
 
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.commands.Commands;
+import org.agilewiki.jasocket.commands.EvalAgent;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.AgentChannelManager;
@@ -64,7 +66,7 @@ public class Console {
     }
 
     protected void initializeCommands() throws Exception {
-        commands = new Commands();
+        commands = new ConsoleCommands();
         commands.initialize(factory);
     }
 
