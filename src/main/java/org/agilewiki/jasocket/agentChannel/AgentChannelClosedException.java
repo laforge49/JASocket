@@ -21,19 +21,10 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.commands;
+package org.agilewiki.jasocket.agentChannel;
 
-public class ConsoleCommands extends Commands {
-    @Override
-    protected void configure() throws Exception {
-        cmd("help", "Displays this list of commands", HelpAgentFactory.fac);
-        cmd("to", "Send a command to another node", ToAgentFactory.fac);
-        cmd("channels", "List all the open channels to other nodes in the cluster", ChannelsAgentFactory.fac);
-        cmd("registerResource", "Register a resource with the given name", RegisterResourceAgentFactory.fac);
-        cmd("unregisterResource", "Unregister a resource with the given name", UnregisterResourceAgentFactory.fac);
-        cmd("resources", "list all resources in the cluster", ResourcesAgentFactory.fac);
-        cmd("halt", "Exit (only) the local node", HaltAgentFactory.fac);
-        cmd("exception", "Throws an exception", ExceptionAgentFactory.fac);
-        cmd("latencyTest", "Benchmarks latency between this node and another node", LatencyBenchmarkAgentFactory.fac);
+public class AgentChannelClosedException extends Exception {
+    public AgentChannelClosedException(String remoteAddress) {
+        super(remoteAddress);
     }
 }

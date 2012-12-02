@@ -122,7 +122,7 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         while (it.hasNext()) {
             RP rp = it.next();
             try {
-                rp.processResponse(new ClosedChannelException());
+                rp.processResponse(new AgentChannelClosedException(remoteAddress));
             } catch (Exception x) {
                 getMailboxFactory().logException(false, "unhandled exception while aborting unsatisfied request", x);
             }

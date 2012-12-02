@@ -25,6 +25,7 @@ package org.agilewiki.jasocket.node;
 
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.agentChannel.AgentChannelClosedException;
 import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jid.collection.vlenc.BListJid;
@@ -58,8 +59,8 @@ public class Console extends Node {
                     System.out.println(out.iGet(i).getValue());
                     i += 1;
                 }
-            } catch (ClosedChannelException x) {
-                System.out.println("Channel closed");
+            } catch (AgentChannelClosedException x) {
+                System.out.println("Channel closed: " + x.getMessage());
             } catch (Exception x) {
                 x.printStackTrace();
             }
