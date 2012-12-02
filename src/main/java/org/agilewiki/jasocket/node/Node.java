@@ -74,7 +74,7 @@ public class Node {
     }
 
     protected void initializeKeepAlive() throws Exception {
-        agentChannelManager.startKeepAlive(1000000, 100000);
+        agentChannelManager.startKeepAlive(10000, 1000);
     }
 
     protected void initialize() throws Exception {

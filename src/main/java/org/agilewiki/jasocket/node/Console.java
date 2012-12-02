@@ -59,7 +59,7 @@ public class Console extends Node {
                     i += 1;
                 }
             } catch (ClosedChannelException x) {
-                System.out.println("closed channel exception");
+                System.out.println("Channel closed");
             } catch (Exception x) {
                 x.printStackTrace();
             }
