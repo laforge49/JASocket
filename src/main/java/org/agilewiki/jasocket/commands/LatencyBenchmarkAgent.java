@@ -23,6 +23,7 @@
  */
 package org.agilewiki.jasocket.commands;
 
+import org.agilewiki.jactor.JAIterator;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;
@@ -31,8 +32,19 @@ import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.KeepAliveAgent;
+import org.agilewiki.jasocket.server.KeepAliveAgentFactory;
 import org.agilewiki.jid.Jid;
 
+/**
+ * >latencyTest 10.0.0.2:8880
+ * elapsed time (ms): 2246
+ * message count: 10000
+ * latency (ns): 224600
+ * >latencyTest 10.0.0.2:8880 100000
+ * elapsed time (ms): 8411
+ * message count: 100000
+ * latency (ns): 84110
+ */
 public class LatencyBenchmarkAgent extends ConsoleStringAgent {
     @Override
     protected void process(final RP rp) throws Exception {
@@ -48,24 +60,63 @@ public class LatencyBenchmarkAgent extends ConsoleStringAgent {
             rp.processResponse(out);
             return;
         }
-        KeepAliveAgent keepAliveAgent = (KeepAliveAgent)
-                JAFactory.newActor(this, JASocketFactories.EVAL_FACTORY, getMailbox(), agentChannelManager());
+        int count = 100000;
+        if (argsString.length() > 0)
+            count = Integer.valueOf(argsString);
+        final int c = count;
+        final KeepAliveAgent keepAliveAgent = (KeepAliveAgent)
+                JAFactory.newActor(this, KeepAliveAgentFactory.fac.actorType, getMailbox(), agentChannelManager());
+
         if (address.equals(agentChannelManager().agentChannelManagerAddress())) {
+            final long t0 = System.currentTimeMillis();
+            (new JAIterator() {
+                int i = 0;
+
+                @Override
+                protected void process(RP responseProcessor) throws Exception {
+                    if (i == c) {
+                        long t1 = System.currentTimeMillis();
+                        long d = t1 - t0;
+                        println("elapsed time (ms): " + d);
+                        println("message count: " + c);
+                        println("latency (ns): " + (d*1000000/c));
+                        responseProcessor.processResponse(out);
+                    } else {
+                        i += 1;
+                        StartAgent.req.send(LatencyBenchmarkAgent.this, keepAliveAgent, responseProcessor);
+                    }
+                }
+            }).iterate(rp);
             StartAgent.req.send(this, keepAliveAgent, rp);
             return;
         }
-        AgentChannel agentChannel = agentChannelManager().getAgentChannel(address);
+
+        final AgentChannel agentChannel = agentChannelManager().getAgentChannel(address);
         if (agentChannel == null) {
             println("not an open channel: " + address);
             rp.processResponse(out);
             return;
         }
-        ShipAgent shipAgent = new ShipAgent(keepAliveAgent);
-        shipAgent.send(this, agentChannel, new RP<Jid>() {
+        final long t0 = System.currentTimeMillis();
+        (new JAIterator() {
+            int i = 0;
+
             @Override
-            public void processResponse(Jid response) throws Exception {
-                rp.processResponse(response);
+            protected void process(RP responseProcessor) throws Exception {
+                if (i == c) {
+                    long t1 = System.currentTimeMillis();
+                    long d = t1 - t0;
+                    println("elapsed time (ms): " + d);
+                    println("message count: " + c);
+                    println("latency (ns): " + (d*1000000/c));
+                    responseProcessor.processResponse(out);
+                } else {
+                    i += 1;
+                    ShipAgent shipAgent = new ShipAgent(keepAliveAgent);
+                    shipAgent.send(LatencyBenchmarkAgent.this, agentChannel, responseProcessor);
+
+                }
             }
-        });
+        }).iterate(rp);
     }
 }
