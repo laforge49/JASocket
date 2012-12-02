@@ -321,6 +321,9 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public AgentChannel getAgentChannel(String address) throws Exception {
+        List<String> locations = locateResource(address);
+        if (locations.size() > 0)
+            address = locations.get(0);
         return agentChannels.getAny(address);
     }
 
