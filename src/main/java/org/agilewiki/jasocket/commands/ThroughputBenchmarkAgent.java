@@ -23,27 +23,19 @@
  */
 package org.agilewiki.jasocket.commands;
 
-import org.agilewiki.jactor.JAIterator;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
-import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
-import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.KeepAliveAgent;
 import org.agilewiki.jasocket.server.KeepAliveAgentFactory;
-import org.agilewiki.jid.Jid;
 
 /**
- * >latencyTest 10.0.0.2:8880
- * elapsed time (ms): 2246
- * message count: 10000
- * latency (ns): 224600
- * >latencyTest 10.0.0.2:8880 100000
- * elapsed time (ms): 8411
- * message count: 100000
- * latency (ns): 84110
+ * >throughputTest 10.0.0.2:8880 1000000
+ * elapsed time (ms): 3692
+ * message count: 1000000
+ * round trips per second: 270855
  */
 public class ThroughputBenchmarkAgent extends ConsoleStringAgent {
     @Override
@@ -60,99 +52,70 @@ public class ThroughputBenchmarkAgent extends ConsoleStringAgent {
             rp.processResponse(out);
             return;
         }
-        String rem = "";
-        int p1 = argsString.indexOf(' ');
-        if (p1 > -1) {
-            rem = argsString.substring(p1 + 1).trim();
-            argsString = argsString.substring(0, p1).trim();
-        }
-        int count = 10;
+        int count = 100000;
         if (argsString.length() > 0)
             count = Integer.valueOf(argsString);
         final int c = count;
-        int batch = 10;
-        if (rem.length() > 0)
-            batch = Integer.valueOf(rem);
-        final int b = batch;
         final KeepAliveAgent keepAliveAgent = (KeepAliveAgent)
                 JAFactory.newActor(this, KeepAliveAgentFactory.fac.actorType, getMailbox(), agentChannelManager());
 
         if (address.equals(agentChannelManager().agentChannelManagerAddress())) {
             final long t0 = System.currentTimeMillis();
-            (new JAIterator() {
-                int i = 0;
+            RP brp = new RP() {
+                int j = 0;
 
                 @Override
-                protected void process(final RP responseProcessor) throws Exception {
-                    if (i == c) {
+                public void processResponse(Object response) throws Exception {
+                    j += 1;
+                    if (j == c) {
                         long t1 = System.currentTimeMillis();
                         long d = t1 - t0;
                         println("elapsed time (ms): " + d);
-                        println("message count: " + c * b);
-                        println("latency (ns): " + (d*1000000/c/b));
-                        responseProcessor.processResponse(out);
-                    } else {
-                        i += 1;
-                        RP brp = new RP() {
-                            int j = 0;
-                            @Override
-                            public void processResponse(Object response) throws Exception {
-                                j += 1;
-                                if (j == b)
-                                    responseProcessor.processResponse(null);
-                            }
-                        };
-                        int k = 0;
-                        while (k < b) {
-                            k += 1;
-                            StartAgent.req.send(ThroughputBenchmarkAgent.this, keepAliveAgent, brp);
-                        }
+                        println("message count: " + c);
+                        println("round trips per second: " + (c * 1000 / d));
+                        rp.processResponse(out);
                     }
                 }
-            }).iterate(rp);
-            StartAgent.req.send(this, keepAliveAgent, rp);
-            return;
+            };
+            int k = 0;
+            while (k < c) {
+                k += 1;
+                StartAgent.req.send(ThroughputBenchmarkAgent.this, keepAliveAgent, brp);
+            }
         }
 
         final AgentChannel agentChannel = agentChannelManager().getAgentChannel(address);
-        if (agentChannel == null) {
+        if (agentChannel == null)
+
+        {
             println("not an open channel: " + address);
             rp.processResponse(out);
             return;
         }
+
         final long t0 = System.currentTimeMillis();
-        (new JAIterator() {
-            int i = 0;
+        RP brp = new RP() {
+            int j = 0;
 
             @Override
-            protected void process(final RP responseProcessor) throws Exception {
-                if (i == c) {
+            public void processResponse(Object response) throws Exception {
+                j += 1;
+                if (j == c) {
                     long t1 = System.currentTimeMillis();
                     long d = t1 - t0;
                     println("elapsed time (ms): " + d);
-                    println("message count: " + c * b);
-                    println("latency (ns): " + (d*1000000/c/b));
-                    responseProcessor.processResponse(out);
-                } else {
-                    i += 1;
-                    RP brp = new RP() {
-                        int j = 0;
-                        @Override
-                        public void processResponse(Object response) throws Exception {
-                            j += 1;
-                            if (j == b)
-                                responseProcessor.processResponse(null);
-                        }
-                    };
-                    int k = 0;
-                    while (k < b) {
-                        k += 1;
-                        ShipAgent shipAgent = new ShipAgent(keepAliveAgent);
-                        shipAgent.send(ThroughputBenchmarkAgent.this, agentChannel, brp);
-                    }
-
+                    println("message count: " + c);
+                    println("round trips per second: " + (c * 1000 / d));
+                    rp.processResponse(out);
                 }
             }
-        }).iterate(rp);
+        };
+        int k = 0;
+        while (k < c) {
+            k += 1;
+            ShipAgent shipAgent = new ShipAgent(keepAliveAgent);
+            shipAgent.send(ThroughputBenchmarkAgent.this, agentChannel, brp);
+        }
+
     }
 }

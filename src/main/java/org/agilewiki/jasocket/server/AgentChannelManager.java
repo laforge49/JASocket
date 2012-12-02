@@ -58,7 +58,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AgentChannelManager extends JLPCActor {
     public Commands commands;
     ServerSocketChannel serverSocketChannel;
-    public int maxPacketSize = 100000;
+    public int maxPacketSize = 64000;
     ConcurrentDupMap<String, AgentChannel> agentChannels = new ConcurrentDupMap<String, AgentChannel>();
     protected HashMap<String, JLPCActor> localResources = new HashMap<String, JLPCActor>();
     String agentChannelManagerAddress;
