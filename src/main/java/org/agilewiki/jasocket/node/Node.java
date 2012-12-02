@@ -31,6 +31,8 @@ import org.agilewiki.jasocket.commands.ConsoleCommands;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 
+import java.net.BindException;
+
 public class Node {
     protected MailboxFactory mailboxFactory;
     protected int port;
@@ -95,6 +97,8 @@ public class Node {
         try {
             initialize();
             start();
+        } catch (BindException be) {
+            System.out.println("\n" + be);
         } finally {
             mailboxFactory.close();
         }
