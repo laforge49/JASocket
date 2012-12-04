@@ -35,43 +35,56 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Console extends Node {
+public class Console implements Runnable {
+    protected Node node;
     protected BufferedReader inbr;
 
-    protected void startInteraction() throws Exception {
-        System.out.println("\n*** JASocket Test Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
-        inbr = new BufferedReader(new InputStreamReader(System.in));
-        JAFuture future = new JAFuture();
-        while (true) {
-            System.out.print(">");
-            String in = input();
-            EvalAgent evalAgent = (EvalAgent) factory.newActor(
-                    JASocketFactories.EVAL_FACTORY,
-                    agentChannelManager.getMailboxFactory().createAsyncMailbox(),
-                    agentChannelManager);
-            evalAgent.setEvalString(in);
-            try {
-                BListJid<StringJid> out = (BListJid) StartAgent.req.send(future, evalAgent);
-                int s = out.size();
-                int i = 0;
-                while (i < s) {
-                    System.out.println(out.iGet(i).getValue());
-                    i += 1;
+    public void run() {
+        try {
+            System.out.println(
+                    "\n*** JASocket Test Console " + node.agentChannelManager.agentChannelManagerAddress() + " ***\n");
+            inbr = new BufferedReader(new InputStreamReader(System.in));
+            JAFuture future = new JAFuture();
+            while (true) {
+                System.out.print(">");
+                String in = input();
+                EvalAgent evalAgent = (EvalAgent) node.factory.newActor(
+                        JASocketFactories.EVAL_FACTORY,
+                        node.agentChannelManager.getMailboxFactory().createAsyncMailbox(),
+                        node.agentChannelManager);
+                evalAgent.setEvalString(in);
+                try {
+                    BListJid<StringJid> out = (BListJid) StartAgent.req.send(future, evalAgent);
+                    int s = out.size();
+                    int i = 0;
+                    while (i < s) {
+                        System.out.println(out.iGet(i).getValue());
+                        i += 1;
+                    }
+                } catch (AgentChannelClosedException x) {
+                    System.out.println("Channel closed: " + x.getMessage());
+                } catch (Exception x) {
+                    x.printStackTrace();
                 }
-            } catch (AgentChannelClosedException x) {
-                System.out.println("Channel closed: " + x.getMessage());
-            } catch (Exception x) {
-                x.printStackTrace();
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return;
         }
-    }
-
-    protected void start() throws Exception {
-        startInteraction();
     }
 
     protected String input() throws IOException {
         return inbr.readLine();
+    }
+
+    protected Node newNode() {
+        return new Node();
+    }
+
+    protected void process(String args[]) throws Exception {
+        node = newNode();
+        node.runnable = this;
+        node.process(args);
     }
 
     public static void main(String[] args) throws Exception {

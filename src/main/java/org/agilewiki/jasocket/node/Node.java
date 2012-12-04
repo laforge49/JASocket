@@ -34,12 +34,23 @@ import org.agilewiki.jasocket.server.AgentChannelManager;
 import java.net.BindException;
 
 public class Node {
+    public Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            while (true)
+                try {
+                    Thread.sleep(1000000);
+                } catch (Exception ex) {
+                    return;
+                }
+        }
+    };
     protected MailboxFactory mailboxFactory;
     protected int port;
     protected String[] args;
-    protected JASocketFactories factory;
+    public JASocketFactories factory;
     protected Commands commands;
-    protected AgentChannelManager agentChannelManager;
+    public AgentChannelManager agentChannelManager;
 
     protected void initializeMailboxFactory() throws Exception {
         mailboxFactory = JAMailboxFactory.newMailboxFactory(100);
@@ -86,9 +97,8 @@ public class Node {
         initializeKeepAlive();
     }
 
-    protected void start() throws Exception {
-        while (true)
-            Thread.sleep(1000000);
+    protected void start() {
+        runnable.run();
     }
 
     protected void process(String[] args) throws Exception {
