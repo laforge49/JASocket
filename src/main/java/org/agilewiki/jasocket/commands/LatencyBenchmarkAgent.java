@@ -26,14 +26,11 @@ package org.agilewiki.jasocket.commands;
 import org.agilewiki.jactor.JAIterator;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
-import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
-import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.KeepAliveAgent;
 import org.agilewiki.jasocket.server.KeepAliveAgentFactory;
-import org.agilewiki.jid.Jid;
 
 /**
  * >latencyTest 10.0.0.2:8880
@@ -79,7 +76,7 @@ public class LatencyBenchmarkAgent extends ConsoleStringAgent {
                         long d = t1 - t0;
                         println("elapsed time (ms): " + d);
                         println("message count: " + c);
-                        println("latency (ns): " + (d*1000000/c));
+                        println("latency (ns): " + (d * 1000000 / c));
                         responseProcessor.processResponse(out);
                     } else {
                         i += 1;
@@ -108,7 +105,7 @@ public class LatencyBenchmarkAgent extends ConsoleStringAgent {
                     long d = t1 - t0;
                     println("elapsed time (ms): " + d);
                     println("message count: " + c);
-                    println("latency (ns): " + (d*1000000/c));
+                    println("latency (ns): " + (d * 1000000 / c));
                     responseProcessor.processResponse(out);
                 } else {
                     i += 1;

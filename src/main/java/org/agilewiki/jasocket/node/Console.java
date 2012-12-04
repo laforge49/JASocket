@@ -34,7 +34,6 @@ import org.agilewiki.jid.scalar.vlens.string.StringJid;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.channels.ClosedChannelException;
 
 public class Console extends Node {
     protected BufferedReader inbr;
