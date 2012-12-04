@@ -50,7 +50,7 @@ public class ToAgent extends ConsoleStringAgent {
         EvalAgent evalAgent = (EvalAgent)
                 JAFactory.newActor(this, JASocketFactories.EVAL_FACTORY, getMailbox(), agentChannelManager());
         evalAgent.setEvalString(argsString);
-        if (address.equals(agentChannelManager().agentChannelManagerAddress())) {
+        if (isLocalAddress(address)) {
             StartAgent.req.send(this, evalAgent, rp);
             return;
         }

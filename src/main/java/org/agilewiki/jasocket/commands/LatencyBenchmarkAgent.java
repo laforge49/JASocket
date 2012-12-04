@@ -40,7 +40,7 @@ import org.agilewiki.jasocket.server.KeepAliveAgentFactory;
  * >latencyTest 10.0.0.2:8880 100000
  * elapsed time (ms): 8411
  * message count: 100000
- * latency (ns): 84110
+ * latency (ns): 84110      <- 84 microsecond latency
  */
 public class LatencyBenchmarkAgent extends ConsoleStringAgent {
     @Override
@@ -64,7 +64,7 @@ public class LatencyBenchmarkAgent extends ConsoleStringAgent {
         final KeepAliveAgent keepAliveAgent = (KeepAliveAgent)
                 JAFactory.newActor(this, KeepAliveAgentFactory.fac.actorType, getMailbox(), agentChannelManager());
 
-        if (address.equals(agentChannelManager().agentChannelManagerAddress())) {
+        if (isLocalAddress(address)) {
             final long t0 = System.currentTimeMillis();
             (new JAIterator() {
                 int i = 0;

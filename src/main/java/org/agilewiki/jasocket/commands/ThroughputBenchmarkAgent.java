@@ -59,7 +59,7 @@ public class ThroughputBenchmarkAgent extends ConsoleStringAgent {
         final KeepAliveAgent keepAliveAgent = (KeepAliveAgent)
                 JAFactory.newActor(this, KeepAliveAgentFactory.fac.actorType, getMailbox(), agentChannelManager());
 
-        if (address.equals(agentChannelManager().agentChannelManagerAddress())) {
+        if (isLocalAddress(address)) {
             final long t0 = System.currentTimeMillis();
             RP brp = new RP() {
                 int j = 0;
@@ -82,6 +82,7 @@ public class ThroughputBenchmarkAgent extends ConsoleStringAgent {
                 k += 1;
                 StartAgent.req.send(ThroughputBenchmarkAgent.this, keepAliveAgent, brp);
             }
+            return;
         }
 
         final AgentChannel agentChannel = agentChannelManager().getAgentChannel(address);

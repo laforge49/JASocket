@@ -44,6 +44,10 @@ abstract public class AgentJid extends AppJid {
         return getParent() instanceof AgentChannelManager;
     }
 
+    protected boolean isLocalAddress(String address) throws Exception {
+        return agentChannelManager().isLocalAddress(address);
+    }
+
     protected AgentChannelManager agentChannelManager() {
         if (isLocal())
             return (AgentChannelManager) getParent();

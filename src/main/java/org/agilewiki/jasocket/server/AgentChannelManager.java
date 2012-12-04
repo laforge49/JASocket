@@ -207,8 +207,10 @@ public class AgentChannelManager extends JLPCActor {
         return Integer.valueOf(address.substring(pos + 1));
     }
 
-    public boolean isAgentChannelManagerAddress(String address) throws Exception {
-        return agentChannelManagerAddress().equals(address);
+    public boolean isLocalAddress(String address) throws Exception {
+        if (agentChannelManagerAddress().equals(address))
+            return true;
+        return getLocalResource(address) != null;
     }
 
     public JLPCActor getLocalResource(String name) {
