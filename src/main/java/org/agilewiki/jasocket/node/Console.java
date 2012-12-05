@@ -36,20 +36,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Console {
-    protected Node node;
     protected BufferedReader inbr;
 
     protected String input() throws IOException {
         return inbr.readLine();
     }
 
-    protected Node newNode() {
-        return new Node();
-    }
-
-    protected void process(String args[]) throws Exception {
-        node = newNode();
-        node.process(args);
+    public Console(Node node) throws Exception {
         System.out.println(
                 "\n*** JASocket Test Console " + node.agentChannelManager.agentChannelManagerAddress() + " ***\n");
         inbr = new BufferedReader(new InputStreamReader(System.in));
@@ -79,6 +72,12 @@ public class Console {
     }
 
     public static void main(String[] args) throws Exception {
-        (new Console()).process(args);
+        Node node = new Node(args, 100);
+        try {
+            node.process();
+            new Console(node);
+        } finally {
+            node.mailboxFactory.close();
+        }
     }
 }

@@ -35,16 +35,12 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 
 public class Node {
-    protected MailboxFactory mailboxFactory;
+    public MailboxFactory mailboxFactory;
     protected int port;
-    protected String[] args;
+    public String[] args;
     public JASocketFactories factory;
     protected Commands commands;
     public AgentChannelManager agentChannelManager;
-
-    protected void initializeMailboxFactory() throws Exception {
-        mailboxFactory = JAMailboxFactory.newMailboxFactory(100);
-    }
 
     protected void initializePort() throws Exception {
         port = 8880;
@@ -83,7 +79,7 @@ public class Node {
         agentChannelManager.startKeepAlive(10000, 1000);
     }
 
-    protected void initialize() throws Exception {
+    public void process() throws Exception {
         initializePort();
         initializeFactory();
         initializeCommands();
@@ -92,18 +88,18 @@ public class Node {
         initializeKeepAlive();
     }
 
-    protected void process(String[] args) throws Exception {
+    public Node(String[] args, int threadCount) throws Exception {
         this.args = args;
-        initializeMailboxFactory();
-        try {
-            initialize();
-        } catch (Exception x) {
-            mailboxFactory.close();
-            throw x;
-        }
+        mailboxFactory = JAMailboxFactory.newMailboxFactory(threadCount);
     }
 
     public static void main(String[] args) throws Exception {
-        (new Node()).process(args);
+        Node node = new Node(args, 100);
+        try {
+            node.process();
+        } catch (Exception ex) {
+            node.mailboxFactory.close();
+            throw ex;
+        }
     }
 }
