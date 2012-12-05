@@ -31,6 +31,9 @@ import org.agilewiki.jasocket.commands.ConsoleCommands;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+
 public class Node {
     protected MailboxFactory mailboxFactory;
     protected int port;
@@ -68,7 +71,12 @@ public class Node {
     }
 
     protected void initializeDiscovery() throws Exception {
-        new Discovery(agentChannelManager);
+        new Discovery(
+                agentChannelManager,
+                NetworkInterface.getByInetAddress(InetAddress.getLocalHost()),
+                "225.49.42.13",
+                8887,
+                2000);
     }
 
     protected void initializeKeepAlive() throws Exception {

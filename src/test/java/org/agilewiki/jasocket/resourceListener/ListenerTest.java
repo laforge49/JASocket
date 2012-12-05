@@ -11,6 +11,9 @@ import org.agilewiki.jasocket.server.SubscribeResourceNotifications;
 import org.agilewiki.jasocket.server.UnregisterResource;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+
 public class ListenerTest extends TestCase {
     public void test() throws Exception {
         JAMailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(10);
@@ -39,8 +42,16 @@ public class ListenerTest extends TestCase {
         (new SubscribeResourceNotifications(listener1)).send(future, agentChannelManager1);
 
         System.out.println("\nopen channel");
-        new Discovery(agentChannelManager0);
-        new Discovery(agentChannelManager1);
+        new Discovery(agentChannelManager0,
+                NetworkInterface.getByInetAddress(InetAddress.getLocalHost()),
+                "225.49.42.13",
+                8887,
+                2000);
+        new Discovery(agentChannelManager1,
+                NetworkInterface.getByInetAddress(InetAddress.getLocalHost()),
+                "225.49.42.13",
+                8887,
+                2000);
         Thread.sleep(100);
 
         System.out.println("\nregister local resources 0b and 1b");

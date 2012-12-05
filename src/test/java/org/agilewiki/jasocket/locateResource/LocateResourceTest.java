@@ -10,6 +10,8 @@ import org.agilewiki.jasocket.server.LocateResource;
 import org.agilewiki.jasocket.server.RegisterResource;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.Iterator;
 import java.util.List;
 
@@ -31,8 +33,16 @@ public class LocateResourceTest extends TestCase {
         (new RegisterResource("a", new StringJid())).send(future, agentChannelManager0);
         (new RegisterResource("a", new StringJid())).send(future, agentChannelManager1);
 
-        new Discovery(agentChannelManager0);
-        new Discovery(agentChannelManager1);
+        new Discovery(agentChannelManager0,
+                NetworkInterface.getByInetAddress(InetAddress.getLocalHost()),
+                "225.49.42.13",
+                8887,
+                2000);
+        new Discovery(agentChannelManager1,
+                NetworkInterface.getByInetAddress(InetAddress.getLocalHost()),
+                "225.49.42.13",
+                8887,
+                2000);
         Thread.sleep(100);
 
         List<String> addresses = (new LocateResource("a")).send(future, agentChannelManager0);

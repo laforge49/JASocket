@@ -37,28 +37,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Discovery {
-    protected NetworkInterface networkInterface() throws UnknownHostException, SocketException {
-        return NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
-    }
-
-    protected InetAddress multicastingGroup() throws UnknownHostException {
-        return InetAddress.getByName("225.49.42.13");
-    }
-
-    protected int multicastingPort() {
-        return 8887;
-    }
-
-    protected long delay() {
-        return 2000;
-    }
-
-    public Discovery(final AgentChannelManager agentChannelManager) throws Exception {
+    public Discovery(
+            final AgentChannelManager agentChannelManager,
+            NetworkInterface networkInterface,
+            String group,
+            int multicastingPort,
+            long delay) throws Exception {
         final Timer timer = agentChannelManager.getMailboxFactory().timer();
-        final InetAddress multicastingGroup = multicastingGroup();
-        final NetworkInterface networkInterface = networkInterface();
-        final int multicastingPort = multicastingPort();
-        final long delay = delay();
+        final InetAddress multicastingGroup = InetAddress.getByName(group);
         final String agentChannelManagerAddress = agentChannelManager.agentChannelManagerAddress();
         final int agentChannelManagerPort = agentChannelManager.agentChannelManagerPort();
         final InetSocketAddress inetSocketAddress = new InetSocketAddress(multicastingGroup, multicastingPort);
