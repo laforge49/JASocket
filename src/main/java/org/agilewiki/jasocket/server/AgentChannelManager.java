@@ -27,7 +27,6 @@ import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.concurrent.ThreadManager;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
@@ -94,61 +93,49 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public void startKeepAlive(final long readTimeout, final long keepaliveTimeout) throws Exception {
-        final ThreadManager threadManager = getMailboxFactory().getThreadManager();
+        Timer timer = getMailboxFactory().timer();
 
-        threadManager.process(new Runnable() {
+        TimerTask rtt = new TimerTask() {
             @Override
             public void run() {
-                while (true) {
-                    resetActive(inactiveReceivers);
-                    try {
-                        Thread.sleep(readTimeout);
-                    } catch (InterruptedException e) {
-                        return;
-                    }
-                    Iterator<String> it = inactiveReceivers.iterator();
-                    while (it.hasNext()) {
-                        String address = it.next();
-                        AgentChannel agentChannel = agentChannels.getAny(address);
-                        if (agentChannel != null) {
-                            try {
-                                CloseChannel.req.sendEvent(agentChannel);
-                            } catch (Exception x) {
-                            }
+                Iterator<String> it = inactiveReceivers.iterator();
+                while (it.hasNext()) {
+                    String address = it.next();
+                    AgentChannel agentChannel = agentChannels.getAny(address);
+                    if (agentChannel != null) {
+                        try {
+                            CloseChannel.req.sendEvent(agentChannel);
+                        } catch (Exception x) {
                         }
                     }
                 }
+                resetActive(inactiveReceivers);
             }
-        });
+        };
+        timer.scheduleAtFixedRate(rtt, readTimeout, readTimeout);
 
         KeepAliveAgent keepAliveAgent = (KeepAliveAgent)
                 JAFactory.newActor(this, JASocketFactories.KEEP_ALIVE_FACTORY, getMailbox());
         final ShipAgent shipKeepAlive = new ShipAgent(keepAliveAgent);
-        threadManager.process(new Runnable() {
+        TimerTask ktt = new TimerTask() {
             @Override
             public void run() {
-                while (true) {
-                    resetActive(inactiveSenders);
-                    try {
-                        Thread.sleep(keepaliveTimeout);
-                    } catch (InterruptedException e) {
-                        return;
-                    }
-                    Iterator<String> it = inactiveSenders.iterator();
-                    while (it.hasNext()) {
-                        String address = it.next();
-                        AgentChannel agentChannel = agentChannels.getAny(address);
-                        if (agentChannel != null) {
-                            try {
-                                shipKeepAlive.sendEvent(agentChannel);
-                            } catch (Exception e) {
-                                threadManager.logException(false, "shipping keepalive", e);
-                            }
+                Iterator<String> it = inactiveSenders.iterator();
+                while (it.hasNext()) {
+                    String address = it.next();
+                    AgentChannel agentChannel = agentChannels.getAny(address);
+                    if (agentChannel != null) {
+                        try {
+                            shipKeepAlive.sendEvent(agentChannel);
+                        } catch (Exception e) {
+                            getMailboxFactory().logException(false, "shipping keepalive", e);
                         }
                     }
                 }
+                resetActive(inactiveSenders);
             }
-        });
+        };
+        timer.scheduleAtFixedRate(ktt, keepaliveTimeout, keepaliveTimeout);
     }
 
     public TreeSet<String> resources() {
