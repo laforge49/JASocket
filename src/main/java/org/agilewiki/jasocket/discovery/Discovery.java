@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Discovery {
     protected NetworkInterface networkInterface() throws UnknownHostException, SocketException {
@@ -52,12 +54,14 @@ public class Discovery {
     }
 
     public Discovery(final AgentChannelManager agentChannelManager) throws Exception {
+        final Timer timer = agentChannelManager.getMailboxFactory().timer();
         final InetAddress multicastingGroup = multicastingGroup();
         final NetworkInterface networkInterface = networkInterface();
         final int multicastingPort = multicastingPort();
         final long delay = delay();
         final String agentChannelManagerAddress = agentChannelManager.agentChannelManagerAddress();
         final int agentChannelManagerPort = agentChannelManager.agentChannelManagerPort();
+        final InetSocketAddress inetSocketAddress = new InetSocketAddress(multicastingGroup, multicastingPort);
 
         final DatagramChannel datagramChannel = DatagramChannel.open(StandardProtocolFamily.INET)
                 .setOption(StandardSocketOptions.SO_REUSEADDR, true)
@@ -94,28 +98,21 @@ public class Discovery {
             }
         });
 
-        threadManager.process(new Runnable() {
+        TimerTask tt1 = new TimerTask() {
             @Override
             public void run() {
-                InetSocketAddress inetSocketAddress = new InetSocketAddress(multicastingGroup, multicastingPort);
-                while (true) {
-                    ByteBuffer byteBuffer = ByteBuffer.allocate(4);
-                    byteBuffer.putInt(agentChannelManagerPort);
-                    byteBuffer.flip();
-                    try {
-                        datagramChannel.send(byteBuffer, inetSocketAddress);
-                    } catch (IOException e) {
-                        agentChannelManager.getMailboxFactory().logException(false, "Discovery sender threw unexpected exception", e);
-                        agentChannelManager.getMailboxFactory().close();
-                        return;
-                    }
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e) {
-                        return;
-                    }
+                ByteBuffer byteBuffer = ByteBuffer.allocate(4);
+                byteBuffer.putInt(agentChannelManagerPort);
+                byteBuffer.flip();
+                try {
+                    datagramChannel.send(byteBuffer, inetSocketAddress);
+                } catch (IOException e) {
+                    agentChannelManager.getMailboxFactory().logException(false, "Discovery sender threw unexpected exception", e);
+                    agentChannelManager.getMailboxFactory().close();
+                    return;
                 }
             }
-        });
+        };
+        timer.scheduleAtFixedRate(tt1, 0, delay);
     }
 }
