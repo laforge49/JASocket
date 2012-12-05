@@ -35,7 +35,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Console implements Runnable {
+public class Console {
     protected Node node;
     protected BufferedReader inbr;
 
@@ -83,8 +83,8 @@ public class Console implements Runnable {
 
     protected void process(String args[]) throws Exception {
         node = newNode();
-        node.runnable = this;
         node.process(args);
+        run();
     }
 
     public static void main(String[] args) throws Exception {

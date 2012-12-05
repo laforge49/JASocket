@@ -31,20 +31,7 @@ import org.agilewiki.jasocket.commands.ConsoleCommands;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 
-import java.net.BindException;
-
 public class Node {
-    public Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            while (true)
-                try {
-                    Thread.sleep(1000000);
-                } catch (Exception ex) {
-                    return;
-                }
-        }
-    };
     protected MailboxFactory mailboxFactory;
     protected int port;
     protected String[] args;
@@ -97,20 +84,14 @@ public class Node {
         initializeKeepAlive();
     }
 
-    protected void start() {
-        runnable.run();
-    }
-
     protected void process(String[] args) throws Exception {
         this.args = args;
         initializeMailboxFactory();
         try {
             initialize();
-            start();
-        } catch (BindException be) {
-            System.out.println("\n" + be);
-        } finally {
+        } catch (Exception x) {
             mailboxFactory.close();
+            throw x;
         }
     }
 
