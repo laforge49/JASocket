@@ -46,6 +46,7 @@ public class Console {
 
     public Console(Node node) throws Exception {
         AgentChannelManager agentChannelManager = node.agentChannelManager();
+        agentChannelManager.maxPacketSize = 64000;
         System.out.println(
                 "\n*** JASocket Test Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
         inbr = new BufferedReader(new InputStreamReader(System.in));
@@ -56,7 +57,7 @@ public class Console {
             EvalAgent evalAgent = (EvalAgent) JAFactory.newActor(
                     agentChannelManager,
                     JASocketFactories.EVAL_FACTORY,
-                    agentChannelManager.getMailboxFactory().createAsyncMailbox(),
+                    node.mailboxFactory().createAsyncMailbox(),
                     agentChannelManager);
             evalAgent.setEvalString(in);
             try {

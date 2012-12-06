@@ -68,6 +68,7 @@ public class Node {
 
     protected void openAgentChannelManager(int port, Commands commands) throws Exception {
         agentChannelManager = new AgentChannelManager();
+        agentChannelManager.maxPacketSize = 64000;
         agentChannelManager.initialize(mailboxFactory.createMailbox(), commands);
         agentChannelManager.openServerSocket(port);
     }

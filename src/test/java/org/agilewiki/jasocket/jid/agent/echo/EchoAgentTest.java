@@ -17,10 +17,12 @@ public class EchoAgentTest extends TestCase {
         factory.initialize();
 
         AgentChannelManager agentChannelManager0 = new AgentChannelManager();
+        agentChannelManager0.maxPacketSize = 64000;
         agentChannelManager0.initialize(mailboxFactory.createMailbox(), factory);
         agentChannelManager0.openServerSocket(8880);
 
         AgentChannelManager agentChannelManager1 = new AgentChannelManager();
+        agentChannelManager1.maxPacketSize = 64000;
         agentChannelManager1.initialize(mailboxFactory.createMailbox(), factory);
         agentChannelManager1.openServerSocket(8881);
 
