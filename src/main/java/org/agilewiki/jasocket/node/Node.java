@@ -35,38 +35,44 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 
 public class Node {
-    public MailboxFactory mailboxFactory;
-    protected int port;
-    public String[] args;
-    public JASocketFactories factory;
-    protected Commands commands;
-    public AgentChannelManager agentChannelManager;
+    private MailboxFactory mailboxFactory;
+    private AgentChannelManager agentChannelManager;
 
-    protected void initializePort() throws Exception {
-        port = 8880;
+    public MailboxFactory mailboxFactory() {
+        return mailboxFactory;
+    }
+
+    public AgentChannelManager agentChannelManager() {
+        return agentChannelManager;
+    }
+
+    protected int port(String[] args) throws Exception {
+        int port = 8880;
         if (args.length > 0) {
             port = Integer.valueOf(args[0]);
         }
+        return port;
     }
 
-    protected void initializeFactory() throws Exception {
-        factory = new JASocketFactories();
+    protected JASocketFactories factory() throws Exception {
+        JASocketFactories factory = new JASocketFactories();
         factory.initialize();
+        return factory;
     }
 
-    protected void initializeCommands() throws Exception {
-        commands = new ConsoleCommands();
+    protected Commands commands(JASocketFactories factory) throws Exception {
+        Commands commands = new ConsoleCommands();
         commands.initialize(factory);
+        return commands;
     }
 
-    protected void initializeAgentChannelManager() throws Exception {
+    protected void openAgentChannelManager(int port, Commands commands) throws Exception {
         agentChannelManager = new AgentChannelManager();
-        agentChannelManager.initialize(mailboxFactory.createMailbox(), factory);
+        agentChannelManager.initialize(mailboxFactory.createMailbox(), commands);
         agentChannelManager.openServerSocket(port);
-        agentChannelManager.commands = commands;
     }
 
-    protected void initializeDiscovery() throws Exception {
+    protected void startDiscovery() throws Exception {
         new Discovery(
                 agentChannelManager,
                 NetworkInterface.getByInetAddress(InetAddress.getLocalHost()),
@@ -75,28 +81,25 @@ public class Node {
                 2000);
     }
 
-    protected void initializeKeepAlive() throws Exception {
+    protected void startKeepAlive() throws Exception {
         agentChannelManager.startKeepAlive(10000, 1000);
     }
 
-    public void process() throws Exception {
-        initializePort();
-        initializeFactory();
-        initializeCommands();
-        initializeAgentChannelManager();
-        initializeDiscovery();
-        initializeKeepAlive();
+    public void process(String[] args) throws Exception {
+        JASocketFactories factory = factory();
+        openAgentChannelManager(port(args), commands(factory));
+        startDiscovery();
+        startKeepAlive();
     }
 
-    public Node(String[] args, int threadCount) throws Exception {
-        this.args = args;
+    public Node(int threadCount) throws Exception {
         mailboxFactory = JAMailboxFactory.newMailboxFactory(threadCount);
     }
 
     public static void main(String[] args) throws Exception {
-        Node node = new Node(args, 100);
+        Node node = new Node(100);
         try {
-            node.process();
+            node.process(args);
         } catch (Exception ex) {
             node.mailboxFactory.close();
             throw ex;

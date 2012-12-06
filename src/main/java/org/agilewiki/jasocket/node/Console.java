@@ -24,10 +24,12 @@
 package org.agilewiki.jasocket.node;
 
 import org.agilewiki.jactor.JAFuture;
+import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannelClosedException;
 import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
+import org.agilewiki.jasocket.server.AgentChannelManager;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
@@ -43,17 +45,19 @@ public class Console {
     }
 
     public Console(Node node) throws Exception {
+        AgentChannelManager agentChannelManager = node.agentChannelManager();
         System.out.println(
-                "\n*** JASocket Test Console " + node.agentChannelManager.agentChannelManagerAddress() + " ***\n");
+                "\n*** JASocket Test Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
         inbr = new BufferedReader(new InputStreamReader(System.in));
         JAFuture future = new JAFuture();
         while (true) {
             System.out.print(">");
             String in = input();
-            EvalAgent evalAgent = (EvalAgent) node.factory.newActor(
+            EvalAgent evalAgent = (EvalAgent) JAFactory.newActor(
+                    agentChannelManager,
                     JASocketFactories.EVAL_FACTORY,
-                    node.agentChannelManager.getMailboxFactory().createAsyncMailbox(),
-                    node.agentChannelManager);
+                    agentChannelManager.getMailboxFactory().createAsyncMailbox(),
+                    agentChannelManager);
             evalAgent.setEvalString(in);
             try {
                 BListJid<StringJid> out = (BListJid) StartAgent.req.send(future, evalAgent);
@@ -72,12 +76,12 @@ public class Console {
     }
 
     public static void main(String[] args) throws Exception {
-        Node node = new Node(args, 100);
+        Node node = new Node(100);
         try {
-            node.process();
+            node.process(args);
             new Console(node);
         } finally {
-            node.mailboxFactory.close();
+            node.mailboxFactory().close();
         }
     }
 }

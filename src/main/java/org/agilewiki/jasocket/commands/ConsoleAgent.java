@@ -39,7 +39,7 @@ abstract public class ConsoleAgent extends AgentJid {
     }
 
     protected Commands commands() {
-        return agentChannelManager().commands;
+        return (Commands) getAncestor(Commands.class);
     }
 
     protected Command getCommand(String name) {
@@ -58,6 +58,7 @@ abstract public class ConsoleAgent extends AgentJid {
 
     abstract protected void process(RP rp) throws Exception;
 
+    @Override
     public void start(RP rp) throws Exception {
         out = (BListJid<StringJid>) JAFactory.newActor(
                 this, JidFactories.STRING_BLIST_JID_TYPE, getMailboxFactory().createMailbox());

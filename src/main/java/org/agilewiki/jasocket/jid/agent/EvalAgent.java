@@ -38,7 +38,7 @@ public class EvalAgent extends AgentJid {
     BListJid<StringJid> out;
 
     private Commands commands() {
-        return agentChannelManager().commands;
+        return (Commands) getAncestor(Commands.class);
     }
 
     private Command getCommand(String name) {
