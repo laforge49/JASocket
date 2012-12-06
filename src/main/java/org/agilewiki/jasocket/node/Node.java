@@ -46,6 +46,27 @@ public class Node {
         return agentChannelManager;
     }
 
+    public void process(String[] args) throws Exception {
+        JASocketFactories factory = factory();
+        openAgentChannelManager(port(args), commands(factory));
+        startDiscovery();
+        startKeepAlive();
+    }
+
+    public Node(int threadCount) throws Exception {
+        mailboxFactory = JAMailboxFactory.newMailboxFactory(threadCount);
+    }
+
+    public static void main(String[] args) throws Exception {
+        Node node = new Node(100);
+        try {
+            node.process(args);
+        } catch (Exception ex) {
+            node.mailboxFactory.close();
+            throw ex;
+        }
+    }
+
     protected int port(String[] args) throws Exception {
         int port = 8880;
         if (args.length > 0) {
@@ -84,26 +105,5 @@ public class Node {
 
     protected void startKeepAlive() throws Exception {
         agentChannelManager.startKeepAlive(10000, 1000);
-    }
-
-    public void process(String[] args) throws Exception {
-        JASocketFactories factory = factory();
-        openAgentChannelManager(port(args), commands(factory));
-        startDiscovery();
-        startKeepAlive();
-    }
-
-    public Node(int threadCount) throws Exception {
-        mailboxFactory = JAMailboxFactory.newMailboxFactory(threadCount);
-    }
-
-    public static void main(String[] args) throws Exception {
-        Node node = new Node(100);
-        try {
-            node.process(args);
-        } catch (Exception ex) {
-            node.mailboxFactory.close();
-            throw ex;
-        }
     }
 }
