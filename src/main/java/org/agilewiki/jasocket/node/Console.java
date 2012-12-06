@@ -46,7 +46,6 @@ public class Console {
 
     public Console(Node node) throws Exception {
         AgentChannelManager agentChannelManager = node.agentChannelManager();
-        agentChannelManager.maxPacketSize = 64000;
         System.out.println(
                 "\n*** JASocket Test Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
         inbr = new BufferedReader(new InputStreamReader(System.in));
