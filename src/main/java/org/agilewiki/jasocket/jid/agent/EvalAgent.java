@@ -26,54 +26,16 @@ package org.agilewiki.jasocket.jid.agent;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.commands.Command;
-import org.agilewiki.jasocket.commands.Commands;
 import org.agilewiki.jasocket.commands.ConsoleAgent;
-import org.agilewiki.jid.JidFactories;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jasocket.commands.ConsoleStringAgent;
 
-import java.util.Iterator;
-
-public class EvalAgent extends AgentJid {
-    BListJid<StringJid> out;
-
-    private Commands commands() {
-        return (Commands) getAncestor(Commands.class);
-    }
-
-    private Command getCommand(String name) {
-        return commands().get(name);
-    }
-
-    private Iterator<String> commandIterator() {
-        return commands().iterator();
-    }
-
-    private StringJid getStringJid() throws Exception {
-        return (StringJid) _iGet(0);
-    }
-
-    public void setEvalString(String name) throws Exception {
-        getStringJid().setValue(name);
-    }
-
-    private String commandString() throws Exception {
-        return getStringJid().getValue();
-    }
-
-    private void println(String v) throws Exception {
-        out.iAdd(-1);
-        StringJid sj = out.iGet(-1);
-        sj.setValue(v);
-    }
-
+public class EvalAgent extends ConsoleStringAgent {
     @Override
-    public void start(RP rp) throws Exception {
+    protected void process(RP rp) throws Exception {
         if (!isLocal()) {
-            System.out.print("from " + agentChannel().remoteAddress + ">" + commandString() + "\n>");
+            System.out.print("from " + agentChannel().remoteAddress + ">" + getCommandLineString() + "\n>");
         }
-        out = (BListJid<StringJid>) JAFactory.newActor(this, JidFactories.STRING_BLIST_JID_TYPE, getMailbox());
-        String in = commandString().trim();
+        String in = getCommandLineString().trim();
         int i = in.indexOf(' ');
         String rem = "";
         if (i > -1) {

@@ -49,7 +49,7 @@ public class ToAgent extends ConsoleStringAgent {
         }
         EvalAgent evalAgent = (EvalAgent)
                 JAFactory.newActor(this, JASocketFactories.EVAL_FACTORY, getMailbox(), agentChannelManager());
-        evalAgent.setEvalString(argsString);
+        evalAgent.setCommandLineString(argsString);
         if (isLocalAddress(address)) {
             StartAgent.req.send(this, evalAgent, rp);
             return;

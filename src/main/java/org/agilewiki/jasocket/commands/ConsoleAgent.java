@@ -33,7 +33,7 @@ import org.agilewiki.jid.scalar.vlens.string.StringJid;
 import java.util.Iterator;
 
 abstract public class ConsoleAgent extends AgentJid {
-    BListJid<StringJid> out;
+    protected BListJid<StringJid> out;
 
     public void setCommandLineString(String commandLine) throws Exception {
     }
