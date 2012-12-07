@@ -41,7 +41,6 @@ public class JASocketFactories extends JLPCActor {
     public final static String REMOVE_RESOURCE_NAME_AGENT_FACTORY = "removeResourceNameAgent";
     public final static String SET_CLIENT_PORT_AGENT_FACTORY = "setClientPortAgent";
     public final static String GET_LOCAL_RESOURCE_AGENT_FACTORY = "getLocalResourceAgent";
-    public final static String CONNECT_AGENT_FACTORY = "connectAgent";
     public final static String KEEP_ALIVE_FACTORY = "keepAliveAgent";
     public final static String EVAL_FACTORY = "evalAgent";
 
@@ -59,8 +58,7 @@ public class JASocketFactories extends JLPCActor {
         registerActorFactory(AddResourceNameAgentFactory.fac);
         registerActorFactory(RemoveResourceNameAgentFactory.fac);
         registerActorFactory(SetClientPortAgentFactory.fac);
-        registerActorFactory(GetLocalResourceAgentFactory.fac);
-        registerActorFactory(ConnectAgentFactory.fac);
+        registerActorFactory(GetResourceAgentFactory.fac);
         registerActorFactory(KeepAliveAgentFactory.fac);
         registerActorFactory(EvalAgentFactory.fac);
     }

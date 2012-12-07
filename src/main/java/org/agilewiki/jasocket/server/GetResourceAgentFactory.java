@@ -28,15 +28,15 @@ import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jid.collection.flenc.AppJidFactory;
 import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
-public class GetLocalResourceAgentFactory extends AppJidFactory {
-    public final static GetLocalResourceAgentFactory fac = new GetLocalResourceAgentFactory();
+public class GetResourceAgentFactory extends AppJidFactory {
+    public final static GetResourceAgentFactory fac = new GetResourceAgentFactory();
 
-    public GetLocalResourceAgentFactory() {
+    public GetResourceAgentFactory() {
         super(JASocketFactories.GET_LOCAL_RESOURCE_AGENT_FACTORY, StringJidFactory.fac);
     }
 
     @Override
     protected JLPCActor instantiateActor() throws Exception {
-        return new GetLocalResourceAgent();
+        return new GetResourceAgent();
     }
 }

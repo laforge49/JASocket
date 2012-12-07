@@ -222,7 +222,7 @@ public class AgentChannelManager extends JLPCActor {
             (new CopyJID(mailbox)).send(this, resource, rp);
             return;
         }
-        final GetLocalResourceAgent agent = (GetLocalResourceAgent)
+        final GetResourceAgent agent = (GetResourceAgent)
                 JAFactory.newActor(this, JASocketFactories.GET_LOCAL_RESOURCE_AGENT_FACTORY, getMailbox());
         agent.setResourceName(name);
         agentChannel(address, new RP() {
