@@ -26,10 +26,10 @@ package org.agilewiki.jasocket.jid.agent;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.commands.Command;
-import org.agilewiki.jasocket.commands.ConsoleAgent;
-import org.agilewiki.jasocket.commands.ConsoleStringAgent;
+import org.agilewiki.jasocket.commands.CommandAgent;
+import org.agilewiki.jasocket.commands.CommandStringAgent;
 
-public class EvalAgent extends ConsoleStringAgent {
+public class EvalAgent extends CommandStringAgent {
     @Override
     protected void process(RP rp) throws Exception {
         if (!isLocal()) {
@@ -50,7 +50,7 @@ public class EvalAgent extends ConsoleStringAgent {
             return;
         }
         String type = cmd.type();
-        ConsoleAgent agent = (ConsoleAgent)
+        CommandAgent agent = (CommandAgent)
                 JAFactory.newActor(this, type, getMailboxFactory().createAsyncMailbox(), agentChannelManager());
         agent.setCommandLineString(rem);
         StartAgent.req.send(this, agent, rp);

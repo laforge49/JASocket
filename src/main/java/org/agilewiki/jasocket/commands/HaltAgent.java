@@ -25,7 +25,7 @@ package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
 
-public class HaltAgent extends ConsoleAgent {
+public class HaltAgent extends CommandAgent {
     @Override
     public void process(RP rp) throws Exception {
         /*

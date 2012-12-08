@@ -25,7 +25,7 @@ package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
 
-public class ExceptionAgent extends ConsoleAgent {
+public class ExceptionAgent extends CommandAgent {
     @Override
     public void process(RP rp) throws Exception {
         throw new Exception("User-raised exception");

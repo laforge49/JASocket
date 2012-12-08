@@ -37,7 +37,7 @@ import org.agilewiki.jasocket.server.KeepAliveAgentFactory;
  * message count: 1000000
  * round trips per second: 270855
  */
-public class ThroughputBenchmarkAgent extends ConsoleStringAgent {
+public class ThroughputBenchmarkAgent extends CommandStringAgent {
     @Override
     protected void process(final RP rp) throws Exception {
         String address = getCommandLineString();

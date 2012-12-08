@@ -27,7 +27,7 @@ import org.agilewiki.jactor.RP;
 
 import java.util.Iterator;
 
-public class HelpAgent extends ConsoleAgent {
+public class HelpAgent extends CommandAgent {
     @Override
     public void process(RP rp) throws Exception {
         Iterator<String> it = commandIterator();

@@ -27,7 +27,7 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.server.RegisterResource;
 import org.agilewiki.jid.Jid;
 
-public class RegisterResourceAgent extends ConsoleStringAgent {
+public class RegisterResourceAgent extends CommandStringAgent {
     @Override
     public void process(final RP rp) throws Exception {
         String args = getCommandLineString();

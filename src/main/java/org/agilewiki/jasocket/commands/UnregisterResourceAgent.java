@@ -27,7 +27,7 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.server.UnregisterResource;
 
-public class UnregisterResourceAgent extends ConsoleStringAgent {
+public class UnregisterResourceAgent extends CommandStringAgent {
     @Override
     public void process(final RP rp) throws Exception {
         String args = getCommandLineString();

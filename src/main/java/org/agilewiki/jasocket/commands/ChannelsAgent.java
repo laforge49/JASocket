@@ -27,7 +27,7 @@ import org.agilewiki.jactor.RP;
 
 import java.util.Iterator;
 
-public class ChannelsAgent extends ConsoleAgent {
+public class ChannelsAgent extends CommandAgent {
     @Override
     public void process(RP rp) throws Exception {
         Iterator<String> it = agentChannelManager().channels().iterator();

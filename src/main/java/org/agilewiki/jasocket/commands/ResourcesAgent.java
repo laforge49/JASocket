@@ -29,7 +29,7 @@ import org.agilewiki.jasocket.server.Resources;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-public class ResourcesAgent extends ConsoleAgent {
+public class ResourcesAgent extends CommandAgent {
     @Override
     public void process(final RP rp) throws Exception {
         Resources.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {

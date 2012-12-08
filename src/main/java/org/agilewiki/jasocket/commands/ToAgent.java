@@ -32,7 +32,7 @@ import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jid.Jid;
 
-public class ToAgent extends ConsoleStringAgent {
+public class ToAgent extends CommandStringAgent {
     @Override
     protected void process(final RP rp) throws Exception {
         String address = getCommandLineString();

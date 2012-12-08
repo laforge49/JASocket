@@ -42,7 +42,7 @@ import org.agilewiki.jasocket.server.KeepAliveAgentFactory;
  * message count: 100000
  * latency (ns): 84110      <- 84 microsecond latency
  */
-public class LatencyBenchmarkAgent extends ConsoleStringAgent {
+public class LatencyBenchmarkAgent extends CommandStringAgent {
     @Override
     protected void process(final RP rp) throws Exception {
         String address = getCommandLineString();
