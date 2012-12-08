@@ -30,7 +30,7 @@ import org.agilewiki.jasocket.server.UnregisterResource;
 public class UnregisterResourceAgent extends CommandStringAgent {
     @Override
     public void process(final RP rp) throws Exception {
-        String args = getCommandLineString();
+        String args = getArgString();
         int p = args.indexOf(' ');
         if (p > -1)
             args = args.substring(0, p).trim();

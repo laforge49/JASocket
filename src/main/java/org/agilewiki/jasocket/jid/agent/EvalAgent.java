@@ -33,9 +33,9 @@ public class EvalAgent extends CommandStringAgent {
     @Override
     protected void process(RP rp) throws Exception {
         if (!isLocal()) {
-            System.out.print("from " + agentChannel().remoteAddress + ">" + getCommandLineString() + "\n>");
+            System.out.print("from " + agentChannel().remoteAddress + ">" + getArgString() + "\n>");
         }
-        String in = getCommandLineString().trim();
+        String in = getArgString().trim();
         int i = in.indexOf(' ');
         String rem = "";
         if (i > -1) {
@@ -52,7 +52,7 @@ public class EvalAgent extends CommandStringAgent {
         String type = cmd.type();
         CommandAgent agent = (CommandAgent)
                 JAFactory.newActor(this, type, getMailboxFactory().createAsyncMailbox(), agentChannelManager());
-        agent.setCommandLineString(rem);
+        agent.setArgString(rem);
         StartAgent.req.send(this, agent, rp);
     }
 }

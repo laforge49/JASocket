@@ -45,7 +45,7 @@ import org.agilewiki.jasocket.server.KeepAliveAgentFactory;
 public class LatencyBenchmarkAgent extends CommandStringAgent {
     @Override
     protected void process(final RP rp) throws Exception {
-        String address = getCommandLineString();
+        String address = getArgString();
         String argsString = "";
         int p = address.indexOf(' ');
         if (p > -1) {

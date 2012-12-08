@@ -31,11 +31,11 @@ abstract public class CommandStringAgent extends CommandAgent {
     }
 
     @Override
-    public void setCommandLineString(String commandLineString) throws Exception {
+    public void setArgString(String commandLineString) throws Exception {
         getStringJid().setValue(commandLineString);
     }
 
-    protected String getCommandLineString() throws Exception {
+    protected String getArgString() throws Exception {
         return getStringJid().getValue();
     }
 }

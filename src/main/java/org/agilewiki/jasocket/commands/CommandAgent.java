@@ -35,7 +35,7 @@ import java.util.Iterator;
 abstract public class CommandAgent extends AgentJid {
     protected BListJid<StringJid> out;
 
-    public void setCommandLineString(String commandLine) throws Exception {
+    public void setArgString(String commandLine) throws Exception {
     }
 
     protected Commands commands() {

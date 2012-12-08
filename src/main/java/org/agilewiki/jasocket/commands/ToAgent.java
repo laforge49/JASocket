@@ -35,7 +35,7 @@ import org.agilewiki.jid.Jid;
 public class ToAgent extends CommandStringAgent {
     @Override
     protected void process(final RP rp) throws Exception {
-        String address = getCommandLineString();
+        String address = getArgString();
         String argsString = "";
         int p = address.indexOf(' ');
         if (p > -1) {
@@ -49,7 +49,7 @@ public class ToAgent extends CommandStringAgent {
         }
         EvalAgent evalAgent = (EvalAgent)
                 JAFactory.newActor(this, JASocketFactories.EVAL_FACTORY, getMailbox(), agentChannelManager());
-        evalAgent.setCommandLineString(argsString);
+        evalAgent.setArgString(argsString);
         if (isLocalAddress(address)) {
             StartAgent.req.send(this, evalAgent, rp);
             return;

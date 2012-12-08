@@ -58,7 +58,7 @@ public class Console {
                     JASocketFactories.EVAL_FACTORY,
                     node.mailboxFactory().createAsyncMailbox(),
                     agentChannelManager);
-            evalAgent.setCommandLineString(in);
+            evalAgent.setArgString(in);
             try {
                 BListJid<StringJid> out = (BListJid) StartAgent.req.send(future, evalAgent);
                 int s = out.size();
