@@ -23,10 +23,7 @@
  */
 package org.agilewiki.jasocket.server;
 
-import org.agilewiki.jactor.Actor;
-import org.agilewiki.jactor.Mailbox;
-import org.agilewiki.jactor.MailboxFactory;
-import org.agilewiki.jactor.RP;
+import org.agilewiki.jactor.*;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
@@ -77,23 +74,25 @@ public class AgentChannelManager extends JLPCActor {
         Iterator<String> it = agentChannels.keySet().iterator();
         while (it.hasNext()) {
             String address = it.next();
-            if (isActive(address))
+            if (agentChannels.getAny(address) != null)
                 channels.add(address);
         }
         return channels;
     }
 
-    public boolean isActive(String address) {
-        return agentChannels.getAny(address) != null;
+    public AgentChannel getAgentChannel(String address) throws Exception {
+        List<String> locations = locateResource(address);
+        if (locations.size() > 0)
+            address = locations.get(0);
+        return agentChannels.getAny(address);
     }
 
-    public void resetActive(Set<String> set) {
+    private void resetActive(JAFuture future, Set<String> set) throws Exception {
         set.clear();
-        Iterator<String> it = agentChannels.keySet().iterator();
+        Iterator<String> it = Channels.req.send(new JAFuture(), this).iterator();
         while (it.hasNext()) {
             String address = it.next();
-            if (isActive(address))
-                set.add(address);
+            set.add(address);
         }
     }
 
@@ -103,18 +102,22 @@ public class AgentChannelManager extends JLPCActor {
         TimerTask rtt = new TimerTask() {
             @Override
             public void run() {
+                JAFuture future = new JAFuture();
                 Iterator<String> it = inactiveReceivers.iterator();
                 while (it.hasNext()) {
                     String address = it.next();
-                    AgentChannel agentChannel = agentChannels.getAny(address);
-                    if (agentChannel != null) {
-                        try {
+                    try {
+                        AgentChannel agentChannel = (new GetAgentChannel(address)).send(future, AgentChannelManager.this);
+                        if (agentChannel != null) {
                             CloseChannel.req.sendEvent(agentChannel);
-                        } catch (Exception x) {
                         }
+                    } catch (Exception x) {
                     }
                 }
-                resetActive(inactiveReceivers);
+                try {
+                    resetActive(future, inactiveReceivers);
+                } catch (Exception x) {
+                }
             }
         };
         timer.scheduleAtFixedRate(rtt, readTimeout, readTimeout);
@@ -125,19 +128,22 @@ public class AgentChannelManager extends JLPCActor {
         TimerTask ktt = new TimerTask() {
             @Override
             public void run() {
+                JAFuture future = new JAFuture();
                 Iterator<String> it = inactiveSenders.iterator();
                 while (it.hasNext()) {
                     String address = it.next();
-                    AgentChannel agentChannel = agentChannels.getAny(address);
-                    if (agentChannel != null) {
-                        try {
+                    try {
+                        AgentChannel agentChannel = (new GetAgentChannel(address)).send(future, AgentChannelManager.this);
+                        if (agentChannel != null) {
                             shipKeepAlive.sendEvent(agentChannel);
-                        } catch (Exception e) {
-                            getMailboxFactory().logException(false, "shipping keepalive", e);
                         }
+                    } catch (Exception x) {
                     }
                 }
-                resetActive(inactiveSenders);
+                try {
+                    resetActive(future, inactiveSenders);
+                } catch (Exception x) {
+                }
             }
         };
         timer.scheduleAtFixedRate(ktt, keepaliveTimeout, keepaliveTimeout);
@@ -312,13 +318,6 @@ public class AgentChannelManager extends JLPCActor {
             ShipAgent shipAgent = new ShipAgent(agent);
             shipAgent.sendEvent(this, agentChannel);
         }
-    }
-
-    public AgentChannel getAgentChannel(String address) throws Exception {
-        List<String> locations = locateResource(address);
-        if (locations.size() > 0)
-            address = locations.get(0);
-        return agentChannels.getAny(address);
     }
 
     public void agentChannel(String address, RP rp) throws Exception {

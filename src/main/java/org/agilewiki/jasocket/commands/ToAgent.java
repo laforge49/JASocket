@@ -30,6 +30,7 @@ import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
+import org.agilewiki.jasocket.server.GetAgentChannel;
 import org.agilewiki.jid.Jid;
 
 public class ToAgent extends CommandStringAgent {
@@ -47,24 +48,29 @@ public class ToAgent extends CommandStringAgent {
             rp.processResponse(out);
             return;
         }
-        EvalAgent evalAgent = (EvalAgent)
+        final EvalAgent evalAgent = (EvalAgent)
                 JAFactory.newActor(this, JASocketFactories.EVAL_FACTORY, getMailbox(), agentChannelManager());
         evalAgent.setArgString(argsString);
         if (isLocalAddress(address)) {
             StartAgent.req.send(this, evalAgent, rp);
             return;
         }
-        AgentChannel agentChannel = agentChannelManager().getAgentChannel(address);
-        if (agentChannel == null) {
-            println("not an open channel: " + address);
-            rp.processResponse(out);
-            return;
-        }
-        ShipAgent shipAgent = new ShipAgent(evalAgent);
-        shipAgent.send(this, agentChannel, new RP<Jid>() {
+        final String a = address;
+        (new GetAgentChannel(address)).send(this, agentChannelManager(), new RP<AgentChannel>() {
             @Override
-            public void processResponse(Jid response) throws Exception {
-                rp.processResponse(response);
+            public void processResponse(AgentChannel agentChannel) throws Exception {
+                if (agentChannel == null) {
+                    println("not an open channel: " + a);
+                    rp.processResponse(out);
+                    return;
+                }
+                ShipAgent shipAgent = new ShipAgent(evalAgent);
+                shipAgent.send(ToAgent.this, agentChannel, new RP<Jid>() {
+                    @Override
+                    public void processResponse(Jid response) throws Exception {
+                        rp.processResponse(response);
+                    }
+                });
             }
         });
     }

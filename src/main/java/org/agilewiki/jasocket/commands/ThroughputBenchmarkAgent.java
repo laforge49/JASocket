@@ -28,6 +28,7 @@ import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
+import org.agilewiki.jasocket.server.GetAgentChannel;
 import org.agilewiki.jasocket.server.KeepAliveAgent;
 import org.agilewiki.jasocket.server.KeepAliveAgentFactory;
 
@@ -85,38 +86,40 @@ public class ThroughputBenchmarkAgent extends CommandStringAgent {
             return;
         }
 
-        final AgentChannel agentChannel = agentChannelManager().getAgentChannel(address);
-        if (agentChannel == null)
-
-        {
-            println("not an open channel: " + address);
-            rp.processResponse(out);
-            return;
-        }
-
-        final long t0 = System.currentTimeMillis();
-        RP brp = new RP() {
-            int j = 0;
-
+        final String a = address;
+        (new GetAgentChannel(address)).send(this, agentChannelManager(), new RP<AgentChannel>() {
             @Override
-            public void processResponse(Object response) throws Exception {
-                j += 1;
-                if (j == c) {
-                    long t1 = System.currentTimeMillis();
-                    long d = t1 - t0;
-                    println("elapsed time (ms): " + d);
-                    println("message count: " + c);
-                    println("round trips per second: " + (c * 1000 / d));
+            public void processResponse(final AgentChannel agentChannel) throws Exception {
+                if (agentChannel == null) {
+                    println("not an open channel: " + a);
                     rp.processResponse(out);
+                    return;
+                }
+
+                final long t0 = System.currentTimeMillis();
+                RP brp = new RP() {
+                    int j = 0;
+
+                    @Override
+                    public void processResponse(Object response) throws Exception {
+                        j += 1;
+                        if (j == c) {
+                            long t1 = System.currentTimeMillis();
+                            long d = t1 - t0;
+                            println("elapsed time (ms): " + d);
+                            println("message count: " + c);
+                            println("round trips per second: " + (c * 1000 / d));
+                            rp.processResponse(out);
+                        }
+                    }
+                };
+                int k = 0;
+                while (k < c) {
+                    k += 1;
+                    ShipAgent shipAgent = new ShipAgent(keepAliveAgent);
+                    shipAgent.send(ThroughputBenchmarkAgent.this, agentChannel, brp);
                 }
             }
-        };
-        int k = 0;
-        while (k < c) {
-            k += 1;
-            ShipAgent shipAgent = new ShipAgent(keepAliveAgent);
-            shipAgent.send(ThroughputBenchmarkAgent.this, agentChannel, brp);
-        }
-
+        });
     }
 }

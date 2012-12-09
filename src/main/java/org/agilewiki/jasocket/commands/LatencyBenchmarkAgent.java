@@ -29,6 +29,7 @@ import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
+import org.agilewiki.jasocket.server.GetAgentChannel;
 import org.agilewiki.jasocket.server.KeepAliveAgent;
 import org.agilewiki.jasocket.server.KeepAliveAgentFactory;
 
@@ -88,32 +89,37 @@ public class LatencyBenchmarkAgent extends CommandStringAgent {
             return;
         }
 
-        final AgentChannel agentChannel = agentChannelManager().getAgentChannel(address);
-        if (agentChannel == null) {
-            println("not an open channel: " + address);
-            rp.processResponse(out);
-            return;
-        }
-        final long t0 = System.currentTimeMillis();
-        (new JAIterator() {
-            int i = 0;
-
+        final String a = address;
+        (new GetAgentChannel(address)).send(this, agentChannelManager(), new RP<AgentChannel>() {
             @Override
-            protected void process(RP responseProcessor) throws Exception {
-                if (i == c) {
-                    long t1 = System.currentTimeMillis();
-                    long d = t1 - t0;
-                    println("elapsed time (ms): " + d);
-                    println("message count: " + c);
-                    println("latency (ns): " + (d * 1000000 / c));
-                    responseProcessor.processResponse(out);
-                } else {
-                    i += 1;
-                    ShipAgent shipAgent = new ShipAgent(keepAliveAgent);
-                    shipAgent.send(LatencyBenchmarkAgent.this, agentChannel, responseProcessor);
-
+            public void processResponse(final AgentChannel agentChannel) throws Exception {
+                if (agentChannel == null) {
+                    println("not an open channel: " + a);
+                    rp.processResponse(out);
+                    return;
                 }
+                final long t0 = System.currentTimeMillis();
+                (new JAIterator() {
+                    int i = 0;
+
+                    @Override
+                    protected void process(RP responseProcessor) throws Exception {
+                        if (i == c) {
+                            long t1 = System.currentTimeMillis();
+                            long d = t1 - t0;
+                            println("elapsed time (ms): " + d);
+                            println("message count: " + c);
+                            println("latency (ns): " + (d * 1000000 / c));
+                            responseProcessor.processResponse(out);
+                        } else {
+                            i += 1;
+                            ShipAgent shipAgent = new ShipAgent(keepAliveAgent);
+                            shipAgent.send(LatencyBenchmarkAgent.this, agentChannel, responseProcessor);
+
+                        }
+                    }
+                }).iterate(rp);
             }
-        }).iterate(rp);
+        });
     }
 }
