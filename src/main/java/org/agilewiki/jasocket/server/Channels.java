@@ -21,27 +21,25 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.commands;
+package org.agilewiki.jasocket.server;
 
+import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.server.Channels;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jactor.lpc.Request;
 
-import java.util.Iterator;
 import java.util.TreeSet;
 
-public class ChannelsAgent extends CommandAgent {
+public class Channels extends Request<TreeSet<String>, AgentChannelManager> {
+    public final static Channels req = new Channels();
+
     @Override
-    public void process(final RP rp) throws Exception {
-        Channels.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {
-            @Override
-            public void processResponse(TreeSet<String> response) throws Exception {
-                Iterator<String> it = response.iterator();
-                while (it.hasNext()) {
-                    String address = it.next();
-                    println(address);
-                }
-                rp.processResponse(out);
-            }
-        });
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof AgentChannelManager;
+    }
+
+    @Override
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        rp.processResponse(((AgentChannelManager) targetActor).channels());
     }
 }

@@ -72,8 +72,15 @@ public class AgentChannelManager extends JLPCActor {
         inactiveSenders.remove(address);
     }
 
-    public Set<String> channels() {
-        return agentChannels.keySet();
+    public TreeSet<String> channels() {
+        TreeSet<String> channels = new TreeSet<String>();
+        Iterator<String> it = agentChannels.keySet().iterator();
+        while (it.hasNext()) {
+            String address = it.next();
+            if (isActive(address))
+                channels.add(address);
+        }
+        return channels;
     }
 
     public boolean isActive(String address) {
