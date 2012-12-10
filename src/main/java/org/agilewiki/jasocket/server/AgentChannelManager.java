@@ -23,7 +23,10 @@
  */
 package org.agilewiki.jasocket.server;
 
-import org.agilewiki.jactor.*;
+import org.agilewiki.jactor.Actor;
+import org.agilewiki.jactor.Mailbox;
+import org.agilewiki.jactor.MailboxFactory;
+import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
@@ -57,11 +60,13 @@ public class AgentChannelManager extends JLPCActor {
     String agentChannelManagerAddress;
     private HashSet<String> resourceNames = new HashSet<String>();
     private HashSet<ResourceListener> resourceListeners = new HashSet<ResourceListener>();
-    private Set<String> inactiveReceivers = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    private Set<AgentChannel> inactiveReceivers = Collections.newSetFromMap(new ConcurrentHashMap<AgentChannel, Boolean>());
+    private Set<AgentChannel> activeReceivers = Collections.newSetFromMap(new ConcurrentHashMap<AgentChannel, Boolean>());
     private Set<String> inactiveSenders = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
-    public void received(String address) {
-        inactiveReceivers.remove(address);
+    public void received(AgentChannel agentChannel) {
+        inactiveReceivers.remove(agentChannel);
+        activeReceivers.add(agentChannel);
     }
 
     public void sent(String address) {
@@ -89,12 +94,50 @@ public class AgentChannelManager extends JLPCActor {
         return dups.get(0);
     }
 
-    private void resetActive(JAFuture future, Set<String> set) throws Exception {
-        set.clear();
-        Iterator<String> it = Channels.req.send(new JAFuture(), this).iterator();
+    public void readTimeout() throws Exception {
+        Iterator<AgentChannel> it = inactiveReceivers.iterator();
+        while (it.hasNext()) {
+            AgentChannel agentChannel = it.next();
+            CloseChannel.req.sendEvent(agentChannel);
+        }
+        inactiveReceivers.clear();
+        Iterator<String> it2 = agentChannels.keySet().iterator();
+        while (it2.hasNext()) {
+            List<AgentChannel> dup = agentChannels.get(it2.next());
+            inactiveReceivers.addAll(dup);
+        }
+    }
+
+    public void writeTimeout() throws Exception {
+        Iterator<AgentChannel> ait = activeReceivers.iterator();
+        while (ait.hasNext()) {
+            AgentChannel agentChannel = ait.next();
+            String remoteAddress = agentChannel.remoteAddress;
+            List<AgentChannel> dup = agentChannels.get(remoteAddress);
+            if (dup == null)
+                continue;
+            int i = dup.indexOf(agentChannel);
+            if (i > 0) {
+                dup.remove(i);
+                dup.add(0, agentChannel);
+            }
+        }
+        KeepAliveAgent keepAliveAgent = (KeepAliveAgent)
+                JAFactory.newActor(this, JASocketFactories.KEEP_ALIVE_FACTORY, getMailbox());
+        ShipAgent shipKeepAlive = new ShipAgent(keepAliveAgent);
+        Iterator<String> it = inactiveSenders.iterator();
         while (it.hasNext()) {
             String address = it.next();
-            set.add(address);
+            AgentChannel agentChannel = getAgentChannel(address);
+            if (agentChannel != null) {
+                shipKeepAlive.sendEvent(agentChannel);
+            }
+        }
+        inactiveSenders.clear();
+        Iterator<String> it2 = channels().iterator();
+        while (it2.hasNext()) {
+            String address = it2.next();
+            inactiveSenders.add(address);
         }
     }
 
@@ -104,46 +147,19 @@ public class AgentChannelManager extends JLPCActor {
         TimerTask rtt = new TimerTask() {
             @Override
             public void run() {
-                JAFuture future = new JAFuture();
-                Iterator<String> it = inactiveReceivers.iterator();
-                while (it.hasNext()) {
-                    String address = it.next();
-                    try {
-                        AgentChannel agentChannel = (new GetAgentChannel(address)).send(future, AgentChannelManager.this);
-                        if (agentChannel != null) {
-                            CloseChannel.req.sendEvent(agentChannel);
-                        }
-                    } catch (Exception x) {
-                    }
-                }
                 try {
-                    resetActive(future, inactiveReceivers);
+                    ReadTimeout.req.sendEvent(AgentChannelManager.this);
                 } catch (Exception x) {
                 }
             }
         };
         timer.scheduleAtFixedRate(rtt, readTimeout, readTimeout);
 
-        KeepAliveAgent keepAliveAgent = (KeepAliveAgent)
-                JAFactory.newActor(this, JASocketFactories.KEEP_ALIVE_FACTORY, getMailbox());
-        final ShipAgent shipKeepAlive = new ShipAgent(keepAliveAgent);
         TimerTask ktt = new TimerTask() {
             @Override
             public void run() {
-                JAFuture future = new JAFuture();
-                Iterator<String> it = inactiveSenders.iterator();
-                while (it.hasNext()) {
-                    String address = it.next();
-                    try {
-                        AgentChannel agentChannel = (new GetAgentChannel(address)).send(future, AgentChannelManager.this);
-                        if (agentChannel != null) {
-                            shipKeepAlive.sendEvent(agentChannel);
-                        }
-                    } catch (Exception x) {
-                    }
-                }
                 try {
-                    resetActive(future, inactiveSenders);
+                    WriteTimeout.req.sendEvent(AgentChannelManager.this);
                 } catch (Exception x) {
                 }
             }
@@ -349,7 +365,7 @@ public class AgentChannelManager extends JLPCActor {
                     dups = new ArrayList<AgentChannel>();
                     agentChannels.put(remoteAddress, dups);
                 }
-                dups.add(agentChannel);
+                dups.add(0, agentChannel);
                 AgentChannel someAgentChannel = dups.get(0);
                 shareResourceNames(someAgentChannel);
                 rp.processResponse(someAgentChannel);
@@ -384,7 +400,7 @@ public class AgentChannelManager extends JLPCActor {
             dups = new ArrayList<AgentChannel>();
             agentChannels.put(remoteAddress, dups);
         }
-        dups.add(agentChannel);
+        dups.add(0, agentChannel);
         shareResourceNames(agentChannel);
     }
 
