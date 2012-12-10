@@ -31,7 +31,6 @@ import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.CloseChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
-import org.agilewiki.jasocket.concurrent.ConcurrentDupMap;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.resourceListener.ResourceAdded;
 import org.agilewiki.jasocket.resourceListener.ResourceListener;
@@ -53,7 +52,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AgentChannelManager extends JLPCActor {
     ServerSocketChannel serverSocketChannel;
     public int maxPacketSize;
-    ConcurrentDupMap<String, AgentChannel> agentChannels = new ConcurrentDupMap<String, AgentChannel>();
+    HashMap<String, List<AgentChannel>> agentChannels = new HashMap<String, List<AgentChannel>>();
     protected HashMap<String, JLPCActor> localResources = new HashMap<String, JLPCActor>();
     String agentChannelManagerAddress;
     private HashSet<String> resourceNames = new HashSet<String>();
@@ -74,7 +73,7 @@ public class AgentChannelManager extends JLPCActor {
         Iterator<String> it = agentChannels.keySet().iterator();
         while (it.hasNext()) {
             String address = it.next();
-            if (agentChannels.getAny(address) != null)
+            if (agentChannels.containsKey(address))
                 channels.add(address);
         }
         return channels;
@@ -84,7 +83,10 @@ public class AgentChannelManager extends JLPCActor {
         List<String> locations = locateResource(address);
         if (locations.size() > 0)
             address = locations.get(0);
-        return agentChannels.getAny(address);
+        List<AgentChannel> dups = agentChannels.get(address);
+        if (dups == null)
+            return null;
+        return dups.get(0);
     }
 
     private void resetActive(JAFuture future, Set<String> set) throws Exception {
@@ -252,12 +254,8 @@ public class AgentChannelManager extends JLPCActor {
         Iterator<String> ksit = agentChannels.keySet().iterator();
         while (ksit.hasNext()) {
             String remoteAddress = ksit.next();
-            Set<AgentChannel> agentChannelSet = agentChannels.getSet(remoteAddress);
-            Iterator<AgentChannel> acit = agentChannelSet.iterator();
-            while (acit.hasNext()) {
-                AgentChannel agentChannel = acit.next();
-                shipAgent.sendEvent(this, agentChannel);
-            }
+            AgentChannel agentChannel = agentChannels.get(remoteAddress).get(0);
+            shipAgent.sendEvent(this, agentChannel);
         }
     }
 
@@ -332,9 +330,9 @@ public class AgentChannelManager extends JLPCActor {
             throws Exception {
         InetAddress inetAddress = inetSocketAddress.getAddress();
         final String remoteAddress = inetAddress.getHostAddress() + ":" + inetSocketAddress.getPort();
-        AgentChannel oldAgentChannel = agentChannels.getAny(remoteAddress);
-        if (oldAgentChannel != null) {
-            rp.processResponse(oldAgentChannel);
+        List<AgentChannel> dups = agentChannels.get(remoteAddress);
+        if (dups != null) {
+            rp.processResponse(dups.get(0));
             return;
         }
         final AgentChannel agentChannel = new AgentChannel();
@@ -346,8 +344,13 @@ public class AgentChannelManager extends JLPCActor {
         (new ShipAgent(agent)).send(this, agentChannel, new RP<Jid>() {
             @Override
             public void processResponse(Jid response) throws Exception {
-                agentChannels.add(agentChannel.remoteAddress(), agentChannel);
-                AgentChannel someAgentChannel = agentChannels.getAny(remoteAddress);
+                List<AgentChannel> dups = agentChannels.get(remoteAddress);
+                if (dups == null) {
+                    dups = new ArrayList<AgentChannel>();
+                    agentChannels.put(remoteAddress, dups);
+                }
+                dups.add(agentChannel);
+                AgentChannel someAgentChannel = dups.get(0);
                 shareResourceNames(someAgentChannel);
                 rp.processResponse(someAgentChannel);
             }
@@ -376,7 +379,12 @@ public class AgentChannelManager extends JLPCActor {
     public void setClientPort(AgentChannel agentChannel, int port) throws Exception {
         agentChannel.setClientPort(port);
         String remoteAddress = agentChannel.remoteAddress();
-        agentChannels.add(remoteAddress, agentChannel);
+        List<AgentChannel> dups = agentChannels.get(remoteAddress);
+        if (dups == null) {
+            dups = new ArrayList<AgentChannel>();
+            agentChannels.put(remoteAddress, dups);
+        }
+        dups.add(agentChannel);
         shareResourceNames(agentChannel);
     }
 
@@ -389,24 +397,29 @@ public class AgentChannelManager extends JLPCActor {
 
     public void agentChannelClosed(AgentChannel agentChannel, RP rp) throws Exception {
         String remoteAddress = agentChannel.remoteAddress();
-        if (remoteAddress != null) {
-            agentChannels.remove(remoteAddress, agentChannel);
-            inactiveSenders.remove(remoteAddress);
-            HashSet<String> channelResources = new HashSet<String>();
-            Iterator<String> it = resourceNames.iterator();
-            String prefix = remoteAddress + " ";
-            int offset = prefix.length();
-            while (it.hasNext()) {
-                String name = it.next();
-                if (name.startsWith(prefix)) {
-                    channelResources.add(name.substring(offset));
-                }
+        if (remoteAddress == null)
+            rp.processResponse(null);
+        List<AgentChannel> dups = agentChannels.get(remoteAddress);
+        if (dups != null) {
+            dups.remove(agentChannel);
+            if (dups.isEmpty())
+                agentChannels.remove(remoteAddress);
+        }
+        inactiveSenders.remove(remoteAddress);
+        HashSet<String> channelResources = new HashSet<String>();
+        Iterator<String> it = resourceNames.iterator();
+        String prefix = remoteAddress + " ";
+        int offset = prefix.length();
+        while (it.hasNext()) {
+            String name = it.next();
+            if (name.startsWith(prefix)) {
+                channelResources.add(name.substring(offset));
             }
-            it = channelResources.iterator();
-            while (it.hasNext()) {
-                String name = it.next();
-                removeResourceName(remoteAddress, name);
-            }
+        }
+        it = channelResources.iterator();
+        while (it.hasNext()) {
+            String name = it.next();
+            removeResourceName(remoteAddress, name);
         }
         rp.processResponse(null);
     }
