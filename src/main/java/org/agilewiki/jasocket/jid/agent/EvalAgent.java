@@ -36,7 +36,7 @@ public class EvalAgent extends CommandStringAgent {
     protected void process(RP rp) throws Exception {
         if (!isLocal()) {
             LoggerFactory.getLogger(EvalAgent.class).
-                    info("from " + agentChannel().remoteAddress + ">" + getArgString() + "\n>");
+                    info("from " + agentChannel().remoteAddress + ">" + getArgString());
         }
         String in = getArgString().trim();
         int i = in.indexOf(' ');
