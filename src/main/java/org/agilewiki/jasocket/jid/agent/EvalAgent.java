@@ -28,12 +28,15 @@ import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.commands.Command;
 import org.agilewiki.jasocket.commands.CommandAgent;
 import org.agilewiki.jasocket.commands.CommandStringAgent;
+import org.slf4j.LoggerFactory;
 
 public class EvalAgent extends CommandStringAgent {
+
     @Override
     protected void process(RP rp) throws Exception {
         if (!isLocal()) {
-            System.out.print("from " + agentChannel().remoteAddress + ">" + getArgString() + "\n>");
+            LoggerFactory.getLogger(EvalAgent.class).
+                    info("from " + agentChannel().remoteAddress + ">" + getArgString() + "\n>");
         }
         String in = getArgString().trim();
         int i = in.indexOf(' ');
