@@ -50,7 +50,7 @@ public class JASShell implements Command {
     protected InputStream in;
     protected ConsoleReader consoleReader;
     protected PrintStream out;
-    protected OutputStreamWriter writer;
+    protected OutputStream outputStream;
     protected PrintStream err;
     protected ExitCallback exitCallback;
     protected Thread thread;
@@ -70,7 +70,7 @@ public class JASShell implements Command {
 
     @Override
     public void setOutputStream(OutputStream out) {
-        writer = new OutputStreamWriter(out);
+        outputStream = out;
         this.out = new PrintStream(out, true);
     }
 
@@ -91,7 +91,7 @@ public class JASShell implements Command {
             @Override
             public void run() {
                 try {
-                    consoleReader = new ConsoleReader(in, writer);
+                    consoleReader = new ConsoleReader(in, outputStream);
                     thread = Thread.currentThread();
                     out.println(
                             "\n*** JASocket Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
