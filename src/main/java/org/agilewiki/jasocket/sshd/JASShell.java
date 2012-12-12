@@ -23,49 +23,113 @@
  */
 package org.agilewiki.jasocket.sshd;
 
+import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.MailboxFactory;
+import org.agilewiki.jactor.concurrent.ThreadManager;
+import org.agilewiki.jactor.factory.JAFactory;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.agentChannel.AgentChannelClosedException;
+import org.agilewiki.jasocket.jid.agent.EvalAgent;
+import org.agilewiki.jasocket.jid.agent.StartAgent;
+import org.agilewiki.jasocket.node.Node;
+import org.agilewiki.jasocket.server.AgentChannelManager;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 public class JASShell implements Command {
+    protected Node node;
+    protected AgentChannelManager agentChannelManager;
     protected MailboxFactory mailboxFactory;
+    protected ThreadManager threadManager;
+    protected BufferedReader inbr;
+    protected PrintStream out;
+    protected PrintStream err;
+    protected ExitCallback exitCallback;
+    protected Thread thread;
+    protected Environment env;
 
-    public JASShell(MailboxFactory mailboxFactory) {
-        this.mailboxFactory = mailboxFactory;
+    public JASShell(Node node) {
+        this.node = node;
+        agentChannelManager = node.agentChannelManager();
+        mailboxFactory = node.mailboxFactory();
+        threadManager = mailboxFactory.getThreadManager();
     }
 
     @Override
     public void setInputStream(InputStream in) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        inbr = new BufferedReader(new InputStreamReader(in));
     }
 
     @Override
     public void setOutputStream(OutputStream out) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.out = new PrintStream(out, true);
     }
 
     @Override
     public void setErrorStream(OutputStream err) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.err = new PrintStream(err, true);
     }
 
     @Override
     public void setExitCallback(ExitCallback callback) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.exitCallback = callback;
     }
 
     @Override
     public void start(Environment env) throws IOException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.env = env;
+        threadManager.process(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    thread = Thread.currentThread();
+                    out.println(
+                            "\n*** JASocket Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
+                    JAFuture future = new JAFuture();
+                    while (true) {
+                        out.print(">");
+                        String in = inbr.readLine();
+                        EvalAgent evalAgent = (EvalAgent) JAFactory.newActor(
+                                agentChannelManager,
+                                JASocketFactories.EVAL_FACTORY,
+                                node.mailboxFactory().createAsyncMailbox(),
+                                agentChannelManager);
+                        evalAgent.setArgString(in);
+                        try {
+                            BListJid<StringJid> outs = (BListJid) StartAgent.req.send(future, evalAgent);
+                            int s = outs.size();
+                            int i = 0;
+                            while (i < s) {
+                                out.println(outs.iGet(i).getValue());
+                                i += 1;
+                            }
+                        } catch (InterruptedException ex) {
+                        } catch (AgentChannelClosedException x) {
+                            out.println("Channel closed: " + x.getMessage());
+                        } catch (Exception x) {
+                            x.printStackTrace();
+                        }
+                    }
+                } catch (InterruptedException ex) {
+                } catch (Exception ex) {
+                    ex.printStackTrace(err);
+                }
+                exitCallback.onExit(0);
+            }
+        });
     }
 
     @Override
     public void destroy() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+        }
+        thread.interrupt();
     }
 }

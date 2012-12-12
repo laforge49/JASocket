@@ -135,6 +135,6 @@ public class Node {
     }
 
     protected void setShellFactory() {
-        sshd.setShellFactory(new JASShellFactory(mailboxFactory));
+        sshd.setShellFactory(new JASShellFactory(this));
     }
 }

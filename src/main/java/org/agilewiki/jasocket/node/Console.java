@@ -47,7 +47,7 @@ public class Console {
     public Console(Node node) throws Exception {
         AgentChannelManager agentChannelManager = node.agentChannelManager();
         System.out.println(
-                "\n*** JASocket Test Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
+                "\n*** JASocket Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
         inbr = new BufferedReader(new InputStreamReader(System.in));
         JAFuture future = new JAFuture();
         while (true) {
@@ -67,6 +67,7 @@ public class Console {
                     System.out.println(out.iGet(i).getValue());
                     i += 1;
                 }
+            } catch (InterruptedException ex) {
             } catch (AgentChannelClosedException x) {
                 System.out.println("Channel closed: " + x.getMessage());
             } catch (Exception x) {

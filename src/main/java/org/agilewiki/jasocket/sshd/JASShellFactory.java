@@ -23,19 +23,19 @@
  */
 package org.agilewiki.jasocket.sshd;
 
-import org.agilewiki.jactor.MailboxFactory;
+import org.agilewiki.jasocket.node.Node;
 import org.apache.sshd.common.Factory;
 import org.apache.sshd.server.Command;
 
 public class JASShellFactory implements Factory<Command> {
-    protected MailboxFactory mailboxFactory;
+    protected Node node;
 
-    public JASShellFactory(MailboxFactory mailboxFactory) {
-        this.mailboxFactory = mailboxFactory;
+    public JASShellFactory(Node node) {
+        this.node = node;
     }
 
     @Override
     public Command create() {
-        return new JASShell(mailboxFactory);
+        return new JASShell(node);
     }
 }

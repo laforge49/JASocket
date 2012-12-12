@@ -41,10 +41,10 @@ public class JASMailboxFactory extends JAMailboxFactory {
     }
 
     public void close() {
-        super.close();
         try {
             node.sshServer().stop(true);
         } catch (InterruptedException e) {
         }
+        super.close();
     }
 }
