@@ -23,6 +23,7 @@
  */
 package org.agilewiki.jasocket.sshd;
 
+import jline.console.ConsoleReader;
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jactor.concurrent.ThreadManager;
@@ -46,8 +47,10 @@ public class JASShell implements Command {
     protected AgentChannelManager agentChannelManager;
     protected MailboxFactory mailboxFactory;
     protected ThreadManager threadManager;
-    protected BufferedReader inbr;
+    protected InputStream in;
+    protected ConsoleReader consoleReader;
     protected PrintStream out;
+    protected OutputStreamWriter writer;
     protected PrintStream err;
     protected ExitCallback exitCallback;
     protected Thread thread;
@@ -62,11 +65,12 @@ public class JASShell implements Command {
 
     @Override
     public void setInputStream(InputStream in) {
-        inbr = new BufferedReader(new InputStreamReader(in));
+        this.in = in;
     }
 
     @Override
     public void setOutputStream(OutputStream out) {
+        writer = new OutputStreamWriter(out);
         this.out = new PrintStream(out, true);
     }
 
@@ -87,13 +91,14 @@ public class JASShell implements Command {
             @Override
             public void run() {
                 try {
+                    consoleReader = new ConsoleReader(in, writer);
                     thread = Thread.currentThread();
                     out.println(
                             "\n*** JASocket Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
                     JAFuture future = new JAFuture();
                     while (true) {
                         out.print(">");
-                        String in = inbr.readLine();
+                        String in = consoleReader.readLine();
                         EvalAgent evalAgent = (EvalAgent) JAFactory.newActor(
                                 agentChannelManager,
                                 JASocketFactories.EVAL_FACTORY,
