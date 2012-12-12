@@ -48,9 +48,10 @@ public class Node {
 
     public void process(String[] args) throws Exception {
         JASocketFactories factory = factory();
-        openAgentChannelManager(port(args), commands(factory));
+        openAgentChannelManager(clusterPort(args), commands(factory));
         startDiscovery();
         startKeepAlive();
+        openSSD(ssdPort(args));
     }
 
     public Node(int threadCount) throws Exception {
@@ -67,7 +68,7 @@ public class Node {
         }
     }
 
-    protected int port(String[] args) throws Exception {
+    protected int clusterPort(String[] args) throws Exception {
         int port = 8880;
         if (args.length > 0) {
             port = Integer.valueOf(args[0]);
@@ -87,11 +88,11 @@ public class Node {
         return commands;
     }
 
-    protected void openAgentChannelManager(int port, Commands commands) throws Exception {
+    protected void openAgentChannelManager(int clusterPort, Commands commands) throws Exception {
         agentChannelManager = new AgentChannelManager();
         agentChannelManager.maxPacketSize = 64000;
         agentChannelManager.initialize(mailboxFactory.createMailbox(), commands);
-        agentChannelManager.openServerSocket(port);
+        agentChannelManager.openServerSocket(clusterPort);
     }
 
     protected void startDiscovery() throws Exception {
@@ -105,5 +106,13 @@ public class Node {
 
     protected void startKeepAlive() throws Exception {
         agentChannelManager.startKeepAlive(10000, 1000);
+    }
+
+    protected int ssdPort(String[] args) throws Exception {
+        return clusterPort(args) + 1;
+    }
+
+    protected void openSSD(int ssdPort) {
+
     }
 }
