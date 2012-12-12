@@ -31,8 +31,8 @@ import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 import org.agilewiki.jasocket.sshd.DummyPasswordAuthenticator;
 import org.agilewiki.jasocket.sshd.JASMailboxFactory;
+import org.agilewiki.jasocket.sshd.JASShellFactory;
 import org.apache.sshd.SshServer;
-import org.apache.sshd.server.PasswordAuthenticator;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
 import java.net.InetAddress;
@@ -123,13 +123,18 @@ public class Node {
 
     protected void openSSD(int ssdPort) throws Exception {
         sshd = SshServer.setUpDefaultServer();
-        sshd.setPasswordAuthenticator(passwordAuthenticator());
+        setAuthenticator();
         sshd.setPort(ssdPort);
         sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider("hostkey.ser"));
+        setShellFactory();
         sshd.start();
     }
 
-    protected PasswordAuthenticator passwordAuthenticator() {
-        return new DummyPasswordAuthenticator();
+    protected void setAuthenticator() {
+        sshd.setPasswordAuthenticator(new DummyPasswordAuthenticator());
+    }
+
+    protected void setShellFactory() {
+        sshd.setShellFactory(new JASShellFactory(mailboxFactory));
     }
 }
