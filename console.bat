@@ -1,1 +1,1 @@
-java -classpath ..\JActor\target\classes;..\JID\target\classes;target\classes;..\apache-sshd-0.8.0\lib\slf4j-api-1.6.4.jar;..\apache-sshd-0.8.0\lib\slf4j-simple-1.6.4.jar org.agilewiki.jasocket.node.Console %1%
+java -classpath ..\JActor\target\classes;..\JID\target\classes;target\classes;..\apache-sshd-0.8.0\lib\slf4j-api-1.6.4.jar;..\apache-sshd-0.8.0\lib\slf4j-simple-1.6.4.jar;..\apache-sshd-0.8.0\lib\sshd-core-0.8.0.jar;..\apache-sshd-0.8.0\lib\mina-core-2.0.5.jar;..\apache-sshd-0.8.0\lib\bcprov-jdk15-140.jar org.agilewiki.jasocket.node.Console %1%

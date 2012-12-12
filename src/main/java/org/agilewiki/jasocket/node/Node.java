@@ -23,13 +23,17 @@
  */
 package org.agilewiki.jasocket.node;
 
-import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.commands.Commands;
 import org.agilewiki.jasocket.commands.ConsoleCommands;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.AgentChannelManager;
+import org.agilewiki.jasocket.sshd.DummyPasswordAuthenticator;
+import org.agilewiki.jasocket.sshd.JASMailboxFactory;
+import org.apache.sshd.SshServer;
+import org.apache.sshd.server.PasswordAuthenticator;
+import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -37,6 +41,7 @@ import java.net.NetworkInterface;
 public class Node {
     private MailboxFactory mailboxFactory;
     private AgentChannelManager agentChannelManager;
+    private SshServer sshd;
 
     public MailboxFactory mailboxFactory() {
         return mailboxFactory;
@@ -44,6 +49,10 @@ public class Node {
 
     public AgentChannelManager agentChannelManager() {
         return agentChannelManager;
+    }
+
+    public SshServer sshServer() {
+        return sshd;
     }
 
     public void process(String[] args) throws Exception {
@@ -55,7 +64,7 @@ public class Node {
     }
 
     public Node(int threadCount) throws Exception {
-        mailboxFactory = JAMailboxFactory.newMailboxFactory(threadCount);
+        mailboxFactory = JASMailboxFactory.newMailboxFactory(threadCount, this);
     }
 
     public static void main(String[] args) throws Exception {
@@ -112,7 +121,15 @@ public class Node {
         return clusterPort(args) + 1;
     }
 
-    protected void openSSD(int ssdPort) {
+    protected void openSSD(int ssdPort) throws Exception {
+        sshd = SshServer.setUpDefaultServer();
+        sshd.setPasswordAuthenticator(passwordAuthenticator());
+        sshd.setPort(ssdPort);
+        sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider("hostkey.ser"));
+        sshd.start();
+    }
 
+    protected PasswordAuthenticator passwordAuthenticator() {
+        return new DummyPasswordAuthenticator();
     }
 }
