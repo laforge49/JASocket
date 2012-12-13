@@ -60,7 +60,7 @@ public class Node {
         openAgentChannelManager(clusterPort(args), commands(factory));
         startDiscovery();
         startKeepAlive();
-        openSSD(ssdPort(args));
+        openSSH(sshPort(args));
     }
 
     public Node(int threadCount) throws Exception {
@@ -100,7 +100,7 @@ public class Node {
     protected void openAgentChannelManager(int clusterPort, Commands commands) throws Exception {
         agentChannelManager = new AgentChannelManager();
         agentChannelManager.maxPacketSize = 64000;
-        agentChannelManager.initialize(mailboxFactory.createMailbox(), commands);
+        agentChannelManager.initialize(mailboxFactory.createAsyncMailbox(), commands);
         agentChannelManager.openServerSocket(clusterPort);
     }
 
@@ -117,14 +117,14 @@ public class Node {
         agentChannelManager.startKeepAlive(10000, 1000);
     }
 
-    protected int ssdPort(String[] args) throws Exception {
+    protected int sshPort(String[] args) throws Exception {
         return clusterPort(args) + 1;
     }
 
-    protected void openSSD(int ssdPort) throws Exception {
+    protected void openSSH(int sshPort) throws Exception {
         sshd = SshServer.setUpDefaultServer();
         setAuthenticator();
-        sshd.setPort(ssdPort);
+        sshd.setPort(sshPort);
         sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider("hostkey.ser"));
         setShellFactory();
         sshd.start();
