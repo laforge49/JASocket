@@ -35,6 +35,8 @@ import org.agilewiki.jasocket.sshd.JASShellFactory;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 
@@ -42,6 +44,7 @@ public class Node {
     private MailboxFactory mailboxFactory;
     private AgentChannelManager agentChannelManager;
     private SshServer sshd;
+    private File nodeDirectory;
 
     public MailboxFactory mailboxFactory() {
         return mailboxFactory;
@@ -55,7 +58,12 @@ public class Node {
         return sshd;
     }
 
+    public File nodeDirectory() {
+        return nodeDirectory;
+    }
+
     public void process(String[] args) throws Exception {
+        setNodeDirectory(args);
         JASocketFactories factory = factory();
         openAgentChannelManager(clusterPort(args), commands(factory));
         startDiscovery();
@@ -75,6 +83,15 @@ public class Node {
             node.mailboxFactory.close();
             throw ex;
         }
+    }
+
+    protected void setNodeDirectory(String[] args) throws Exception {
+        int port = clusterPort(args);
+        nodeDirectory = new File(".", "node" + port).getCanonicalFile();
+        if (nodeDirectory.exists())
+            return;
+        if (!nodeDirectory.mkdir())
+            throw new IOException("unable to create directory " + nodeDirectory.getPath());
     }
 
     protected int clusterPort(String[] args) throws Exception {
