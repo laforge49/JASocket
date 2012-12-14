@@ -4,7 +4,7 @@
 
     <groupId>org.agilewiki.jasocket</groupId>
     <artifactId>jasocket</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>JASocket</name>
     <description>Lightweight Mobile Agent Cluster</description>
@@ -97,6 +97,11 @@
             <groupId>org.agilewiki.jid</groupId>
             <artifactId>jid</artifactId>
             <version>2.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.agilewiki.jfile</groupId>
+            <artifactId>jfile</artifactId>
+            <version>2.0.12</version>
         </dependency>
         <dependency>
             <groupId>jline</groupId>
