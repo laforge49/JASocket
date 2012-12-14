@@ -32,6 +32,7 @@ import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jasocket.jid.agent.EvalAgentFactory;
 import org.agilewiki.jasocket.server.*;
+import org.agilewiki.jfile.JFileFactories;
 import org.agilewiki.jid.JidFactories;
 
 public class JASocketFactories extends JLPCActor {
@@ -50,6 +51,7 @@ public class JASocketFactories extends JLPCActor {
         if (parent == null) {
             parent = new JidFactories();
             ((JidFactories) parent).initialize(mailbox);
+            (new JFileFactories()).initialize(mailbox, parent);
         }
         super.initialize(mailbox, parent, actorFactory);
 
