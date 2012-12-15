@@ -83,14 +83,15 @@ public class ConsoleApp implements JASApplication {
             }
         }
     }
+
     @Override
-    public void close() {}
+    public void close() {
+    }
 
     public static void main(String[] args) throws Exception {
         Node node = new Node(100);
         try {
-            ConsoleApp consoleApp = new ConsoleApp();
-            node.addApplication(consoleApp);
+            node.addApplication(new ConsoleApp());
             node.process(args);
         } catch (Exception ex) {
             node.mailboxFactory().close();

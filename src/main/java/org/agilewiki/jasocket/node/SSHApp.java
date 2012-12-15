@@ -32,8 +32,8 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
 public class SSHApp implements JASApplication {
     private Node node;
-    private SshServer sshd;
     private int sshPort;
+    private SshServer sshd;
 
     @Override
     public void create(Node node, String[] args, JASocketFactories factory) throws Exception {
@@ -76,8 +76,7 @@ public class SSHApp implements JASApplication {
     public static void main(String[] args) throws Exception {
         Node node = new Node(100);
         try {
-            SSHApp sshApp = new SSHApp();
-            node.addApplication(sshApp);
+            node.addApplication(new SSHApp());
             node.process(args);
         } catch (Exception ex) {
             node.mailboxFactory().close();

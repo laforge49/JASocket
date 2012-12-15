@@ -29,19 +29,14 @@ import org.agilewiki.jasocket.JASMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.commands.Commands;
 import org.agilewiki.jasocket.commands.ConsoleCommands;
-import org.agilewiki.jasocket.configDB.ConfigDB;
-import org.agilewiki.jasocket.configDB.OpenConfigDB;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jfile.JFileFactories;
-import org.agilewiki.jfile.transactions.db.inMemory.IMDB;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -50,7 +45,6 @@ public class Node {
     private MailboxFactory mailboxFactory;
     private AgentChannelManager agentChannelManager;
     private File nodeDirectory;
-    private IMDB configIMDB;
     private List<JASApplication> applications = new ArrayList<JASApplication>();
 
     public void addApplication(JASApplication application) {
@@ -69,10 +63,6 @@ public class Node {
         return nodeDirectory;
     }
 
-    public IMDB configIMDB() {
-        return configIMDB;
-    }
-
     public void process(String[] args) throws Exception {
         setNodeDirectory(args);
         JASocketFactories factory = factory();
@@ -81,7 +71,6 @@ public class Node {
         startDiscovery();
         startKeepAlive();
         openApplications();
-        openConfigDB();
     }
 
     public Node(int threadCount) throws Exception {
@@ -136,7 +125,6 @@ public class Node {
     protected JASocketFactories factory() throws Exception {
         JASocketFactories factory = new JASocketFactories();
         factory.initialize();
-        (new JFileFactories()).initialize(factory);
         return factory;
     }
 
@@ -164,13 +152,5 @@ public class Node {
 
     protected void startKeepAlive() throws Exception {
         agentChannelManager.startKeepAlive(10000, 1000);
-    }
-
-    protected void openConfigDB() throws Exception {
-        Path dbPath = new File(nodeDirectory(), "configDB").toPath();
-        configIMDB = new IMDB(mailboxFactory(), agentChannelManager(), dbPath);
-        ConfigDB configDB = new ConfigDB(this, 1024 * 1024);
-        configDB.initialize(mailboxFactory().createAsyncMailbox(), agentChannelManager());
-        OpenConfigDB.req.sendEvent(configDB);
     }
 }
