@@ -24,6 +24,7 @@
 package org.agilewiki.jasocket.node;
 
 import org.agilewiki.jactor.MailboxFactory;
+import org.agilewiki.jasocket.JASMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.commands.Commands;
 import org.agilewiki.jasocket.commands.ConsoleCommands;
@@ -32,7 +33,6 @@ import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 import org.agilewiki.jasocket.sshd.DummyPasswordAuthenticator;
-import org.agilewiki.jasocket.JASMailboxFactory;
 import org.agilewiki.jasocket.sshd.JASShellFactory;
 import org.agilewiki.jfile.transactions.db.inMemory.IMDB;
 import org.apache.sshd.SshServer;

@@ -26,6 +26,7 @@ package org.agilewiki.jasocket.configDB;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.node.Node;
+import org.agilewiki.jasocket.server.RegisterResource;
 import org.agilewiki.jfile.transactions.db.OpenDbFile;
 import org.agilewiki.jfile.transactions.db.inMemory.IMDB;
 import org.agilewiki.jid.Jid;
@@ -47,7 +48,7 @@ public class ConfigDB extends AgentJid {
         openDbFile.send(this, configIMDB, new RP<Object>() {
             @Override
             public void processResponse(Object response) throws Exception {
-                System.out.println("blip");
+                (new RegisterResource("configDB", ConfigDB.this)).sendEvent(ConfigDB.this, agentChannelManager());
             }
         });
     }
