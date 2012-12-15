@@ -27,6 +27,8 @@ import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jactor.concurrent.JAThreadManager;
 import org.agilewiki.jactor.concurrent.ThreadManager;
 import org.agilewiki.jasocket.node.Node;
+import org.agilewiki.jfile.transactions.db.inMemory.IMDB;
+import org.apache.sshd.SshServer;
 
 public class JASMailboxFactory extends JAMailboxFactory {
     public static JASMailboxFactory newMailboxFactory(int threadCount, Node node) {
@@ -42,11 +44,19 @@ public class JASMailboxFactory extends JAMailboxFactory {
 
     public void close() {
         try {
-            node.sshServer().stop(true);
+            if (node != null) {
+                SshServer ssh = this.node.sshServer();
+                if (ssh != null)
+                    ssh.stop(true);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        node.configIMDB().closeDbFile();
+        if (node != null) {
+            IMDB configIMDB = node.configIMDB();
+            if (configIMDB != null)
+                configIMDB.closeDbFile();
+        }
         super.close();
     }
 }

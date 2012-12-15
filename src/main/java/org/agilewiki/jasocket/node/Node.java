@@ -92,7 +92,7 @@ public class Node {
         try {
             node.process(args);
         } catch (Exception ex) {
-            node.mailboxFactory.close();
+            node.mailboxFactory().close();
             throw ex;
         }
     }
