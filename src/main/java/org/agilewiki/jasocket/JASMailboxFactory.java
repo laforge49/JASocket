@@ -43,15 +43,7 @@ public class JASMailboxFactory extends JAMailboxFactory {
     }
 
     public void close() {
-        try {
-            if (node != null) {
-                SshServer ssh = this.node.sshServer();
-                if (ssh != null)
-                    ssh.stop(true);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        node.close();
         if (node != null) {
             IMDB configIMDB = node.configIMDB();
             if (configIMDB != null)

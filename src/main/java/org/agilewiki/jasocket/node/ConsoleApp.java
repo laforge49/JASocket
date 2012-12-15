@@ -38,12 +38,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Console implements JASApplication {
+public class ConsoleApp implements JASApplication {
     private Node node;
     protected BufferedReader inbr;
 
     @Override
-    public void create(Node node) throws Exception {
+    public void create(Node node, String[] args) throws Exception {
         this.node = node;
     }
 
@@ -55,7 +55,7 @@ public class Console implements JASApplication {
     public void open() throws Exception {
         AgentChannelManager agentChannelManager = node.agentChannelManager();
         System.out.println(
-                "\n*** JASocket Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
+                "\n*** JASocket ConsoleApp " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
         inbr = new BufferedReader(new InputStreamReader(System.in));
         JAFuture future = new JAFuture();
         while (true) {
@@ -89,8 +89,8 @@ public class Console implements JASApplication {
     public static void main(String[] args) throws Exception {
         Node node = new Node(100);
         try {
-            Console console = new Console();
-            node.addApplication(console);
+            ConsoleApp consoleApp = new ConsoleApp();
+            node.addApplication(consoleApp);
             node.process(args);
         } catch (Exception ex) {
             node.mailboxFactory().close();

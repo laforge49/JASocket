@@ -97,7 +97,7 @@ public class JASShell implements Command {
                     consoleReader = new ConsoleReader(in, outputStream);
                     thread = Thread.currentThread();
                     out.println(
-                            "\n*** JASocket Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
+                            "\n*** JASocket ConsoleApp " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
                     JAFuture future = new JAFuture();
                     while (true) {
                         out.print(">");

@@ -32,13 +32,8 @@ import org.agilewiki.jasocket.commands.ConsoleCommands;
 import org.agilewiki.jasocket.configDB.ConfigDB;
 import org.agilewiki.jasocket.configDB.OpenConfigDB;
 import org.agilewiki.jasocket.discovery.Discovery;
-import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jasocket.sshd.DummyPasswordAuthenticator;
-import org.agilewiki.jasocket.sshd.JASShellFactory;
 import org.agilewiki.jfile.transactions.db.inMemory.IMDB;
-import org.apache.sshd.SshServer;
-import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +48,6 @@ import java.util.List;
 public class Node {
     private MailboxFactory mailboxFactory;
     private AgentChannelManager agentChannelManager;
-    private SshServer sshd;
     private File nodeDirectory;
     private IMDB configIMDB;
     private List<JASApplication> applications = new ArrayList<JASApplication>();
@@ -70,10 +64,6 @@ public class Node {
         return agentChannelManager;
     }
 
-    public SshServer sshServer() {
-        return sshd;
-    }
-
     public File nodeDirectory() {
         return nodeDirectory;
     }
@@ -86,16 +76,21 @@ public class Node {
         setNodeDirectory(args);
         JASocketFactories factory = factory();
         openAgentChannelManager(clusterPort(args), commands(factory));
-        createApplications();
+        createApplications(args);
         startDiscovery();
         startKeepAlive();
         openApplications();
-        openSSH(sshPort(args));
         openConfigDB();
     }
 
     public Node(int threadCount) throws Exception {
         mailboxFactory = JASMailboxFactory.newMailboxFactory(threadCount, this);
+    }
+
+    public void close() {
+        Iterator<JASApplication> it = applications.iterator();
+        while (it.hasNext())
+            it.next().close();
     }
 
     public static void main(String[] args) throws Exception {
@@ -108,10 +103,10 @@ public class Node {
         }
     }
 
-    protected void createApplications() throws Exception {
+    protected void createApplications(String[] args) throws Exception {
         Iterator<JASApplication> it = applications.iterator();
         while (it.hasNext())
-            it.next().create(this);
+            it.next().create(this, args);
     }
 
     protected void openApplications() throws Exception {
@@ -167,27 +162,6 @@ public class Node {
 
     protected void startKeepAlive() throws Exception {
         agentChannelManager.startKeepAlive(10000, 1000);
-    }
-
-    protected int sshPort(String[] args) throws Exception {
-        return clusterPort(args) + 1;
-    }
-
-    protected void openSSH(int sshPort) throws Exception {
-        sshd = SshServer.setUpDefaultServer();
-        setAuthenticator();
-        sshd.setPort(sshPort);
-        sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider("hostkey.ser"));
-        setShellFactory();
-        sshd.start();
-    }
-
-    protected void setAuthenticator() {
-        sshd.setPasswordAuthenticator(new DummyPasswordAuthenticator());
-    }
-
-    protected void setShellFactory() {
-        sshd.setShellFactory(new JASShellFactory(this));
     }
 
     protected void openConfigDB() throws Exception {
