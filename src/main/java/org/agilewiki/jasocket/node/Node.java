@@ -29,6 +29,7 @@ import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.commands.Commands;
 import org.agilewiki.jasocket.commands.ConsoleCommands;
 import org.agilewiki.jasocket.configDB.ConfigDB;
+import org.agilewiki.jasocket.configDB.OpenConfigDB;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.AgentChannelManager;
@@ -171,6 +172,6 @@ public class Node {
         configIMDB = new IMDB(mailboxFactory(), agentChannelManager(), dbPath);
         ConfigDB configDB = new ConfigDB(this, 1024 * 1024);
         configDB.initialize(mailboxFactory().createAsyncMailbox(), agentChannelManager());
-        StartAgent.req.sendEvent(configDB);
+        OpenConfigDB.req.sendEvent(configDB);
     }
 }

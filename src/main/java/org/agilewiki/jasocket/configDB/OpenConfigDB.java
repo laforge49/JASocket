@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Bill La Forge
+ * Copyright 2012 Bill La Forge
  *
  * This file is part of AgileWiki and is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,32 +23,21 @@
  */
 package org.agilewiki.jasocket.configDB;
 
+import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.node.Node;
-import org.agilewiki.jasocket.server.RegisterResource;
-import org.agilewiki.jfile.transactions.db.OpenDbFile;
-import org.agilewiki.jfile.transactions.db.inMemory.IMDB;
-import org.agilewiki.jid.Jid;
+import org.agilewiki.jactor.lpc.Request;
 
-public class ConfigDB extends JLPCActor {
-    private Node node;
-    private int maxSize;
-    private IMDB configIMDB;
+public class OpenConfigDB extends Request<Object, ConfigDB> {
+    public final static OpenConfigDB req = new OpenConfigDB();
 
-    public ConfigDB(Node node, int maxSize) {
-        this.node = node;
-        this.maxSize = maxSize;
-        configIMDB = node.configIMDB();
+    @Override
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof ConfigDB;
     }
 
-    public void start(RP<Jid> rp) throws Exception {
-        OpenDbFile openDbFile = new OpenDbFile(maxSize);
-        openDbFile.send(this, configIMDB, new RP<Object>() {
-            @Override
-            public void processResponse(Object response) throws Exception {
-                (new RegisterResource("configDB", ConfigDB.this)).sendEvent(ConfigDB.this, node.agentChannelManager());
-            }
-        });
+    @Override
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        ((ConfigDB) targetActor).start(rp);
     }
 }
