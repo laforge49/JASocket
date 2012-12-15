@@ -33,6 +33,7 @@ import org.agilewiki.jasocket.configDB.ConfigDB;
 import org.agilewiki.jasocket.configDB.OpenConfigDB;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.AgentChannelManager;
+import org.agilewiki.jfile.JFileFactories;
 import org.agilewiki.jfile.transactions.db.inMemory.IMDB;
 
 import java.io.File;
@@ -76,7 +77,7 @@ public class Node {
         setNodeDirectory(args);
         JASocketFactories factory = factory();
         openAgentChannelManager(clusterPort(args), commands(factory));
-        createApplications(args);
+        createApplications(args, factory);
         startDiscovery();
         startKeepAlive();
         openApplications();
@@ -103,10 +104,10 @@ public class Node {
         }
     }
 
-    protected void createApplications(String[] args) throws Exception {
+    protected void createApplications(String[] args, JASocketFactories factory) throws Exception {
         Iterator<JASApplication> it = applications.iterator();
         while (it.hasNext())
-            it.next().create(this, args);
+            it.next().create(this, args, factory);
     }
 
     protected void openApplications() throws Exception {
@@ -135,6 +136,7 @@ public class Node {
     protected JASocketFactories factory() throws Exception {
         JASocketFactories factory = new JASocketFactories();
         factory.initialize();
+        (new JFileFactories()).initialize(factory);
         return factory;
     }
 

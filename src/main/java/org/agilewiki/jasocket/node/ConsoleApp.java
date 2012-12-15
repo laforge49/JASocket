@@ -43,7 +43,7 @@ public class ConsoleApp implements JASApplication {
     protected BufferedReader inbr;
 
     @Override
-    public void create(Node node, String[] args) throws Exception {
+    public void create(Node node, String[] args, JASocketFactories factory) throws Exception {
         this.node = node;
     }
 

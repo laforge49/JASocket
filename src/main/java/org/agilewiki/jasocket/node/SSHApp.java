@@ -24,6 +24,7 @@
 package org.agilewiki.jasocket.node;
 
 import org.agilewiki.jasocket.JASApplication;
+import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.sshd.DummyPasswordAuthenticator;
 import org.agilewiki.jasocket.sshd.JASShellFactory;
 import org.apache.sshd.SshServer;
@@ -35,7 +36,7 @@ public class SSHApp implements JASApplication {
     private int sshPort;
 
     @Override
-    public void create(Node node, String[] args) throws Exception {
+    public void create(Node node, String[] args, JASocketFactories factory) throws Exception {
         this.node = node;
         sshPort = sshPort(args);
     }

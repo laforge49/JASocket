@@ -51,7 +51,6 @@ public class JASocketFactories extends JLPCActor {
         if (parent == null) {
             parent = new JidFactories();
             ((JidFactories) parent).initialize(mailbox);
-            (new JFileFactories()).initialize(mailbox, parent);
         }
         super.initialize(mailbox, parent, actorFactory);
 
