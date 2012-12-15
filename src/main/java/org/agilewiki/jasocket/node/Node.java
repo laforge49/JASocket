@@ -24,6 +24,7 @@
 package org.agilewiki.jasocket.node;
 
 import org.agilewiki.jactor.MailboxFactory;
+import org.agilewiki.jasocket.JASApplication;
 import org.agilewiki.jasocket.JASMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.commands.Commands;
@@ -45,6 +46,9 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class Node {
     private MailboxFactory mailboxFactory;
@@ -52,6 +56,11 @@ public class Node {
     private SshServer sshd;
     private File nodeDirectory;
     private IMDB configIMDB;
+    private List<JASApplication> applications = new ArrayList<JASApplication>();
+
+    public void addApplication(JASApplication application) {
+        applications.add(application);
+    }
 
     public MailboxFactory mailboxFactory() {
         return mailboxFactory;
@@ -77,8 +86,10 @@ public class Node {
         setNodeDirectory(args);
         JASocketFactories factory = factory();
         openAgentChannelManager(clusterPort(args), commands(factory));
+        createApplications();
         startDiscovery();
         startKeepAlive();
+        openApplications();
         openSSH(sshPort(args));
         openConfigDB();
     }
@@ -95,6 +106,18 @@ public class Node {
             node.mailboxFactory().close();
             throw ex;
         }
+    }
+
+    protected void createApplications() throws Exception {
+        Iterator<JASApplication> it = applications.iterator();
+        while (it.hasNext())
+            it.next().create(this);
+    }
+
+    protected void openApplications() throws Exception {
+        Iterator<JASApplication> it = applications.iterator();
+        while (it.hasNext())
+            it.next().open();
     }
 
     protected void setNodeDirectory(String[] args) throws Exception {

@@ -25,6 +25,7 @@ package org.agilewiki.jasocket.node;
 
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.factory.JAFactory;
+import org.agilewiki.jasocket.JASApplication;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannelClosedException;
 import org.agilewiki.jasocket.jid.agent.EvalAgent;
@@ -37,14 +38,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Console {
+public class Console implements JASApplication {
+    private Node node;
     protected BufferedReader inbr;
+
+    @Override
+    public void create(Node node) throws Exception {
+        this.node = node;
+    }
 
     protected String input() throws IOException {
         return inbr.readLine();
     }
 
-    public Console(Node node) throws Exception {
+    @Override
+    public void open() throws Exception {
         AgentChannelManager agentChannelManager = node.agentChannelManager();
         System.out.println(
                 "\n*** JASocket Console " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
@@ -75,14 +83,18 @@ public class Console {
             }
         }
     }
+    @Override
+    public void close() {}
 
     public static void main(String[] args) throws Exception {
         Node node = new Node(100);
         try {
+            Console console = new Console();
+            node.addApplication(console);
             node.process(args);
-            new Console(node);
-        } finally {
+        } catch (Exception ex) {
             node.mailboxFactory().close();
+            throw ex;
         }
     }
 }
