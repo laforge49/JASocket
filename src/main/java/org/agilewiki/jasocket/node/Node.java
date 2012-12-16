@@ -23,9 +23,8 @@
  */
 package org.agilewiki.jasocket.node;
 
+import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jactor.MailboxFactory;
-import org.agilewiki.jasocket.Closable;
-import org.agilewiki.jasocket.JASMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.commands.Commands;
 import org.agilewiki.jasocket.commands.ConsoleCommands;
@@ -37,24 +36,16 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.FileSystems;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class Node {
     private String[] args;
     private MailboxFactory mailboxFactory;
     private AgentChannelManager agentChannelManager;
     private File nodeDirectory;
-    private List<Closable> closables = new ArrayList<Closable>();
     private JASocketFactories factory;
 
     public String[] args() {
         return args;
-    }
-
-    public void addClosable(Closable closable) {
-        closables.add(closable);
     }
 
     public MailboxFactory mailboxFactory() {
@@ -86,14 +77,8 @@ public class Node {
     }
 
     public Node(String[] args, int threadCount) throws Exception {
-        mailboxFactory = JASMailboxFactory.newMailboxFactory(threadCount, this);
+        mailboxFactory = JAMailboxFactory.newMailboxFactory(threadCount);
         this.args = args;
-    }
-
-    public void close() {
-        Iterator<Closable> it = closables.iterator();
-        while (it.hasNext())
-            it.next().close();
     }
 
     public static void main(String[] args) throws Exception {
@@ -131,6 +116,7 @@ public class Node {
 
     protected void openAgentChannelManager(int clusterPort, Commands commands) throws Exception {
         agentChannelManager = new AgentChannelManager();
+        agentChannelManager.node = this;
         agentChannelManager.maxPacketSize = 64000;
         agentChannelManager.initialize(mailboxFactory.createAsyncMailbox(), commands);
         agentChannelManager.openServerSocket(clusterPort);

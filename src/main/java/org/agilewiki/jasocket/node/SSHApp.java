@@ -23,11 +23,10 @@
  */
 package org.agilewiki.jasocket.node;
 
-import org.agilewiki.jasocket.Closable;
+import org.agilewiki.jactor.Closable;
 import org.agilewiki.jasocket.server.RegisterResource;
 import org.agilewiki.jasocket.sshd.DummyPasswordAuthenticator;
 import org.agilewiki.jasocket.sshd.JASShellFactory;
-import org.agilewiki.jid.Jid;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
@@ -38,7 +37,7 @@ public class SSHApp implements Closable {
 
     public void create(Node node) throws Exception {
         this.node = node;
-        node.addClosable(this);
+        node.mailboxFactory().addClosable(this);
         sshPort = sshPort(node.args());
         sshd = SshServer.setUpDefaultServer();
         setAuthenticator();

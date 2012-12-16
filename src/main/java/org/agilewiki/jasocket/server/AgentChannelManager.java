@@ -35,6 +35,7 @@ import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.CloseChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jasocket.resourceListener.ResourceAdded;
 import org.agilewiki.jasocket.resourceListener.ResourceListener;
 import org.agilewiki.jasocket.resourceListener.ResourceRemoved;
@@ -53,6 +54,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AgentChannelManager extends JLPCActor {
+    public Node node;
     ServerSocketChannel serverSocketChannel;
     public int maxPacketSize;
     HashMap<String, List<AgentChannel>> agentChannels = new HashMap<String, List<AgentChannel>>();
