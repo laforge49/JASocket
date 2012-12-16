@@ -23,26 +23,21 @@
  */
 package org.agilewiki.jasocket.node;
 
-import org.agilewiki.jasocket.JASApplication;
-import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.Closable;
 import org.agilewiki.jasocket.sshd.DummyPasswordAuthenticator;
 import org.agilewiki.jasocket.sshd.JASShellFactory;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
-public class SSHApp implements JASApplication {
+public class SSHApp implements Closable {
     private Node node;
     private int sshPort;
     private SshServer sshd;
 
-    @Override
-    public void create(Node node, String[] args, JASocketFactories factory) throws Exception {
+    public void create(Node node) throws Exception {
         this.node = node;
-        sshPort = sshPort(args);
-    }
-
-    @Override
-    public void open() throws Exception {
+        node.addClosable(this);
+        sshPort = sshPort(node.args());
         sshd = SshServer.setUpDefaultServer();
         setAuthenticator();
         sshd.setPort(sshPort);
@@ -74,10 +69,10 @@ public class SSHApp implements JASApplication {
     }
 
     public static void main(String[] args) throws Exception {
-        Node node = new Node(100);
+        Node node = new Node(args, 100);
         try {
-            node.addApplication(new SSHApp());
-            node.process(args);
+            node.process();
+            (new SSHApp()).create(node);
         } catch (Exception ex) {
             node.mailboxFactory().close();
             throw ex;
