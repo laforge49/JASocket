@@ -24,8 +24,10 @@
 package org.agilewiki.jasocket.node;
 
 import org.agilewiki.jasocket.Closable;
+import org.agilewiki.jasocket.server.RegisterResource;
 import org.agilewiki.jasocket.sshd.DummyPasswordAuthenticator;
 import org.agilewiki.jasocket.sshd.JASShellFactory;
+import org.agilewiki.jid.Jid;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
@@ -43,6 +45,7 @@ public class SSHApp implements Closable {
         sshd.setPort(sshPort);
         sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider("hostkey.ser"));
         setShellFactory();
+        (new RegisterResource("sshConsole", node.agentChannelManager())).sendEvent(node.agentChannelManager());
         sshd.start();
     }
 

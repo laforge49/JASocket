@@ -40,7 +40,7 @@ public class RegisterResourceAgent extends CommandStringAgent {
             return;
         }
         final String name = args;
-        (new RegisterResource(name, new Jid())).send(this, agentChannelManager(), new RP<Boolean>() {
+        (new RegisterResource(name, agentChannelManager())).send(this, agentChannelManager(), new RP<Boolean>() {
             @Override
             public void processResponse(Boolean response) throws Exception {
                 if (response)
