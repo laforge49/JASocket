@@ -33,11 +33,12 @@ import org.agilewiki.jasocket.server.UnregisterResource;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.TreeMap;
 
 abstract public class Application extends JLPCActor implements Closable {
     private Node node;
-    protected HashMap<String, ApplicationCommand> applicationCommands = new HashMap<String, ApplicationCommand>();
+    protected TreeMap<String, ApplicationCommand> applicationCommands = new TreeMap<String, ApplicationCommand>();
     protected String startupArgs;
 
     abstract protected String applicationName();
@@ -62,7 +63,7 @@ abstract public class Application extends JLPCActor implements Closable {
             @Override
             public void processResponse(Boolean response) throws Exception {
                 if (response)
-                    applicationRegistered(out, rp);
+                    startApplication(out, rp);
                 else
                     println(out, "Application already registered: " + applicationName());
                 rp.processResponse(out);
@@ -70,8 +71,9 @@ abstract public class Application extends JLPCActor implements Closable {
         });
     }
 
-    protected void applicationRegistered(final BListJid<StringJid> out, RP rp) throws Exception {
+    protected void startApplication(BListJid<StringJid> out, RP rp) throws Exception {
         registerCloseCommand();
+        registerHelpCommand();
     }
 
     public void close() {
@@ -114,13 +116,37 @@ abstract public class Application extends JLPCActor implements Closable {
 
             @Override
             public String description() {
-                return "Closes the application.";
+                return "Closes the application";
             }
 
             @Override
             public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception {
                 close();
                 println(out, "Closed");
+                rp.processResponse(out);
+            }
+        });
+    }
+
+    protected void registerHelpCommand() {
+        registerApplicationCommand(new ApplicationCommand() {
+            @Override
+            public String name() {
+                return "help";
+            }
+
+            @Override
+            public String description() {
+                return "List the commands supported by the application";
+            }
+
+            @Override
+            public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception {
+                Iterator<String> it = applicationCommands.keySet().iterator();
+                while (it.hasNext()) {
+                    ApplicationCommand ac = applicationCommands.get(it.next());
+                    println(out, ac.name() + " - " + ac.description());
+                }
                 rp.processResponse(out);
             }
         });
