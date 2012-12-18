@@ -74,13 +74,11 @@ abstract public class Application extends JLPCActor implements Closable {
         }
     }
 
-    public void eval(String commandString, RP rp) throws Exception {
+    public void eval(String commandString, BListJid<StringJid> out, RP rp) throws Exception {
         commandString = commandString.trim();
         int i = commandString.indexOf(' ');
         String command = commandString.substring(0, i);
         String args = commandString.substring(i + 1).trim();
-        BListJid<StringJid> out = (BListJid<StringJid>) JAFactory.newActor(
-                this, JidFactories.STRING_BLIST_JID_TYPE, getMailboxFactory().createMailbox());
         eval(command, args, out, rp);
     }
 
