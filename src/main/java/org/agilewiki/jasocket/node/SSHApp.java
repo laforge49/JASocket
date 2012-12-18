@@ -38,7 +38,7 @@ public class SSHApp implements Closable {
     public void create(Node node) throws Exception {
         this.node = node;
         node.mailboxFactory().addClosable(this);
-        sshPort = sshPort(node.args());
+        sshPort = sshPort();
         sshd = SshServer.setUpDefaultServer();
         setAuthenticator();
         sshd.setPort(sshPort);
@@ -48,8 +48,8 @@ public class SSHApp implements Closable {
         sshd.start();
     }
 
-    protected int sshPort(String[] args) throws Exception {
-        return node.clusterPort(args) + 1;
+    protected int sshPort() throws Exception {
+        return node.clusterPort() + 1;
     }
 
     protected void setAuthenticator() {

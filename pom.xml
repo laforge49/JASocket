@@ -77,6 +77,11 @@
             <version>0.8.0</version>
         </dependency>
         <dependency>
+            <groupId>org.agilewiki.jactor</groupId>
+            <artifactId>jactor</artifactId>
+            <version>4.6.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.agilewiki.jid</groupId>
             <artifactId>jid</artifactId>
             <version>2.0.5</version>

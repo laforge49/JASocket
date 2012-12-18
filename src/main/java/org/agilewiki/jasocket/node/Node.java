@@ -70,8 +70,8 @@ public class Node {
 
     public void process() throws Exception {
         factory();
-        setNodeDirectory(args);
-        openAgentChannelManager(clusterPort(args), commands(factory));
+        setNodeDirectory();
+        openAgentChannelManager(clusterPort(), commands());
         startDiscovery();
         startKeepAlive();
     }
@@ -91,8 +91,8 @@ public class Node {
         }
     }
 
-    protected void setNodeDirectory(String[] args) throws Exception {
-        int port = clusterPort(args);
+    protected void setNodeDirectory() throws Exception {
+        int port = clusterPort();
         nodeDirectory = FileSystems.getDefault().getPath("node" + port).toFile();
         if (nodeDirectory.exists())
             return;
@@ -100,7 +100,7 @@ public class Node {
             throw new IOException("unable to create directory " + nodeDirectory.getPath());
     }
 
-    protected int clusterPort(String[] args) throws Exception {
+    protected int clusterPort() throws Exception {
         int port = 8880;
         if (args.length > 0) {
             port = Integer.valueOf(args[0]);
@@ -108,7 +108,7 @@ public class Node {
         return port;
     }
 
-    protected Commands commands(JASocketFactories factory) throws Exception {
+    protected Commands commands() throws Exception {
         Commands commands = new ConsoleCommands();
         commands.initialize(factory);
         return commands;
