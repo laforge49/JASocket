@@ -25,12 +25,16 @@ package org.agilewiki.jasocket.application;
 
 import org.agilewiki.jactor.Closable;
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.DuplicateResourceException;
 import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 import org.agilewiki.jasocket.server.RegisterResource;
 import org.agilewiki.jasocket.server.UnregisterResource;
+import org.agilewiki.jid.JidFactories;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 abstract public class Application extends JLPCActor implements Closable {
     private Node node;
@@ -46,6 +50,7 @@ abstract public class Application extends JLPCActor implements Closable {
     }
 
     public void startUp(Node node, final RP rp) throws Exception {
+        this.node = node;
         RegisterResource registerResource = new RegisterResource(applicationName(), this);
         registerResource.send(this, agentChannelManager(), new RP<Boolean>() {
             @Override
@@ -74,13 +79,22 @@ abstract public class Application extends JLPCActor implements Closable {
         int i = commandString.indexOf(' ');
         String command = commandString.substring(0, i);
         String args = commandString.substring(i + 1).trim();
-        eval(command, args, rp);
+        BListJid<StringJid> out = (BListJid<StringJid>) JAFactory.newActor(
+                this, JidFactories.STRING_BLIST_JID_TYPE, getMailboxFactory().createMailbox());
+        eval(command, args, out, rp);
     }
 
-    protected void eval(String command, String args, RP rp) throws Exception {
+    protected void println(BListJid<StringJid> out, String v) throws Exception {
+        out.iAdd(-1);
+        StringJid sj = out.iGet(-1);
+        sj.setValue(v);
+    }
+
+    protected void eval(String command, String args, BListJid<StringJid> out, RP<BListJid<StringJid>> rp) throws Exception {
         if (command.equals("close")) {
             close();
-            rp.processResponse(null);
+            println(out, "Closed");
+            rp.processResponse(out);
         } else {
             throw new IllegalArgumentException("Unrecognized command: " + command);
         }
