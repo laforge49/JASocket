@@ -43,7 +43,7 @@ public class RegisterResourceAgent extends CommandStringAgent {
             @Override
             public void processResponse(Boolean response) throws Exception {
                 if (response)
-                    println("registered resource " + name);
+                    println("applicationRegistered resource " + name);
                 else
                     println("a resource named " + name + " was already registred");
                 rp.processResponse(out);

@@ -33,8 +33,11 @@ import org.agilewiki.jasocket.server.UnregisterResource;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
+import java.util.HashMap;
+
 abstract public class Application extends JLPCActor implements Closable {
     private Node node;
+    protected HashMap<String, ApplicationCommand> applicationCommands = new HashMap<String, ApplicationCommand>();
     protected String startupArgs;
 
     abstract protected String applicationName();
@@ -47,6 +50,10 @@ abstract public class Application extends JLPCActor implements Closable {
         return node.agentChannelManager();
     }
 
+    protected void registerApplicationCommand(ApplicationCommand applicationCommand) {
+        applicationCommands.put(applicationCommand.name(), applicationCommand);
+    }
+
     public void startUp(Node node, final String args, final BListJid<StringJid> out, final RP rp) throws Exception {
         this.node = node;
         this.startupArgs = args;
@@ -55,7 +62,7 @@ abstract public class Application extends JLPCActor implements Closable {
             @Override
             public void processResponse(Boolean response) throws Exception {
                 if (response)
-                    registered(out, rp);
+                    applicationRegistered(out, rp);
                 else
                     println(out, "Application already registered: " + applicationName());
                 rp.processResponse(out);
@@ -63,7 +70,9 @@ abstract public class Application extends JLPCActor implements Closable {
         });
     }
 
-    abstract protected void registered(final BListJid<StringJid> out, RP rp) throws Exception;
+    protected void applicationRegistered(final BListJid<StringJid> out, RP rp) throws Exception {
+        registerCloseCommand();
+    }
 
     public void close() {
         UnregisterResource unregisterResource = new UnregisterResource(applicationName());
@@ -81,7 +90,13 @@ abstract public class Application extends JLPCActor implements Closable {
         String args = "";
         if (i > -1)
             args = commandString.substring(i + 1).trim();
-        eval(command, args, out, rp);
+        ApplicationCommand applicationCommand = applicationCommands.get(command);
+        if (applicationCommand == null) {
+            println(out, "Unknown command for " + applicationName() + ": " + command);
+            rp.processResponse(out);
+            return;
+        }
+        applicationCommand.eval(args, out, rp);
     }
 
     protected void println(BListJid<StringJid> out, String v) throws Exception {
@@ -90,13 +105,24 @@ abstract public class Application extends JLPCActor implements Closable {
         sj.setValue(v);
     }
 
-    protected void eval(String command, String args, BListJid<StringJid> out, RP<BListJid<StringJid>> rp) throws Exception {
-        if (command.equals("close")) {
-            close();
-            println(out, "Closed");
-            rp.processResponse(out);
-        } else {
-            println(out, "Unrecognized command: " + command);
-        }
+    protected void registerCloseCommand() {
+        registerApplicationCommand(new ApplicationCommand() {
+            @Override
+            public String name() {
+                return "close";
+            }
+
+            @Override
+            public String description() {
+                return "Closes the application.";
+            }
+
+            @Override
+            public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception {
+                close();
+                println(out, "Closed");
+                rp.processResponse(out);
+            }
+        });
     }
 }
