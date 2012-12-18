@@ -28,12 +28,18 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.node.Node;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 public class StartUp extends Request<Object, Application> {
     private Node node;
+    private String args;
+    private BListJid<StringJid> out;
 
-    public StartUp(Node node) {
+    public StartUp(Node node, String args, BListJid<StringJid> out) {
         this.node = node;
+        this.args = args;
+        this.out = out;
     }
 
     @Override
@@ -43,6 +49,6 @@ public class StartUp extends Request<Object, Application> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((Application) targetActor).startUp(node, rp);
+        ((Application) targetActor).startUp(node, args, out, rp);
     }
 }

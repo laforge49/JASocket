@@ -25,19 +25,17 @@ package org.agilewiki.jasocket.application;
 
 import org.agilewiki.jactor.Closable;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.DuplicateResourceException;
 import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jasocket.server.AgentChannelManager;
 import org.agilewiki.jasocket.server.RegisterResource;
 import org.agilewiki.jasocket.server.UnregisterResource;
-import org.agilewiki.jid.JidFactories;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 abstract public class Application extends JLPCActor implements Closable {
     private Node node;
+    protected String startupArgs;
 
     abstract protected String applicationName();
 
@@ -49,21 +47,23 @@ abstract public class Application extends JLPCActor implements Closable {
         return node.agentChannelManager();
     }
 
-    public void startUp(Node node, final RP rp) throws Exception {
+    public void startUp(Node node, final String args, final BListJid<StringJid> out, final RP rp) throws Exception {
         this.node = node;
+        this.startupArgs = args;
         RegisterResource registerResource = new RegisterResource(applicationName(), this);
         registerResource.send(this, agentChannelManager(), new RP<Boolean>() {
             @Override
             public void processResponse(Boolean response) throws Exception {
                 if (response)
-                    registered(rp);
+                    registered(out, rp);
                 else
-                    throw new DuplicateResourceException();
+                    println(out, "Application already registered: " + applicationName());
+                rp.processResponse(out);
             }
         });
     }
 
-    abstract protected void registered(RP rp) throws Exception;
+    abstract protected void registered(final BListJid<StringJid> out, RP rp) throws Exception;
 
     public void close() {
         UnregisterResource unregisterResource = new UnregisterResource(applicationName());
@@ -96,7 +96,7 @@ abstract public class Application extends JLPCActor implements Closable {
             println(out, "Closed");
             rp.processResponse(out);
         } else {
-            throw new IllegalArgumentException("Unrecognized command: " + command);
+            println(out, "Unrecognized command: " + command);
         }
     }
 }
