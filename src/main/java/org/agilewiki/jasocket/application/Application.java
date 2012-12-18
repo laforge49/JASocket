@@ -78,7 +78,9 @@ abstract public class Application extends JLPCActor implements Closable {
         commandString = commandString.trim();
         int i = commandString.indexOf(' ');
         String command = commandString.substring(0, i);
-        String args = commandString.substring(i + 1).trim();
+        String args = "";
+        if (i > -1)
+            args = commandString.substring(i + 1).trim();
         eval(command, args, out, rp);
     }
 

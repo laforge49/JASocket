@@ -46,5 +46,7 @@ public class ConsoleCommands extends Commands {
                 LatencyBenchmarkAgentFactory.fac);
         cmd("throughputTest", "Benchmarks throughput between this node and another node",
                 ThroughputBenchmarkAgentFactory.fac);
+        cmd("application", "Sends a command to an application",
+                ApplicationEvalAgentFactory.fac);
     }
 }
