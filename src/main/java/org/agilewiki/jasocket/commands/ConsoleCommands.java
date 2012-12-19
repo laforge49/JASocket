@@ -48,5 +48,7 @@ public class ConsoleCommands extends Commands {
                 ThroughputBenchmarkAgentFactory.fac);
         cmd("application", "Sends a command to an application",
                 ApplicationEvalAgentFactory.fac);
+        cmd("startup", "Starts an application",
+                StartupAgentFactory.fac);
     }
 }
