@@ -30,11 +30,11 @@ import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class Eval extends Request<BListJid<StringJid>, Application> {
+public class EvalApplicationCommand extends Request<BListJid<StringJid>, Application> {
     private String commandLine;
     private BListJid<StringJid> out;
 
-    public Eval(String commandLine, BListJid<StringJid> out) {
+    public EvalApplicationCommand(String commandLine, BListJid<StringJid> out) {
         this.commandLine = commandLine;
         this.out = out;
     }
@@ -46,6 +46,6 @@ public class Eval extends Request<BListJid<StringJid>, Application> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((Application) targetActor).eval(commandLine, out, rp);
+        ((Application) targetActor).evalApplicationCommand(commandLine, out, rp);
     }
 }

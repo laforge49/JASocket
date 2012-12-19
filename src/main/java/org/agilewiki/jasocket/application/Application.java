@@ -85,7 +85,7 @@ abstract public class Application extends JLPCActor implements Closable {
         }
     }
 
-    public void eval(String commandString, BListJid<StringJid> out, RP rp) throws Exception {
+    public void evalApplicationCommand(String commandString, BListJid<StringJid> out, RP rp) throws Exception {
         commandString = commandString.trim();
         int i = commandString.indexOf(' ');
         String command = commandString.substring(0, i);

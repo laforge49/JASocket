@@ -25,7 +25,7 @@ package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.application.Eval;
+import org.agilewiki.jasocket.application.EvalApplicationCommand;
 import org.agilewiki.jasocket.server.GetLocalResource;
 
 public class ApplicationEvalAgent extends CommandStringAgent {
@@ -36,8 +36,11 @@ public class ApplicationEvalAgent extends CommandStringAgent {
         final String resourceName = args.substring(0, i);
         if (i > -1)
             args = args.substring(i + 1).trim();
-        else
-            args = "";
+        else {
+            println("Application command name is missing");
+            rp.processResponse(out);
+            return;
+        }
         final String commandLine = args;
         (new GetLocalResource(resourceName)).send(this, agentChannelManager(), new RP<JLPCActor>() {
             @Override
@@ -47,7 +50,7 @@ public class ApplicationEvalAgent extends CommandStringAgent {
                     rp.processResponse(out);
                     return;
                 }
-                (new Eval(commandLine, out)).send(ApplicationEvalAgent.this, response, rp);
+                (new EvalApplicationCommand(commandLine, out)).send(ApplicationEvalAgent.this, response, rp);
             }
         });
     }
