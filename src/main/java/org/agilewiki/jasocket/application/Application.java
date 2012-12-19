@@ -55,7 +55,7 @@ abstract public class Application extends JLPCActor implements Closable {
         applicationCommands.put(applicationCommand.name, applicationCommand);
     }
 
-    public void startup(Node node, final String args, final BListJid<StringJid> out, final RP rp) throws Exception {
+    public void startUp(Node node, final String args, final BListJid<StringJid> out, final RP rp) throws Exception {
         this.node = node;
         this.startupArgs = args;
         RegisterResource registerResource = new RegisterResource(applicationName(), this);

@@ -31,7 +31,7 @@ import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class Startup extends Request<BListJid<StringJid>, Application> {
+public class Startup extends Request<Object, Application> {
     private Node node;
     private String args;
     private BListJid<StringJid> out;
@@ -49,6 +49,6 @@ public class Startup extends Request<BListJid<StringJid>, Application> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((Application) targetActor).startup(node, args, out, rp);
+        ((Application) targetActor).startUp(node, args, out, rp);
     }
 }
