@@ -31,12 +31,12 @@ import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class StartUp extends Request<Object, Application> {
+public class Startup extends Request<BListJid<StringJid>, Application> {
     private Node node;
     private String args;
     private BListJid<StringJid> out;
 
-    public StartUp(Node node, String args, BListJid<StringJid> out) {
+    public Startup(Node node, String args, BListJid<StringJid> out) {
         this.node = node;
         this.args = args;
         this.out = out;
@@ -49,6 +49,6 @@ public class StartUp extends Request<Object, Application> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((Application) targetActor).startUp(node, args, out, rp);
+        ((Application) targetActor).startup(node, args, out, rp);
     }
 }

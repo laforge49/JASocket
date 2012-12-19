@@ -23,19 +23,27 @@
  */
 package org.agilewiki.jasocket.node;
 
+import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jactor.MailboxFactory;
+import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.application.Application;
+import org.agilewiki.jasocket.application.Startup;
 import org.agilewiki.jasocket.commands.Commands;
 import org.agilewiki.jasocket.commands.ConsoleCommands;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.AgentChannelManager;
+import org.agilewiki.jid.JidFactories;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.FileSystems;
+import java.util.Iterator;
 
 public class Node {
     private String[] args;
@@ -74,6 +82,27 @@ public class Node {
         openAgentChannelManager(clusterPort(), commands());
         startDiscovery();
         startKeepAlive();
+    }
+
+    public Application initializeApplication(Class<Application> applicationClass) throws Exception {
+        Application application = applicationClass.newInstance();
+        application.initialize(mailboxFactory.createAsyncMailbox());
+        return application;
+    }
+
+    public void startup(Class<Application> applicationClass, String args) throws Exception {
+        System.out.println("\nstartup " + applicationClass.getName() + args);
+        Application application = initializeApplication(applicationClass);
+        BListJid<StringJid> out = (BListJid<StringJid>)
+                factory.newActor(JidFactories.STRING_BLIST_JID_TYPE, mailboxFactory.createMailbox());
+        Startup startup = new Startup(this, args, out);
+        startup.send(new JAFuture(), application);
+        int s = out.size();
+        int i = 0;
+        while (i < s) {
+            System.out.println(out.iGet(i).getValue());
+            i += 1;
+        }
     }
 
     public Node(String[] args, int threadCount) throws Exception {
