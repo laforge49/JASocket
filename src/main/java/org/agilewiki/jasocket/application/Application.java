@@ -52,7 +52,7 @@ abstract public class Application extends JLPCActor implements Closable {
     }
 
     protected void registerApplicationCommand(ApplicationCommand applicationCommand) {
-        applicationCommands.put(applicationCommand.name(), applicationCommand);
+        applicationCommands.put(applicationCommand.name, applicationCommand);
     }
 
     public void startUp(Node node, final String args, final BListJid<StringJid> out, final RP rp) throws Exception {
@@ -108,17 +108,7 @@ abstract public class Application extends JLPCActor implements Closable {
     }
 
     protected void registerCloseCommand() {
-        registerApplicationCommand(new ApplicationCommand() {
-            @Override
-            public String name() {
-                return "close";
-            }
-
-            @Override
-            public String description() {
-                return "Closes the application";
-            }
-
+        registerApplicationCommand(new ApplicationCommand("close", "Closes the application") {
             @Override
             public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception {
                 close();
@@ -129,23 +119,13 @@ abstract public class Application extends JLPCActor implements Closable {
     }
 
     protected void registerHelpCommand() {
-        registerApplicationCommand(new ApplicationCommand() {
-            @Override
-            public String name() {
-                return "help";
-            }
-
-            @Override
-            public String description() {
-                return "List the commands supported by the application";
-            }
-
+        registerApplicationCommand(new ApplicationCommand("help", "List the commands supported by the application") {
             @Override
             public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception {
                 Iterator<String> it = applicationCommands.keySet().iterator();
                 while (it.hasNext()) {
                     ApplicationCommand ac = applicationCommands.get(it.next());
-                    println(out, ac.name() + " - " + ac.description());
+                    println(out, ac.name + " - " + ac.description);
                 }
                 rp.processResponse(out);
             }

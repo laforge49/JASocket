@@ -4,10 +4,15 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public interface ApplicationCommand {
-    public String name();
+abstract public class ApplicationCommand {
+    public final String name;
 
-    public String description();
+    public final String description;
 
-    public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception;
+    public ApplicationCommand(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    abstract public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception;
 }
