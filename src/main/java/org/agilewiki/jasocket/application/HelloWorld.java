@@ -7,7 +7,7 @@ import org.agilewiki.jid.scalar.vlens.string.StringJid;
 public class HelloWorld extends Application {
 
     protected String applicationName() {
-        return "HelloWorld";
+        return "helloWorld";
     }
 
     protected void startApplication(BListJid<StringJid> out, RP rp) throws Exception {

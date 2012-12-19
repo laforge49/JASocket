@@ -29,6 +29,7 @@ import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.application.Application;
+import org.agilewiki.jasocket.application.HelloWorld;
 import org.agilewiki.jasocket.application.Startup;
 import org.agilewiki.jasocket.commands.Commands;
 import org.agilewiki.jasocket.commands.ConsoleCommands;
@@ -90,7 +91,7 @@ public class Node {
         return application;
     }
 
-    public void startup(Class<Application> applicationClass, String args) throws Exception {
+    public void startup(Class applicationClass, String args) throws Exception {
         System.out.println("\nstartup " + applicationClass.getName() + args);
         Application application = initializeApplication(applicationClass);
         BListJid<StringJid> out = (BListJid<StringJid>)

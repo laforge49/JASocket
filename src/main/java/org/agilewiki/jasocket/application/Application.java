@@ -76,6 +76,7 @@ abstract public class Application extends JLPCActor implements Closable {
     protected void startApplication(BListJid<StringJid> out, RP rp) throws Exception {
         registerCloseCommand();
         registerHelpCommand();
+        println(out, applicationName() + " started");
     }
 
     public void close() {
@@ -116,7 +117,7 @@ abstract public class Application extends JLPCActor implements Closable {
             @Override
             public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception {
                 close();
-                println(out, "Closed");
+                println(out, "Closed " + applicationName());
                 rp.processResponse(out);
             }
         });
