@@ -60,6 +60,7 @@ abstract public class Application extends JLPCActor implements Closable {
     public void startUp(Node node, final String args, final BListJid<StringJid> out, final RP rp) throws Exception {
         this.node = node;
         this.startupArgs = args;
+        node.mailboxFactory().addClosable(this);
         RegisterResource registerResource = new RegisterResource(applicationName(), this);
         registerResource.send(this, agentChannelManager(), new RP<Boolean>() {
             @Override

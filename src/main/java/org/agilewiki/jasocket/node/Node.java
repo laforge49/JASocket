@@ -26,10 +26,8 @@ package org.agilewiki.jasocket.node;
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jactor.MailboxFactory;
-import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.application.Application;
-import org.agilewiki.jasocket.application.HelloWorld;
 import org.agilewiki.jasocket.application.Startup;
 import org.agilewiki.jasocket.commands.Commands;
 import org.agilewiki.jasocket.commands.ConsoleCommands;
@@ -44,7 +42,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.FileSystems;
-import java.util.Iterator;
 
 public class Node {
     private String[] args;
@@ -121,6 +118,14 @@ public class Node {
         }
     }
 
+    public int clusterPort() throws Exception {
+        int port = 8880;
+        if (args.length > 0) {
+            port = Integer.valueOf(args[0]);
+        }
+        return port;
+    }
+
     protected void setNodeDirectory() throws Exception {
         int port = clusterPort();
         nodeDirectory = FileSystems.getDefault().getPath("node" + port).toFile();
@@ -128,14 +133,6 @@ public class Node {
             return;
         if (!nodeDirectory.mkdir())
             throw new IOException("unable to create directory " + nodeDirectory.getPath());
-    }
-
-    protected int clusterPort() throws Exception {
-        int port = 8880;
-        if (args.length > 0) {
-            port = Integer.valueOf(args[0]);
-        }
-        return port;
     }
 
     protected Commands commands() throws Exception {

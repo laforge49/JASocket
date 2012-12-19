@@ -27,7 +27,6 @@ import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannelClosedException;
-import org.agilewiki.jasocket.application.HelloWorld;
 import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.AgentChannelManager;
@@ -85,7 +84,6 @@ public class ConsoleApp {
         Node node = new Node(args, 100);
         try {
             node.process();
-            node.startup(HelloWorld.class, "");
             (new ConsoleApp()).create(node);
         } catch (Exception ex) {
             node.mailboxFactory().close();

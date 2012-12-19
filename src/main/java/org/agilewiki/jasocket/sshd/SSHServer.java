@@ -21,43 +21,35 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.node;
+package org.agilewiki.jasocket.sshd;
 
-import org.agilewiki.jactor.Closable;
-import org.agilewiki.jasocket.server.RegisterResource;
-import org.agilewiki.jasocket.sshd.DummyPasswordAuthenticator;
-import org.agilewiki.jasocket.sshd.JASShellFactory;
+import org.agilewiki.jactor.RP;
+import org.agilewiki.jasocket.application.Application;
+import org.agilewiki.jasocket.node.Node;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
-public class SSHApp implements Closable {
-    private Node node;
+public class SSHServer extends Application {
     private int sshPort;
     private SshServer sshd;
 
-    public void create(Node node) throws Exception {
-        this.node = node;
-        node.mailboxFactory().addClosable(this);
+    @Override
+    protected String applicationName() {
+        return "sshServer";
+    }
+
+    @Override
+    protected void startApplication(BListJid<StringJid> out, RP rp) throws Exception {
         sshPort = sshPort();
         sshd = SshServer.setUpDefaultServer();
         setAuthenticator();
         sshd.setPort(sshPort);
         sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider("hostkey.ser"));
         setShellFactory();
-        (new RegisterResource("sshConsole", node.agentChannelManager())).sendEvent(node.agentChannelManager());
         sshd.start();
-    }
-
-    protected int sshPort() throws Exception {
-        return node.clusterPort() + 1;
-    }
-
-    protected void setAuthenticator() {
-        sshd.setPasswordAuthenticator(new DummyPasswordAuthenticator());
-    }
-
-    protected void setShellFactory() {
-        sshd.setShellFactory(new JASShellFactory(node));
+        super.startApplication(out, rp);
     }
 
     @Override
@@ -68,13 +60,26 @@ public class SSHApp implements Closable {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        super.close();
+    }
+
+    protected int sshPort() throws Exception {
+        return node().clusterPort() + 1;
+    }
+
+    protected void setAuthenticator() {
+        sshd.setPasswordAuthenticator(new DummyPasswordAuthenticator());
+    }
+
+    protected void setShellFactory() {
+        sshd.setShellFactory(new JASShellFactory(node()));
     }
 
     public static void main(String[] args) throws Exception {
         Node node = new Node(args, 100);
         try {
             node.process();
-            (new SSHApp()).create(node);
+            node.startup(SSHServer.class, "");
         } catch (Exception ex) {
             node.mailboxFactory().close();
             throw ex;
