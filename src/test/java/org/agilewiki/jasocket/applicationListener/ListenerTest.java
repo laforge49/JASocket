@@ -4,11 +4,12 @@ import junit.framework.TestCase;
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.application.HelloWorld;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jasocket.server.RegisterResource;
-import org.agilewiki.jasocket.server.SubscribeResourceNotifications;
-import org.agilewiki.jasocket.server.UnregisterResource;
+import org.agilewiki.jasocket.server.RegisterApplication;
+import org.agilewiki.jasocket.server.SubscribeApplicationNameNotifications;
+import org.agilewiki.jasocket.server.UnregisterApplication;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.net.InetAddress;
@@ -30,18 +31,18 @@ public class ListenerTest extends TestCase {
         agentChannelManager1.openServerSocket(8881);
 
         System.out.println("\nregister local applicationNames 0a and 1a");
-        (new RegisterResource("0a", new StringJid())).send(future, agentChannelManager0);
-        (new RegisterResource("1a", new StringJid())).send(future, agentChannelManager1);
+        (new RegisterApplication("0a", new HelloWorld())).send(future, agentChannelManager0);
+        (new RegisterApplication("1a", new HelloWorld())).send(future, agentChannelManager1);
 
         System.out.println("\nadd listeners");
         Listener listener0 = new Listener();
         listener0.initialize(mailboxFactory.createMailbox());
         listener0.txt = "0";
-        (new SubscribeResourceNotifications(listener0)).send(future, agentChannelManager0);
+        (new SubscribeApplicationNameNotifications(listener0)).send(future, agentChannelManager0);
         Listener listener1 = new Listener();
         listener1.initialize(mailboxFactory.createMailbox());
         listener1.txt = "1";
-        (new SubscribeResourceNotifications(listener1)).send(future, agentChannelManager1);
+        (new SubscribeApplicationNameNotifications(listener1)).send(future, agentChannelManager1);
 
         System.out.println("\nopen channel");
         new Discovery(agentChannelManager0,
@@ -57,23 +58,23 @@ public class ListenerTest extends TestCase {
         Thread.sleep(100);
 
         System.out.println("\nregister local applicationNames 0b and 1b");
-        (new RegisterResource("0b", new StringJid())).send(future, agentChannelManager0);
-        (new RegisterResource("1b", new StringJid())).send(future, agentChannelManager1);
+        (new RegisterApplication("0b", new HelloWorld())).send(future, agentChannelManager0);
+        (new RegisterApplication("1b", new HelloWorld())).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nregister local applicationNames 0b and 1b, again");
-        (new RegisterResource("0b", new StringJid())).send(future, agentChannelManager0);
-        (new RegisterResource("1b", new StringJid())).send(future, agentChannelManager1);
+        (new RegisterApplication("0b", new HelloWorld())).send(future, agentChannelManager0);
+        (new RegisterApplication("1b", new HelloWorld())).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nunregister local applicationNames 0a and 1a");
-        (new UnregisterResource("0a")).send(future, agentChannelManager0);
-        (new UnregisterResource("1a")).send(future, agentChannelManager1);
+        (new UnregisterApplication("0a")).send(future, agentChannelManager0);
+        (new UnregisterApplication("1a")).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nunregister local applicationNames 0a and 1a, again");
-        (new UnregisterResource("0a")).send(future, agentChannelManager0);
-        (new UnregisterResource("1a")).send(future, agentChannelManager1);
+        (new UnregisterApplication("0a")).send(future, agentChannelManager0);
+        (new UnregisterApplication("1a")).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nshutdown");

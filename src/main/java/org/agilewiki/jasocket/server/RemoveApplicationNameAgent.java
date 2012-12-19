@@ -38,6 +38,6 @@ public class RemoveApplicationNameAgent extends AgentJid {
 
     @Override
     public void start(RP rp) throws Exception {
-        (new RemoveRemoteResourceName(remoteAddress(), getStringJid().getValue())).send(this, agentChannelManager(), rp);
+        (new RemoveRemoteApplicationName(remoteAddress(), getStringJid().getValue())).send(this, agentChannelManager(), rp);
     }
 }

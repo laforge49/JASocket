@@ -28,8 +28,8 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jasocket.server.RegisterResource;
-import org.agilewiki.jasocket.server.UnregisterResource;
+import org.agilewiki.jasocket.server.RegisterApplication;
+import org.agilewiki.jasocket.server.UnregisterApplication;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
@@ -61,8 +61,8 @@ abstract public class Application extends JLPCActor implements Closable {
         this.node = node;
         this.startupArgs = args;
         node.mailboxFactory().addClosable(this);
-        RegisterResource registerResource = new RegisterResource(applicationName(), this);
-        registerResource.send(this, agentChannelManager(), new RP<Boolean>() {
+        RegisterApplication registerApplication = new RegisterApplication(applicationName(), this);
+        registerApplication.send(this, agentChannelManager(), new RP<Boolean>() {
             @Override
             public void processResponse(Boolean response) throws Exception {
                 if (response)
@@ -83,9 +83,9 @@ abstract public class Application extends JLPCActor implements Closable {
     }
 
     public void close() {
-        UnregisterResource unregisterResource = new UnregisterResource(applicationName());
+        UnregisterApplication unregisterApplication = new UnregisterApplication(applicationName());
         try {
-            unregisterResource.sendEvent(agentChannelManager());
+            unregisterApplication.sendEvent(agentChannelManager());
         } catch (Exception ex) {
             ex.printStackTrace();
         }

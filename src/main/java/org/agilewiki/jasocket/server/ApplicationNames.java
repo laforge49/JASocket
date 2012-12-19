@@ -28,12 +28,10 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
-public class UnregisterResource extends Request<JLPCActor, AgentChannelManager> {
-    private String name;
+import java.util.TreeSet;
 
-    public UnregisterResource(String name) {
-        this.name = name;
-    }
+public class ApplicationNames extends Request<TreeSet<String>, AgentChannelManager> {
+    public final static ApplicationNames req = new ApplicationNames();
 
     @Override
     public boolean isTargetType(Actor targetActor) {
@@ -42,6 +40,6 @@ public class UnregisterResource extends Request<JLPCActor, AgentChannelManager> 
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).unregisterApplication(name));
+        rp.processResponse(((AgentChannelManager) targetActor).applicationNames());
     }
 }

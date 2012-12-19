@@ -27,14 +27,13 @@ import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.applicationListener.ApplicationNameListener;
 
-public class RemoveRemoteResourceName extends Request<Object, AgentChannelManager> {
-    private String address;
-    private String name;
+public class SubscribeApplicationNameNotifications extends Request<Boolean, AgentChannelManager> {
+    private ApplicationNameListener applicationNameListener;
 
-    public RemoveRemoteResourceName(String address, String name) {
-        this.address = address;
-        this.name = name;
+    public SubscribeApplicationNameNotifications(ApplicationNameListener applicationNameListener) {
+        this.applicationNameListener = applicationNameListener;
     }
 
     @Override
@@ -44,7 +43,6 @@ public class RemoveRemoteResourceName extends Request<Object, AgentChannelManage
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentChannelManager) targetActor).removeApplicationName(address, name);
-        rp.processResponse(null);
+        rp.processResponse(((AgentChannelManager) targetActor).subscribeApplicationNameNotifications(applicationNameListener));
     }
 }

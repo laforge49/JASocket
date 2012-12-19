@@ -34,6 +34,7 @@ import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.CloseChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
+import org.agilewiki.jasocket.application.Application;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jasocket.applicationListener.ApplicationNameAdded;
@@ -58,7 +59,7 @@ public class AgentChannelManager extends JLPCActor {
     ServerSocketChannel serverSocketChannel;
     public int maxPacketSize;
     HashMap<String, List<AgentChannel>> agentChannels = new HashMap<String, List<AgentChannel>>();
-    protected HashMap<String, JLPCActor> localApplications = new HashMap<String, JLPCActor>();
+    protected HashMap<String, Application> localApplications = new HashMap<String, Application>();
     String agentChannelManagerAddress;
     private HashSet<String> applicationNames = new HashSet<String>();
     private HashSet<ApplicationNameListener> applicationNameListeners = new HashSet<ApplicationNameListener>();
@@ -285,11 +286,11 @@ public class AgentChannelManager extends JLPCActor {
                 JAFactory.newActor(this, JASocketFactories.REMOVE_REMOTE_APPLICATION_NAME_AGENT_FACTORY, getMailbox());
         agent.setApplicationName(name);
         shipAgentEventToAll(agent);
-        removeApplicationName(agentChannelManagerAddress(), name);
+        removeRemoteApplicationName(agentChannelManagerAddress(), name);
         return removed;
     }
 
-    public boolean registerApplication(String name, JLPCActor application) throws Exception {
+    public boolean registerApplication(String name, Application application) throws Exception {
         JLPCActor added = localApplications.get(name);
         if (added != null)
             return false;
@@ -314,7 +315,7 @@ public class AgentChannelManager extends JLPCActor {
         }
     }
 
-    public void removeApplicationName(String address, String name) throws Exception {
+    public void removeRemoteApplicationName(String address, String name) throws Exception {
         if (!applicationNames.remove(address + " " + name))
             return;
         ApplicationRemoved applicationRemoved = new ApplicationRemoved(address, name);
@@ -437,7 +438,7 @@ public class AgentChannelManager extends JLPCActor {
         it = channelAppliations.iterator();
         while (it.hasNext()) {
             String name = it.next();
-            removeApplicationName(remoteAddress, name);
+            removeRemoteApplicationName(remoteAddress, name);
         }
         rp.processResponse(null);
     }

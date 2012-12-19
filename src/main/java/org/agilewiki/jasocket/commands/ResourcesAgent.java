@@ -24,7 +24,7 @@
 package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.server.Resources;
+import org.agilewiki.jasocket.server.ApplicationNames;
 
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -32,7 +32,7 @@ import java.util.TreeSet;
 public class ResourcesAgent extends CommandAgent {
     @Override
     public void process(final RP rp) throws Exception {
-        Resources.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {
+        ApplicationNames.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {
             @Override
             public void processResponse(TreeSet<String> response) throws Exception {
                 Iterator<String> it = response.iterator();

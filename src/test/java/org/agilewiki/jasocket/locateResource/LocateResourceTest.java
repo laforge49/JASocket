@@ -4,10 +4,11 @@ import junit.framework.TestCase;
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.application.HelloWorld;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jasocket.server.LocateResource;
-import org.agilewiki.jasocket.server.RegisterResource;
+import org.agilewiki.jasocket.server.LocateApplication;
+import org.agilewiki.jasocket.server.RegisterApplication;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.net.InetAddress;
@@ -32,8 +33,8 @@ public class LocateResourceTest extends TestCase {
         agentChannelManager1.initialize(mailboxFactory.createMailbox(), factory);
         agentChannelManager1.openServerSocket(8881);
 
-        (new RegisterResource("a", new StringJid())).send(future, agentChannelManager0);
-        (new RegisterResource("a", new StringJid())).send(future, agentChannelManager1);
+        (new RegisterApplication("a", new HelloWorld())).send(future, agentChannelManager0);
+        (new RegisterApplication("a", new HelloWorld())).send(future, agentChannelManager1);
 
         new Discovery(agentChannelManager0,
                 NetworkInterface.getByInetAddress(InetAddress.getLocalHost()),
@@ -47,7 +48,7 @@ public class LocateResourceTest extends TestCase {
                 2000);
         Thread.sleep(100);
 
-        List<String> addresses = (new LocateResource("a")).send(future, agentChannelManager0);
+        List<String> addresses = (new LocateApplication("a")).send(future, agentChannelManager0);
         Iterator<String> it = addresses.iterator();
         while (it.hasNext()) {
             System.out.println(it.next());

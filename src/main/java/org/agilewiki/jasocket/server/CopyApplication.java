@@ -21,33 +21,30 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.commands;
+package org.agilewiki.jasocket.server;
 
+import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.server.RegisterResource;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jid.Jid;
 
-public class RegisterResourceAgent extends CommandStringAgent {
+public class CopyApplication extends Request<Jid, AgentChannelManager> {
+    private String address;
+    private String name;
+
+    public CopyApplication(String address, String name) {
+        this.address = address;
+        this.name = name;
+    }
+
     @Override
-    public void process(final RP rp) throws Exception {
-        String args = getArgString();
-        int p = args.indexOf(' ');
-        if (p > -1)
-            args = args.substring(0, p).trim();
-        if (args.length() == 0) {
-            println("missing resource name");
-            rp.processResponse(out);
-            return;
-        }
-        final String name = args;
-        (new RegisterResource(name, agentChannelManager())).send(this, agentChannelManager(), new RP<Boolean>() {
-            @Override
-            public void processResponse(Boolean response) throws Exception {
-                if (response)
-                    println("applicationRegistered resource " + name);
-                else
-                    println("a resource named " + name + " was already registred");
-                rp.processResponse(out);
-            }
-        });
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof AgentChannelManager;
+    }
+
+    @Override
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        ((AgentChannelManager) targetActor).copyApplication(address, name, rp);
     }
 }

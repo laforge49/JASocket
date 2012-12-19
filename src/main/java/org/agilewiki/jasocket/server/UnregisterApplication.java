@@ -28,13 +28,11 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
-public class RegisterResource extends Request<Boolean, AgentChannelManager> {
+public class UnregisterApplication extends Request<JLPCActor, AgentChannelManager> {
     private String name;
-    private JLPCActor resource;
 
-    public RegisterResource(String name, JLPCActor resource) {
+    public UnregisterApplication(String name) {
         this.name = name;
-        this.resource = resource;
     }
 
     @Override
@@ -44,6 +42,6 @@ public class RegisterResource extends Request<Boolean, AgentChannelManager> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).registerApplication(name, resource));
+        rp.processResponse(((AgentChannelManager) targetActor).unregisterApplication(name));
     }
 }

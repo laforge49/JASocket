@@ -30,7 +30,7 @@ import org.agilewiki.jasocket.agentChannel.AgentChannelClosedException;
 import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jasocket.server.RegisterResource;
+import org.agilewiki.jasocket.server.RegisterApplication;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
@@ -49,7 +49,6 @@ public class ConsoleApp {
     public void create(Node node) throws Exception {
         this.node = node;
         AgentChannelManager agentChannelManager = node.agentChannelManager();
-        (new RegisterResource("console", agentChannelManager)).sendEvent(node.agentChannelManager());
         System.out.println(
                 "\n*** JASocket ConsoleApp " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
         inbr = new BufferedReader(new InputStreamReader(System.in));
