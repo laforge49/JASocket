@@ -57,7 +57,7 @@ abstract public class Application extends JLPCActor implements Closable {
         applicationCommands.put(applicationCommand.name, applicationCommand);
     }
 
-    public void startUp(Node node, final String args, final BListJid<StringJid> out, final RP rp) throws Exception {
+    public void startup(Node node, final String args, final BListJid<StringJid> out, final RP rp) throws Exception {
         this.node = node;
         this.startupArgs = args;
         node.mailboxFactory().addClosable(this);
@@ -67,9 +67,10 @@ abstract public class Application extends JLPCActor implements Closable {
             public void processResponse(Boolean response) throws Exception {
                 if (response)
                     startApplication(out, rp);
-                else
+                else {
                     println(out, "Application already registered: " + applicationName());
-                rp.processResponse(out);
+                    rp.processResponse(out);
+                }
             }
         });
     }
@@ -78,6 +79,7 @@ abstract public class Application extends JLPCActor implements Closable {
         registerCloseCommand();
         registerHelpCommand();
         println(out, applicationName() + " started");
+        rp.processResponse(out);
     }
 
     public void close() {

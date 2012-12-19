@@ -49,6 +49,6 @@ public class Startup extends Request<Object, Application> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((Application) targetActor).startUp(node, args, out, rp);
+        ((Application) targetActor).startup(node, args, out, rp);
     }
 }
