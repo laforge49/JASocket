@@ -26,29 +26,25 @@ package org.agilewiki.jasocket.commands;
 public class ConsoleCommands extends Commands {
     @Override
     protected void configure() throws Exception {
-        cmd("help", "Displays this list of commands",
+        cmd("help", "Display this list of commands",
                 HelpAgentFactory.fac);
         cmd("to", "Send a command to another node",
                 ToAgentFactory.fac);
-        cmd("channels", "List all the open channels to other nodes in the cluster",
-                ChannelsAgentFactory.fac);
-        cmd("registerApplication", "Register a resource with the given name",
-                RegisterResourceAgentFactory.fac);
-        cmd("unregisterApplication", "Unregister a resource with the given name",
-                UnregisterResourceAgentFactory.fac);
-        cmd("applicationNames", "list all applicationNames in the cluster",
+        cmd("nodes", "List all the accessible nodes in the cluster",
+                NodesAgentFactory.fac);
+        cmd("applications", "list all applications in the cluster",
                 ResourcesAgentFactory.fac);
         cmd("halt", "Exit (only) the local node",
                 HaltAgentFactory.fac);
-        cmd("exception", "Throws an exception",
+        cmd("exception", "Throw an exception",
                 ExceptionAgentFactory.fac);
-        cmd("latencyTest", "Benchmarks latency between this node and another node",
+        cmd("latencyTest", "Benchmark latency between this node and another node",
                 LatencyBenchmarkAgentFactory.fac);
-        cmd("throughputTest", "Benchmarks throughput between this node and another node",
+        cmd("throughputTest", "Benchmark throughput between this node and another node",
                 ThroughputBenchmarkAgentFactory.fac);
-        cmd("application", "Sends a command to an application",
+        cmd("application", "Send a command to an application",
                 ApplicationEvalAgentFactory.fac);
-        cmd("startup", "Starts an application",
+        cmd("startup", "Start an application",
                 StartupAgentFactory.fac);
     }
 }

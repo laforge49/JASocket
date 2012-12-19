@@ -29,7 +29,7 @@ import org.agilewiki.jasocket.server.Channels;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-public class ChannelsAgent extends CommandAgent {
+public class NodesAgent extends CommandAgent {
     @Override
     public void process(final RP rp) throws Exception {
         Channels.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {

@@ -23,32 +23,18 @@
  */
 package org.agilewiki.jasocket.commands;
 
-import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.server.UnregisterResource;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
 
-public class UnregisterResourceAgent extends CommandStringAgent {
+public class NodesAgentFactory extends AppJidFactory {
+    public final static NodesAgentFactory fac = new NodesAgentFactory();
+
+    public NodesAgentFactory() {
+        super("channelsAgent");
+    }
+
     @Override
-    public void process(final RP rp) throws Exception {
-        String args = getArgString();
-        int p = args.indexOf(' ');
-        if (p > -1)
-            args = args.substring(0, p).trim();
-        if (args.length() == 0) {
-            println("missing resource name");
-            rp.processResponse(out);
-            return;
-        }
-        final String name = args;
-        (new UnregisterResource(name)).send(this, agentChannelManager(), new RP<JLPCActor>() {
-            @Override
-            public void processResponse(JLPCActor response) throws Exception {
-                if (response != null)
-                    println("unregistered resource " + name);
-                else
-                    println("a resource named " + name + " was not registred");
-                rp.processResponse(out);
-            }
-        });
+    protected JLPCActor instantiateActor() throws Exception {
+        return new NodesAgent();
     }
 }
