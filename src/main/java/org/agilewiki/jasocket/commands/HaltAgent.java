@@ -24,10 +24,12 @@
 package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 public class HaltAgent extends CommandAgent {
     @Override
-    public void process(RP rp) throws Exception {
+    public void process(RP<BListJid<StringJid>> rp) throws Exception {
         getMailboxFactory().close();
         System.exit(0);
     }

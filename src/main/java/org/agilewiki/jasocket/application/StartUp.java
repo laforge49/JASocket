@@ -31,7 +31,7 @@ import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class Startup extends Request<Object, Application> {
+public class Startup extends Request<BListJid<StringJid>, Application> {
     private Node node;
     private String args;
     private BListJid<StringJid> out;

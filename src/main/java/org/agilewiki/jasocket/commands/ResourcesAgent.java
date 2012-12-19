@@ -25,13 +25,15 @@ package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.server.ApplicationNames;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.util.Iterator;
 import java.util.TreeSet;
 
 public class ResourcesAgent extends CommandAgent {
     @Override
-    public void process(final RP rp) throws Exception {
+    public void process(final RP<BListJid<StringJid>> rp) throws Exception {
         ApplicationNames.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {
             @Override
             public void processResponse(TreeSet<String> response) throws Exception {

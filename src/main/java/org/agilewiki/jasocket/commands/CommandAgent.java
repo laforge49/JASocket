@@ -56,7 +56,7 @@ abstract public class CommandAgent extends AgentJid {
         sj.setValue(v);
     }
 
-    abstract protected void process(RP rp) throws Exception;
+    abstract protected void process(RP<BListJid<StringJid>> rp) throws Exception;
 
     @Override
     public void start(RP rp) throws Exception {

@@ -27,10 +27,12 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.application.Application;
 import org.agilewiki.jasocket.application.Startup;
 import org.agilewiki.jasocket.node.Node;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 public class StartupAgent extends CommandStringAgent {
     @Override
-    protected void process(RP rp) throws Exception {
+    protected void process(RP<BListJid<StringJid>> rp) throws Exception {
         String args = getArgString().trim();
         int i = args.indexOf(' ');
         String applicationClassName = args;

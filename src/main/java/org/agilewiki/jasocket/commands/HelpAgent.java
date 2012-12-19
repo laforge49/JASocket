@@ -24,12 +24,14 @@
 package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.util.Iterator;
 
 public class HelpAgent extends CommandAgent {
     @Override
-    public void process(RP rp) throws Exception {
+    public void process(RP<BListJid<StringJid>> rp) throws Exception {
         Iterator<String> it = commandIterator();
         while (it.hasNext()) {
             String name = it.next();

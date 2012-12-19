@@ -27,10 +27,12 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.application.EvalApplicationCommand;
 import org.agilewiki.jasocket.server.GetLocalApplication;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 public class ApplicationEvalAgent extends CommandStringAgent {
     @Override
-    protected void process(final RP rp) throws Exception {
+    protected void process(final RP<BListJid<StringJid>> rp) throws Exception {
         String args = getArgString().trim();
         int i = args.indexOf(' ');
         final String resourceName = args.substring(0, i);

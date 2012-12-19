@@ -31,6 +31,8 @@ import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.GetAgentChannel;
 import org.agilewiki.jasocket.server.KeepAliveAgent;
 import org.agilewiki.jasocket.server.KeepAliveAgentFactory;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 /**
  * >throughputTest 10.0.0.2:8880 1000000
@@ -40,7 +42,7 @@ import org.agilewiki.jasocket.server.KeepAliveAgentFactory;
  */
 public class ThroughputBenchmarkAgent extends CommandStringAgent {
     @Override
-    protected void process(final RP rp) throws Exception {
+    protected void process(final RP<BListJid<StringJid>> rp) throws Exception {
         String address = getArgString();
         String argsString = "";
         int p = address.indexOf(' ');

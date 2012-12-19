@@ -32,10 +32,12 @@ import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.server.GetAgentChannel;
 import org.agilewiki.jid.Jid;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 public class ToAgent extends CommandStringAgent {
     @Override
-    protected void process(final RP rp) throws Exception {
+    protected void process(final RP<BListJid<StringJid>> rp) throws Exception {
         String address = getArgString();
         String argsString = "";
         int p = address.indexOf(' ');
@@ -52,7 +54,7 @@ public class ToAgent extends CommandStringAgent {
                 JAFactory.newActor(this, JASocketFactories.EVAL_FACTORY, getMailbox(), agentChannelManager());
         evalAgent.setArgString(argsString);
         if (isLocalAddress(address)) {
-            StartAgent.req.send(this, evalAgent, rp);
+            StartAgent.req.send(this, evalAgent, (RP) rp);
             return;
         }
         final String a = address;
@@ -68,7 +70,7 @@ public class ToAgent extends CommandStringAgent {
                 shipAgent.send(ToAgent.this, agentChannel, new RP<Jid>() {
                     @Override
                     public void processResponse(Jid response) throws Exception {
-                        rp.processResponse(response);
+                        rp.processResponse((BListJid<StringJid>) response);
                     }
                 });
             }
