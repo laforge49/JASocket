@@ -41,7 +41,9 @@ abstract public class Application extends JLPCActor implements Closable {
     protected TreeMap<String, ApplicationCommand> applicationCommands = new TreeMap<String, ApplicationCommand>();
     protected String startupArgs;
 
-    abstract protected String applicationName();
+    protected String applicationName() {
+        return this.getClass().getName();
+    }
 
     protected Node node() {
         return node;
@@ -88,10 +90,12 @@ abstract public class Application extends JLPCActor implements Closable {
     public void evalApplicationCommand(String commandString, BListJid<StringJid> out, RP rp) throws Exception {
         commandString = commandString.trim();
         int i = commandString.indexOf(' ');
-        String command = commandString.substring(0, i);
+        String command = commandString;
         String args = "";
-        if (i > -1)
+        if (i > -1) {
+            command = commandString.substring(0, i);
             args = commandString.substring(i + 1).trim();
+        }
         ApplicationCommand applicationCommand = applicationCommands.get(command);
         if (applicationCommand == null) {
             println(out, "Unknown command for " + applicationName() + ": " + command);

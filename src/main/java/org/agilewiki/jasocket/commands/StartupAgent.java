@@ -33,10 +33,11 @@ public class StartupAgent extends CommandStringAgent {
     protected void process(RP rp) throws Exception {
         String args = getArgString().trim();
         int i = args.indexOf(' ');
-        final String applicationClassName = args.substring(0, i);
-        if (i > -1)
+        String applicationClassName = args;
+        if (i > -1) {
+            applicationClassName = args.substring(0, i);
             args = args.substring(i + 1).trim();
-        else {
+        } else {
             args = "";
         }
         final String a = args;
