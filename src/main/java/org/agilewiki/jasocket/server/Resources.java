@@ -40,6 +40,6 @@ public class Resources extends Request<TreeSet<String>, AgentChannelManager> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).resources());
+        rp.processResponse(((AgentChannelManager) targetActor).applicationNames());
     }
 }

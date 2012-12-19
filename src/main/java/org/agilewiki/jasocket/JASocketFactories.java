@@ -37,10 +37,10 @@ import org.agilewiki.jid.JidFactories;
 public class JASocketFactories extends JLPCActor {
     public final static String EXCEPTION_FACTORY = "ExceptionJid";
     public final static String TRANSPORT_FACTORY = "transportJid";
-    public final static String ADD_RESOURCE_NAME_AGENT_FACTORY = "addResourceNameAgent";
-    public final static String REMOVE_RESOURCE_NAME_AGENT_FACTORY = "removeResourceNameAgent";
+    public final static String ADD_REMOTE_APPLICATION_NAME_AGENT_FACTORY = "addRemoteApplicationNameAgent";
+    public final static String REMOVE_REMOTE_APPLICATION_NAME_AGENT_FACTORY = "removeRemoteApplicationNameAgent";
     public final static String SET_CLIENT_PORT_AGENT_FACTORY = "setClientPortAgent";
-    public final static String GET_LOCAL_RESOURCE_AGENT_FACTORY = "getLocalResourceAgent";
+    public final static String GET_LOCAL_APPLICATION_AGENT_FACTORY = "getLocalApplicationAgent";
     public final static String KEEP_ALIVE_FACTORY = "keepAliveAgent";
     public final static String EVAL_FACTORY = "evalAgent";
 
@@ -55,10 +55,10 @@ public class JASocketFactories extends JLPCActor {
 
         registerActorFactory(ExceptionJidFactory.fac);
         registerActorFactory(TransportJidFactory.fac);
-        registerActorFactory(AddResourceNameAgentFactory.fac);
+        registerActorFactory(AddRemoteApplicationNameAgentFactory.fac);
         registerActorFactory(RemoveResourceNameAgentFactory.fac);
         registerActorFactory(SetClientPortAgentFactory.fac);
-        registerActorFactory(GetResourceAgentFactory.fac);
+        registerActorFactory(GetLocalApplicationAgentFactory.fac);
         registerActorFactory(KeepAliveAgentFactory.fac);
         registerActorFactory(EvalAgentFactory.fac);
     }

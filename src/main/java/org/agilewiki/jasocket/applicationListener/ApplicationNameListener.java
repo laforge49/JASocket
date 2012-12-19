@@ -21,23 +21,12 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.applicationListener;
 
-import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jactor.lpc.TargetActor;
 
-public class GetResourceAgent extends AgentJid {
-    private StringJid getStringJid() throws Exception {
-        return (StringJid) _iGet(0);
-    }
+public interface ApplicationNameListener extends TargetActor {
+    public void applicationNameAdded(String address, String name);
 
-    public void setResourceName(String name) throws Exception {
-        getStringJid().setValue(name);
-    }
-
-    @Override
-    public void start(RP rp) throws Exception {
-        (new GetLocalResource(getStringJid().getValue())).send(this, agentChannelManager(), rp);
-    }
+    public void applicationNameRemoved(String address, String name);
 }

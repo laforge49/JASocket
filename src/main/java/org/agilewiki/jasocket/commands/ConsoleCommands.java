@@ -32,11 +32,11 @@ public class ConsoleCommands extends Commands {
                 ToAgentFactory.fac);
         cmd("channels", "List all the open channels to other nodes in the cluster",
                 ChannelsAgentFactory.fac);
-        cmd("registerResource", "Register a resource with the given name",
+        cmd("registerApplication", "Register a resource with the given name",
                 RegisterResourceAgentFactory.fac);
-        cmd("unregisterResource", "Unregister a resource with the given name",
+        cmd("unregisterApplication", "Unregister a resource with the given name",
                 UnregisterResourceAgentFactory.fac);
-        cmd("resources", "list all resources in the cluster",
+        cmd("applicationNames", "list all applicationNames in the cluster",
                 ResourcesAgentFactory.fac);
         cmd("halt", "Exit (only) the local node",
                 HaltAgentFactory.fac);

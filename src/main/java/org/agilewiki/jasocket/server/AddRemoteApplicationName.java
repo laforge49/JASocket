@@ -23,20 +23,28 @@
  */
 package org.agilewiki.jasocket.server;
 
+import org.agilewiki.jactor.Actor;
+import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jid.collection.flenc.AppJidFactory;
-import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
+import org.agilewiki.jactor.lpc.Request;
 
-public class AddResourceNameAgentFactory extends AppJidFactory {
-    public final static AddResourceNameAgentFactory fac = new AddResourceNameAgentFactory();
+public class AddRemoteApplicationName extends Request<Object, AgentChannelManager> {
+    private String address;
+    private String name;
 
-    public AddResourceNameAgentFactory() {
-        super(JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY, StringJidFactory.fac);
+    public AddRemoteApplicationName(String address, String name) {
+        this.address = address;
+        this.name = name;
     }
 
     @Override
-    protected JLPCActor instantiateActor() throws Exception {
-        return new AddResourceNameAgent();
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof AgentChannelManager;
+    }
+
+    @Override
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        ((AgentChannelManager) targetActor).addRemoteApplicationName(address, name);
+        rp.processResponse(null);
     }
 }

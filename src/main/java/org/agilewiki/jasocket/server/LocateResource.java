@@ -44,6 +44,6 @@ public class LocateResource extends Request<List<String>, AgentChannelManager> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).locateResource(name));
+        rp.processResponse(((AgentChannelManager) targetActor).locateApplication(name));
     }
 }

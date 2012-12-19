@@ -44,6 +44,6 @@ public class RegisterResource extends Request<Boolean, AgentChannelManager> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).registerResource(name, resource));
+        rp.processResponse(((AgentChannelManager) targetActor).registerApplication(name, resource));
     }
 }

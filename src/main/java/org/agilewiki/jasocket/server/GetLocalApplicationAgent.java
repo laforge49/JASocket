@@ -23,20 +23,21 @@
  */
 package org.agilewiki.jasocket.server;
 
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jid.collection.flenc.AppJidFactory;
-import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
+import org.agilewiki.jactor.RP;
+import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class GetResourceAgentFactory extends AppJidFactory {
-    public final static GetResourceAgentFactory fac = new GetResourceAgentFactory();
+public class GetLocalApplicationAgent extends AgentJid {
+    private StringJid getStringJid() throws Exception {
+        return (StringJid) _iGet(0);
+    }
 
-    public GetResourceAgentFactory() {
-        super(JASocketFactories.GET_LOCAL_RESOURCE_AGENT_FACTORY, StringJidFactory.fac);
+    public void setApplicationName(String name) throws Exception {
+        getStringJid().setValue(name);
     }
 
     @Override
-    protected JLPCActor instantiateActor() throws Exception {
-        return new GetResourceAgent();
+    public void start(RP rp) throws Exception {
+        (new GetLocalApplication(getStringJid().getValue())).send(this, agentChannelManager(), rp);
     }
 }

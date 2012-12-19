@@ -21,27 +21,30 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.applicationListener;
 
 import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
-public class GetLocalResource extends Request<JLPCActor, AgentChannelManager> {
+public class ApplicationRemoved extends Request<Object, ApplicationNameListener> {
+    private String address;
     private String name;
 
-    public GetLocalResource(String name) {
+    public ApplicationRemoved(String address, String name) {
+        this.address = address;
         this.name = name;
     }
 
     @Override
     public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof AgentChannelManager;
+        return targetActor instanceof ApplicationNameListener;
     }
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).getLocalResource(name));
+        ((ApplicationNameListener) targetActor).applicationNameRemoved(address, name);
+        rp.processResponse(null);
     }
 }

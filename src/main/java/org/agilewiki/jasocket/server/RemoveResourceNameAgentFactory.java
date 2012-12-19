@@ -32,11 +32,11 @@ public class RemoveResourceNameAgentFactory extends AppJidFactory {
     public final static RemoveResourceNameAgentFactory fac = new RemoveResourceNameAgentFactory();
 
     public RemoveResourceNameAgentFactory() {
-        super(JASocketFactories.REMOVE_RESOURCE_NAME_AGENT_FACTORY, StringJidFactory.fac);
+        super(JASocketFactories.REMOVE_REMOTE_APPLICATION_NAME_AGENT_FACTORY, StringJidFactory.fac);
     }
 
     @Override
     protected JLPCActor instantiateActor() throws Exception {
-        return new RemoveResourceNameAgent();
+        return new RemoveApplicationNameAgent();
     }
 }

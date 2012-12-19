@@ -44,7 +44,7 @@ public class RemoveRemoteResourceName extends Request<Object, AgentChannelManage
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentChannelManager) targetActor).removeResourceName(address, name);
+        ((AgentChannelManager) targetActor).removeApplicationName(address, name);
         rp.processResponse(null);
     }
 }

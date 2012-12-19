@@ -1,4 +1,4 @@
-package org.agilewiki.jasocket.resourceListener;
+package org.agilewiki.jasocket.applicationListener;
 
 import junit.framework.TestCase;
 import org.agilewiki.jactor.JAFuture;
@@ -29,7 +29,7 @@ public class ListenerTest extends TestCase {
         agentChannelManager1.initialize(mailboxFactory.createMailbox(), factory);
         agentChannelManager1.openServerSocket(8881);
 
-        System.out.println("\nregister local resources 0a and 1a");
+        System.out.println("\nregister local applicationNames 0a and 1a");
         (new RegisterResource("0a", new StringJid())).send(future, agentChannelManager0);
         (new RegisterResource("1a", new StringJid())).send(future, agentChannelManager1);
 
@@ -56,22 +56,22 @@ public class ListenerTest extends TestCase {
                 2000);
         Thread.sleep(100);
 
-        System.out.println("\nregister local resources 0b and 1b");
+        System.out.println("\nregister local applicationNames 0b and 1b");
         (new RegisterResource("0b", new StringJid())).send(future, agentChannelManager0);
         (new RegisterResource("1b", new StringJid())).send(future, agentChannelManager1);
         Thread.sleep(100);
 
-        System.out.println("\nregister local resources 0b and 1b, again");
+        System.out.println("\nregister local applicationNames 0b and 1b, again");
         (new RegisterResource("0b", new StringJid())).send(future, agentChannelManager0);
         (new RegisterResource("1b", new StringJid())).send(future, agentChannelManager1);
         Thread.sleep(100);
 
-        System.out.println("\nunregister local resources 0a and 1a");
+        System.out.println("\nunregister local applicationNames 0a and 1a");
         (new UnregisterResource("0a")).send(future, agentChannelManager0);
         (new UnregisterResource("1a")).send(future, agentChannelManager1);
         Thread.sleep(100);
 
-        System.out.println("\nunregister local resources 0a and 1a, again");
+        System.out.println("\nunregister local applicationNames 0a and 1a, again");
         (new UnregisterResource("0a")).send(future, agentChannelManager0);
         (new UnregisterResource("1a")).send(future, agentChannelManager1);
         Thread.sleep(100);

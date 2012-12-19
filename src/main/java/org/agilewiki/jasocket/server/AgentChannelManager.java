@@ -36,9 +36,9 @@ import org.agilewiki.jasocket.agentChannel.CloseChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.node.Node;
-import org.agilewiki.jasocket.resourceListener.ResourceAdded;
-import org.agilewiki.jasocket.resourceListener.ResourceListener;
-import org.agilewiki.jasocket.resourceListener.ResourceRemoved;
+import org.agilewiki.jasocket.applicationListener.ApplicationNameAdded;
+import org.agilewiki.jasocket.applicationListener.ApplicationNameListener;
+import org.agilewiki.jasocket.applicationListener.ApplicationRemoved;
 import org.agilewiki.jid.CopyJID;
 import org.agilewiki.jid.Jid;
 
@@ -58,10 +58,10 @@ public class AgentChannelManager extends JLPCActor {
     ServerSocketChannel serverSocketChannel;
     public int maxPacketSize;
     HashMap<String, List<AgentChannel>> agentChannels = new HashMap<String, List<AgentChannel>>();
-    protected HashMap<String, JLPCActor> localResources = new HashMap<String, JLPCActor>();
+    protected HashMap<String, JLPCActor> localApplications = new HashMap<String, JLPCActor>();
     String agentChannelManagerAddress;
-    private HashSet<String> resourceNames = new HashSet<String>();
-    private HashSet<ResourceListener> resourceListeners = new HashSet<ResourceListener>();
+    private HashSet<String> applicationNames = new HashSet<String>();
+    private HashSet<ApplicationNameListener> applicationNameListeners = new HashSet<ApplicationNameListener>();
     private Set<AgentChannel> inactiveReceivers = Collections.newSetFromMap(new ConcurrentHashMap<AgentChannel, Boolean>());
     private Set<AgentChannel> activeReceivers = Collections.newSetFromMap(new ConcurrentHashMap<AgentChannel, Boolean>());
     private Set<String> inactiveSenders = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
@@ -87,7 +87,7 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public AgentChannel getAgentChannel(String address) throws Exception {
-        List<String> locations = locateResource(address);
+        List<String> locations = locateApplication(address);
         if (locations.size() > 0)
             address = locations.get(0);
         List<AgentChannel> dups = agentChannels.get(address);
@@ -169,12 +169,12 @@ public class AgentChannelManager extends JLPCActor {
         timer.scheduleAtFixedRate(ktt, keepaliveTimeout, keepaliveTimeout);
     }
 
-    public TreeSet<String> resources() {
-        return new TreeSet<String>(resourceNames);
+    public TreeSet<String> applicationNames() {
+        return new TreeSet<String>(applicationNames);
     }
 
-    public List<String> locateResource(String name) {
-        Iterator<String> it = resourceNames.iterator();
+    public List<String> locateApplication(String name) {
+        Iterator<String> it = applicationNames.iterator();
         List<String> addresses = new ArrayList<String>();
         String postfix = " " + name;
         while (it.hasNext()) {
@@ -189,24 +189,24 @@ public class AgentChannelManager extends JLPCActor {
         return addresses;
     }
 
-    public boolean subscribeResourceNotifications(ResourceListener resourceListener) throws Exception {
-        boolean subscribed = resourceListeners.add(resourceListener);
+    public boolean subscribeApplicationNameNotifications(ApplicationNameListener applicationNameListener) throws Exception {
+        boolean subscribed = applicationNameListeners.add(applicationNameListener);
         if (subscribed) {
-            Iterator<String> it = resourceNames.iterator();
+            Iterator<String> it = applicationNames.iterator();
             while (it.hasNext()) {
-                String resourceName = it.next();
-                int p = resourceName.indexOf(" ");
-                String address = resourceName.substring(0, p);
-                String name = resourceName.substring(p + 1);
-                ResourceAdded resourceAdded = new ResourceAdded(address, name);
-                resourceAdded.sendEvent(this, resourceListener);
+                String applicationName = it.next();
+                int p = applicationName.indexOf(" ");
+                String address = applicationName.substring(0, p);
+                String name = applicationName.substring(p + 1);
+                ApplicationNameAdded applicationNameAdded = new ApplicationNameAdded(address, name);
+                applicationNameAdded.sendEvent(this, applicationNameListener);
             }
         }
         return subscribed;
     }
 
-    public boolean unsubscribeResourceNotifications(ResourceListener resourceListener) {
-        return resourceListeners.remove(resourceListener);
+    public boolean unsubscribeApplicationNameNotifications(ApplicationNameListener applicationNameListener) {
+        return applicationNameListeners.remove(applicationNameListener);
     }
 
     public String agentChannelManagerAddress() throws Exception {
@@ -228,23 +228,23 @@ public class AgentChannelManager extends JLPCActor {
     public boolean isLocalAddress(String address) throws Exception {
         if (agentChannelManagerAddress().equals(address))
             return true;
-        return getLocalResource(address) != null;
+        return getLocalApplication(address) != null;
     }
 
-    public JLPCActor getLocalResource(String name) {
-        return localResources.get(name);
+    public JLPCActor getLocalApplication(String name) {
+        return localApplications.get(name);
     }
 
-    public void copyResource(String address, String name, final RP rp) throws Exception {
+    public void copyApplication(String address, String name, final RP rp) throws Exception {
         if (agentChannelManagerAddress().equals(address)) {
-            Jid resource = (Jid) getLocalResource(name);
-            if (resource == null) {
+            Jid application = (Jid) getLocalApplication(name);
+            if (application == null) {
                 rp.processResponse(null);
                 return;
             }
             Mailbox mailbox = null;
-            if (resource instanceof AgentJid) {
-                AgentJid agent = (AgentJid) resource;
+            if (application instanceof AgentJid) {
+                AgentJid agent = (AgentJid) application;
                 if (agent.async())
                     mailbox = getMailboxFactory().createAsyncMailbox();
                 else
@@ -252,12 +252,12 @@ public class AgentChannelManager extends JLPCActor {
             } else {
                 mailbox = getMailboxFactory().createMailbox();
             }
-            (new CopyJID(mailbox)).send(this, resource, rp);
+            (new CopyJID(mailbox)).send(this, application, rp);
             return;
         }
-        final GetResourceAgent agent = (GetResourceAgent)
-                JAFactory.newActor(this, JASocketFactories.GET_LOCAL_RESOURCE_AGENT_FACTORY, getMailbox());
-        agent.setResourceName(name);
+        final GetLocalApplicationAgent agent = (GetLocalApplicationAgent)
+                JAFactory.newActor(this, JASocketFactories.GET_LOCAL_APPLICATION_AGENT_FACTORY, getMailbox());
+        agent.setApplicationName(name);
         agentChannel(address, new RP() {
             @Override
             public void processResponse(Object response) throws Exception {
@@ -277,60 +277,60 @@ public class AgentChannelManager extends JLPCActor {
         }
     }
 
-    public JLPCActor unregisterResource(String name) throws Exception {
-        JLPCActor removed = localResources.remove(name);
+    public JLPCActor unregisterApplication(String name) throws Exception {
+        JLPCActor removed = localApplications.remove(name);
         if (removed == null)
             return null;
-        RemoveResourceNameAgent agent = (RemoveResourceNameAgent)
-                JAFactory.newActor(this, JASocketFactories.REMOVE_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
-        agent.setResourceName(name);
+        RemoveApplicationNameAgent agent = (RemoveApplicationNameAgent)
+                JAFactory.newActor(this, JASocketFactories.REMOVE_REMOTE_APPLICATION_NAME_AGENT_FACTORY, getMailbox());
+        agent.setApplicationName(name);
         shipAgentEventToAll(agent);
-        removeResourceName(agentChannelManagerAddress(), name);
+        removeApplicationName(agentChannelManagerAddress(), name);
         return removed;
     }
 
-    public boolean registerResource(String name, JLPCActor resource) throws Exception {
-        JLPCActor added = localResources.get(name);
+    public boolean registerApplication(String name, JLPCActor application) throws Exception {
+        JLPCActor added = localApplications.get(name);
         if (added != null)
             return false;
-        localResources.put(name, resource);
-        AddResourceNameAgent agent = (AddResourceNameAgent)
-                JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
-        agent.setResourceName(name);
+        localApplications.put(name, application);
+        AddRemoteApplicationNameAgent agent = (AddRemoteApplicationNameAgent)
+                JAFactory.newActor(this, JASocketFactories.ADD_REMOTE_APPLICATION_NAME_AGENT_FACTORY, getMailbox());
+        agent.setApplicationName(name);
         shipAgentEventToAll(agent);
-        addResourceName(agentChannelManagerAddress(), name);
+        addRemoteApplicationName(agentChannelManagerAddress(), name);
         return true;
     }
 
-    public void addResourceName(String address, String name) throws Exception {
+    public void addRemoteApplicationName(String address, String name) throws Exception {
         String rn = address + " " + name;
-        if (!resourceNames.add(rn))
+        if (!applicationNames.add(rn))
             return;
-        resourceNames.add(rn);
-        ResourceAdded resourceAdded = new ResourceAdded(address, name);
-        Iterator<ResourceListener> it = resourceListeners.iterator();
+        applicationNames.add(rn);
+        ApplicationNameAdded applicationNameAdded = new ApplicationNameAdded(address, name);
+        Iterator<ApplicationNameListener> it = applicationNameListeners.iterator();
         while (it.hasNext()) {
-            resourceAdded.sendEvent(this, it.next());
+            applicationNameAdded.sendEvent(this, it.next());
         }
     }
 
-    public void removeResourceName(String address, String name) throws Exception {
-        if (!resourceNames.remove(address + " " + name))
+    public void removeApplicationName(String address, String name) throws Exception {
+        if (!applicationNames.remove(address + " " + name))
             return;
-        ResourceRemoved resourceRemoved = new ResourceRemoved(address, name);
-        Iterator<ResourceListener> it = resourceListeners.iterator();
+        ApplicationRemoved applicationRemoved = new ApplicationRemoved(address, name);
+        Iterator<ApplicationNameListener> it = applicationNameListeners.iterator();
         while (it.hasNext()) {
-            resourceRemoved.sendEvent(this, it.next());
+            applicationRemoved.sendEvent(this, it.next());
         }
     }
 
-    private void shareResourceNames(AgentChannel agentChannel) throws Exception {
-        Iterator<String> it = localResources.keySet().iterator();
+    private void shareApplicationNames(AgentChannel agentChannel) throws Exception {
+        Iterator<String> it = localApplications.keySet().iterator();
         while (it.hasNext()) {
             String name = it.next();
-            AddResourceNameAgent agent = (AddResourceNameAgent)
-                    JAFactory.newActor(this, JASocketFactories.ADD_RESOURCE_NAME_AGENT_FACTORY, getMailbox());
-            agent.setResourceName(name);
+            AddRemoteApplicationNameAgent agent = (AddRemoteApplicationNameAgent)
+                    JAFactory.newActor(this, JASocketFactories.ADD_REMOTE_APPLICATION_NAME_AGENT_FACTORY, getMailbox());
+            agent.setApplicationName(name);
             ShipAgent shipAgent = new ShipAgent(agent);
             shipAgent.sendEvent(this, agentChannel);
         }
@@ -369,7 +369,7 @@ public class AgentChannelManager extends JLPCActor {
                 }
                 dups.add(0, agentChannel);
                 AgentChannel someAgentChannel = dups.get(0);
-                shareResourceNames(someAgentChannel);
+                shareApplicationNames(someAgentChannel);
                 rp.processResponse(someAgentChannel);
             }
         });
@@ -403,7 +403,7 @@ public class AgentChannelManager extends JLPCActor {
             agentChannels.put(remoteAddress, dups);
         }
         dups.add(0, agentChannel);
-        shareResourceNames(agentChannel);
+        shareApplicationNames(agentChannel);
     }
 
     public void close() {
@@ -424,20 +424,20 @@ public class AgentChannelManager extends JLPCActor {
                 agentChannels.remove(remoteAddress);
         }
         inactiveSenders.remove(remoteAddress);
-        HashSet<String> channelResources = new HashSet<String>();
-        Iterator<String> it = resourceNames.iterator();
+        HashSet<String> channelAppliations = new HashSet<String>();
+        Iterator<String> it = applicationNames.iterator();
         String prefix = remoteAddress + " ";
         int offset = prefix.length();
         while (it.hasNext()) {
             String name = it.next();
             if (name.startsWith(prefix)) {
-                channelResources.add(name.substring(offset));
+                channelAppliations.add(name.substring(offset));
             }
         }
-        it = channelResources.iterator();
+        it = channelAppliations.iterator();
         while (it.hasNext()) {
             String name = it.next();
-            removeResourceName(remoteAddress, name);
+            removeApplicationName(remoteAddress, name);
         }
         rp.processResponse(null);
     }

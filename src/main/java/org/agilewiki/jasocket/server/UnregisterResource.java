@@ -42,6 +42,6 @@ public class UnregisterResource extends Request<JLPCActor, AgentChannelManager> 
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).unregisterResource(name));
+        rp.processResponse(((AgentChannelManager) targetActor).unregisterApplication(name));
     }
 }

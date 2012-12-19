@@ -27,13 +27,13 @@ import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.resourceListener.ResourceListener;
+import org.agilewiki.jasocket.applicationListener.ApplicationNameListener;
 
 public class UnsubscribeResourceNotifications extends Request<Boolean, AgentChannelManager> {
-    private ResourceListener resourceListener;
+    private ApplicationNameListener applicationNameListener;
 
-    public UnsubscribeResourceNotifications(ResourceListener resourceListener) {
-        this.resourceListener = resourceListener;
+    public UnsubscribeResourceNotifications(ApplicationNameListener applicationNameListener) {
+        this.applicationNameListener = applicationNameListener;
     }
 
     @Override
@@ -43,6 +43,6 @@ public class UnsubscribeResourceNotifications extends Request<Boolean, AgentChan
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).unsubscribeResourceNotifications(resourceListener));
+        rp.processResponse(((AgentChannelManager) targetActor).unsubscribeApplicationNameNotifications(applicationNameListener));
     }
 }

@@ -45,6 +45,6 @@ public class CopyResource extends Request<Jid, AgentChannelManager> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentChannelManager) targetActor).copyResource(address, name, rp);
+        ((AgentChannelManager) targetActor).copyApplication(address, name, rp);
     }
 }

@@ -26,7 +26,7 @@ package org.agilewiki.jasocket.commands;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.application.EvalApplicationCommand;
-import org.agilewiki.jasocket.server.GetLocalResource;
+import org.agilewiki.jasocket.server.GetLocalApplication;
 
 public class ApplicationEvalAgent extends CommandStringAgent {
     @Override
@@ -42,7 +42,7 @@ public class ApplicationEvalAgent extends CommandStringAgent {
             return;
         }
         final String commandLine = args;
-        (new GetLocalResource(resourceName)).send(this, agentChannelManager(), new RP<JLPCActor>() {
+        (new GetLocalApplication(resourceName)).send(this, agentChannelManager(), new RP<JLPCActor>() {
             @Override
             public void processResponse(JLPCActor response) throws Exception {
                 if (response == null) {

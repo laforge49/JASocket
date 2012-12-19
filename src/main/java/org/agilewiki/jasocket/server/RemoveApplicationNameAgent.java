@@ -21,30 +21,23 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.resourceListener;
+package org.agilewiki.jasocket.server;
 
-import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class ResourceRemoved extends Request<Object, ResourceListener> {
-    private String address;
-    private String name;
+public class RemoveApplicationNameAgent extends AgentJid {
+    private StringJid getStringJid() throws Exception {
+        return (StringJid) _iGet(0);
+    }
 
-    public ResourceRemoved(String address, String name) {
-        this.address = address;
-        this.name = name;
+    public void setApplicationName(String name) throws Exception {
+        getStringJid().setValue(name);
     }
 
     @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof ResourceListener;
-    }
-
-    @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((ResourceListener) targetActor).resourceRemoved(address, name);
-        rp.processResponse(null);
+    public void start(RP rp) throws Exception {
+        (new RemoveRemoteResourceName(remoteAddress(), getStringJid().getValue())).send(this, agentChannelManager(), rp);
     }
 }
