@@ -21,23 +21,22 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.cluster;
 
-import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jid.scalar.flens.integer.IntegerJidFactory;
 
-public class AddRemoteApplicationNameAgent extends AgentJid {
-    private StringJid getStringJid() throws Exception {
-        return (StringJid) _iGet(0);
-    }
+public class SetClientPortAgentFactory extends AppJidFactory {
+    public final static SetClientPortAgentFactory fac = new SetClientPortAgentFactory();
 
-    public void setApplicationName(String name) throws Exception {
-        getStringJid().setValue(name);
+    public SetClientPortAgentFactory() {
+        super(JASocketFactories.SET_CLIENT_PORT_AGENT_FACTORY, IntegerJidFactory.fac);
     }
 
     @Override
-    public void start(RP rp) throws Exception {
-        (new AddRemoteApplicationName(remoteAddress(), getStringJid().getValue())).send(this, agentChannelManager(), rp);
+    protected JLPCActor instantiateActor() throws Exception {
+        return new SetClientPortAgent();
     }
 }

@@ -27,9 +27,9 @@ import org.agilewiki.jactor.Closable;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.node.Node;
-import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jasocket.server.RegisterApplication;
-import org.agilewiki.jasocket.server.UnregisterApplication;
+import org.agilewiki.jasocket.cluster.AgentChannelManager;
+import org.agilewiki.jasocket.cluster.RegisterApplication;
+import org.agilewiki.jasocket.cluster.UnregisterApplication;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
@@ -76,7 +76,7 @@ abstract public class Application extends JLPCActor implements Closable {
     }
 
     protected void startApplication(BListJid<StringJid> out, RP rp) throws Exception {
-        registerCloseCommand();
+        registerShutdownCommand();
         registerHelpCommand();
         println(out, applicationName() + " started");
         rp.processResponse(out);
@@ -115,12 +115,12 @@ abstract public class Application extends JLPCActor implements Closable {
         sj.setValue(v);
     }
 
-    protected void registerCloseCommand() {
-        registerApplicationCommand(new ApplicationCommand("close", "Closes the application") {
+    protected void registerShutdownCommand() {
+        registerApplicationCommand(new ApplicationCommand("shutdown", "Stops and unregisters the application") {
             @Override
             public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception {
                 close();
-                println(out, "Closed " + applicationName());
+                println(out, "Stopped " + applicationName());
                 rp.processResponse(out);
             }
         });

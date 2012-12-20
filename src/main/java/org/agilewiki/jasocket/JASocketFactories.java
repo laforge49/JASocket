@@ -31,7 +31,7 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jasocket.jid.agent.EvalAgentFactory;
-import org.agilewiki.jasocket.server.*;
+import org.agilewiki.jasocket.cluster.*;
 import org.agilewiki.jid.JidFactories;
 
 public class JASocketFactories extends JLPCActor {

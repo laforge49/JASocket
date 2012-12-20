@@ -6,8 +6,8 @@ import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
-import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jasocket.server.OpenAgentChannel;
+import org.agilewiki.jasocket.cluster.AgentChannelManager;
+import org.agilewiki.jasocket.cluster.OpenAgentChannel;
 
 public class ExceptionAgentTest extends TestCase {
     public void test() throws Exception {

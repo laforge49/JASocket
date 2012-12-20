@@ -30,7 +30,7 @@ import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
-import org.agilewiki.jasocket.server.GetAgentChannel;
+import org.agilewiki.jasocket.cluster.GetAgentChannel;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;

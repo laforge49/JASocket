@@ -21,21 +21,28 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.cluster;
 
+import org.agilewiki.jactor.Actor;
+import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.agentChannel.AgentChannel;
 
-public class KeepAliveAgentFactory extends AppJidFactory {
-    public final static KeepAliveAgentFactory fac = new KeepAliveAgentFactory();
+public class GetAgentChannel extends Request<AgentChannel, AgentChannelManager> {
+    private String address;
 
-    public KeepAliveAgentFactory() {
-        super(JASocketFactories.KEEP_ALIVE_FACTORY);
+    public GetAgentChannel(String address) {
+        this.address = address;
     }
 
     @Override
-    protected JLPCActor instantiateActor() throws Exception {
-        return new KeepAliveAgent();
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof AgentChannelManager;
+    }
+
+    @Override
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        rp.processResponse(((AgentChannelManager) targetActor).getAgentChannel(address));
     }
 }

@@ -24,8 +24,8 @@
 package org.agilewiki.jasocket.discovery;
 
 import org.agilewiki.jactor.concurrent.ThreadManager;
-import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jasocket.server.OpenAgentChannel;
+import org.agilewiki.jasocket.cluster.AgentChannelManager;
+import org.agilewiki.jasocket.cluster.OpenAgentChannel;
 
 import java.io.IOException;
 import java.net.*;

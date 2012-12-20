@@ -26,7 +26,7 @@ package org.agilewiki.jasocket.commands;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.application.EvalApplicationCommand;
-import org.agilewiki.jasocket.server.GetLocalApplication;
+import org.agilewiki.jasocket.cluster.GetLocalApplication;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 

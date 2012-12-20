@@ -21,23 +21,23 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.cluster;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jid.scalar.flens.integer.IntegerJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class SetClientPortAgent extends AgentJid {
-    private IntegerJid getIntegerJid() throws Exception {
-        return (IntegerJid) _iGet(0);
+public class GetLocalApplicationAgent extends AgentJid {
+    private StringJid getStringJid() throws Exception {
+        return (StringJid) _iGet(0);
     }
 
-    public void setRemotePort(int port) throws Exception {
-        getIntegerJid().setValue(port);
+    public void setApplicationName(String name) throws Exception {
+        getStringJid().setValue(name);
     }
 
     @Override
     public void start(RP rp) throws Exception {
-        (new SetClientPort(agentChannel(), getIntegerJid().getValue())).send(this, agentChannelManager(), rp);
+        (new GetLocalApplication(getStringJid().getValue())).send(this, agentChannelManager(), rp);
     }
 }

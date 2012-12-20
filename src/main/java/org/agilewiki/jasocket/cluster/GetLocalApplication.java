@@ -21,19 +21,17 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.cluster;
 
 import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
-public class RemoveRemoteApplicationName extends Request<Object, AgentChannelManager> {
-    private String address;
+public class GetLocalApplication extends Request<JLPCActor, AgentChannelManager> {
     private String name;
 
-    public RemoveRemoteApplicationName(String address, String name) {
-        this.address = address;
+    public GetLocalApplication(String name) {
         this.name = name;
     }
 
@@ -44,7 +42,6 @@ public class RemoveRemoteApplicationName extends Request<Object, AgentChannelMan
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentChannelManager) targetActor).removeRemoteApplicationName(address, name);
-        rp.processResponse(null);
+        rp.processResponse(((AgentChannelManager) targetActor).getLocalApplication(name));
     }
 }

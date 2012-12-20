@@ -21,35 +21,17 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.cluster;
 
 import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.agentChannel.AgentChannel;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
+import java.util.TreeSet;
 
-public class OpenAgentChannel extends Request<AgentChannel, AgentChannelManager> {
-    private InetSocketAddress inetSocketAddress;
-
-    public OpenAgentChannel(int port) throws Exception {
-        InetAddress inetAddress = InetAddress.getLocalHost();
-        this.inetSocketAddress = new InetSocketAddress(inetAddress, port);
-    }
-
-    public OpenAgentChannel(String address) throws Exception {
-        int i = address.indexOf(":");
-        String host = address.substring(0, i);
-        int port = Integer.valueOf(address.substring(i + 1));
-        inetSocketAddress = new InetSocketAddress(host, port);
-    }
-
-    public OpenAgentChannel(InetSocketAddress inetSocketAddress) {
-        this.inetSocketAddress = inetSocketAddress;
-    }
+public class WriteTimeout extends Request<TreeSet<String>, AgentChannelManager> {
+    public final static WriteTimeout req = new WriteTimeout();
 
     @Override
     public boolean isTargetType(Actor targetActor) {
@@ -58,6 +40,7 @@ public class OpenAgentChannel extends Request<AgentChannel, AgentChannelManager>
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentChannelManager) targetActor).agentChannel(inetSocketAddress, rp);
+        ((AgentChannelManager) targetActor).writeTimeout();
+        rp.processResponse(null);
     }
 }

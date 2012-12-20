@@ -21,22 +21,30 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.cluster;
 
+import org.agilewiki.jactor.Actor;
+import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jid.collection.flenc.AppJidFactory;
-import org.agilewiki.jid.scalar.flens.integer.IntegerJidFactory;
+import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jid.Jid;
 
-public class SetClientPortAgentFactory extends AppJidFactory {
-    public final static SetClientPortAgentFactory fac = new SetClientPortAgentFactory();
+public class CopyApplication extends Request<Jid, AgentChannelManager> {
+    private String address;
+    private String name;
 
-    public SetClientPortAgentFactory() {
-        super(JASocketFactories.SET_CLIENT_PORT_AGENT_FACTORY, IntegerJidFactory.fac);
+    public CopyApplication(String address, String name) {
+        this.address = address;
+        this.name = name;
     }
 
     @Override
-    protected JLPCActor instantiateActor() throws Exception {
-        return new SetClientPortAgent();
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof AgentChannelManager;
+    }
+
+    @Override
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        ((AgentChannelManager) targetActor).copyApplication(address, name, rp);
     }
 }

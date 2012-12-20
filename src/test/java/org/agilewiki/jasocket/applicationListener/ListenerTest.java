@@ -6,11 +6,10 @@ import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.application.HelloWorld;
 import org.agilewiki.jasocket.discovery.Discovery;
-import org.agilewiki.jasocket.server.AgentChannelManager;
-import org.agilewiki.jasocket.server.RegisterApplication;
-import org.agilewiki.jasocket.server.SubscribeApplicationNameNotifications;
-import org.agilewiki.jasocket.server.UnregisterApplication;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jasocket.cluster.AgentChannelManager;
+import org.agilewiki.jasocket.cluster.RegisterApplication;
+import org.agilewiki.jasocket.cluster.SubscribeApplicationNameNotifications;
+import org.agilewiki.jasocket.cluster.UnregisterApplication;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;

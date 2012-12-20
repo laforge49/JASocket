@@ -33,7 +33,7 @@ import org.agilewiki.jasocket.agentChannel.AgentChannelClosedException;
 import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.node.Node;
-import org.agilewiki.jasocket.server.AgentChannelManager;
+import org.agilewiki.jasocket.cluster.AgentChannelManager;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 import org.apache.sshd.server.Command;

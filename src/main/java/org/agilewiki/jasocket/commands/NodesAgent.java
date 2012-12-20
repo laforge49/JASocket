@@ -24,7 +24,7 @@
 package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.server.Channels;
+import org.agilewiki.jasocket.cluster.Channels;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 

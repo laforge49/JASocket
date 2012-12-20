@@ -21,28 +21,23 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.cluster;
 
-import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.applicationListener.ApplicationNameListener;
+import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jid.scalar.flens.integer.IntegerJid;
 
-public class UnsubscribeApplicationNameNotifications extends Request<Boolean, AgentChannelManager> {
-    private ApplicationNameListener applicationNameListener;
+public class SetClientPortAgent extends AgentJid {
+    private IntegerJid getIntegerJid() throws Exception {
+        return (IntegerJid) _iGet(0);
+    }
 
-    public UnsubscribeApplicationNameNotifications(ApplicationNameListener applicationNameListener) {
-        this.applicationNameListener = applicationNameListener;
+    public void setRemotePort(int port) throws Exception {
+        getIntegerJid().setValue(port);
     }
 
     @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof AgentChannelManager;
-    }
-
-    @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).unsubscribeApplicationNameNotifications(applicationNameListener));
+    public void start(RP rp) throws Exception {
+        (new SetClientPort(agentChannel(), getIntegerJid().getValue())).send(this, agentChannelManager(), rp);
     }
 }

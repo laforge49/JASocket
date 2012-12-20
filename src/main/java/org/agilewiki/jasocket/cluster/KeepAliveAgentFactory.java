@@ -21,22 +21,21 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.cluster;
 
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jid.collection.flenc.AppJidFactory;
-import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
-public class AddRemoteApplicationNameAgentFactory extends AppJidFactory {
-    public final static AddRemoteApplicationNameAgentFactory fac = new AddRemoteApplicationNameAgentFactory();
+public class KeepAliveAgentFactory extends AppJidFactory {
+    public final static KeepAliveAgentFactory fac = new KeepAliveAgentFactory();
 
-    public AddRemoteApplicationNameAgentFactory() {
-        super(JASocketFactories.ADD_REMOTE_APPLICATION_NAME_AGENT_FACTORY, StringJidFactory.fac);
+    public KeepAliveAgentFactory() {
+        super(JASocketFactories.KEEP_ALIVE_FACTORY);
     }
 
     @Override
     protected JLPCActor instantiateActor() throws Exception {
-        return new AddRemoteApplicationNameAgent();
+        return new KeepAliveAgent();
     }
 }

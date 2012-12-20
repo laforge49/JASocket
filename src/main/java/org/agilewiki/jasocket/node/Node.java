@@ -32,7 +32,7 @@ import org.agilewiki.jasocket.application.Startup;
 import org.agilewiki.jasocket.commands.Commands;
 import org.agilewiki.jasocket.commands.ConsoleCommands;
 import org.agilewiki.jasocket.discovery.Discovery;
-import org.agilewiki.jasocket.server.AgentChannelManager;
+import org.agilewiki.jasocket.cluster.AgentChannelManager;
 import org.agilewiki.jid.JidFactories;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;

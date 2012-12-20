@@ -21,17 +21,22 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.cluster;
 
 import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.agentChannel.AgentChannel;
 
-import java.util.TreeSet;
+public class SetClientPort extends Request<Object, AgentChannelManager> {
+    private AgentChannel agentChannel;
+    private int port;
 
-public class ApplicationNames extends Request<TreeSet<String>, AgentChannelManager> {
-    public final static ApplicationNames req = new ApplicationNames();
+    public SetClientPort(AgentChannel agentChannel, int port) {
+        this.agentChannel = agentChannel;
+        this.port = port;
+    }
 
     @Override
     public boolean isTargetType(Actor targetActor) {
@@ -40,6 +45,7 @@ public class ApplicationNames extends Request<TreeSet<String>, AgentChannelManag
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).applicationNames());
+        ((AgentChannelManager) targetActor).setClientPort(agentChannel, port);
+        rp.processResponse(null);
     }
 }

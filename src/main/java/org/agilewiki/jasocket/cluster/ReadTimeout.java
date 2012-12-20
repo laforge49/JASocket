@@ -21,23 +21,26 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.cluster;
 
+import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jactor.lpc.Request;
 
-public class RemoveApplicationNameAgent extends AgentJid {
-    private StringJid getStringJid() throws Exception {
-        return (StringJid) _iGet(0);
-    }
+import java.util.TreeSet;
 
-    public void setApplicationName(String name) throws Exception {
-        getStringJid().setValue(name);
+public class ReadTimeout extends Request<TreeSet<String>, AgentChannelManager> {
+    public final static ReadTimeout req = new ReadTimeout();
+
+    @Override
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof AgentChannelManager;
     }
 
     @Override
-    public void start(RP rp) throws Exception {
-        (new RemoveRemoteApplicationName(remoteAddress(), getStringJid().getValue())).send(this, agentChannelManager(), rp);
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        ((AgentChannelManager) targetActor).readTimeout();
+        rp.processResponse(null);
     }
 }

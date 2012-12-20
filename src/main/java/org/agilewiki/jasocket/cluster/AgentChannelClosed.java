@@ -21,18 +21,19 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.cluster;
 
 import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.agentChannel.AgentChannel;
 
-public class UnregisterApplication extends Request<JLPCActor, AgentChannelManager> {
-    private String name;
+public class AgentChannelClosed extends Request<Object, AgentChannelManager> {
+    private AgentChannel agentChannel;
 
-    public UnregisterApplication(String name) {
-        this.name = name;
+    public AgentChannelClosed(AgentChannel agentChannel) {
+        this.agentChannel = agentChannel;
     }
 
     @Override
@@ -42,6 +43,6 @@ public class UnregisterApplication extends Request<JLPCActor, AgentChannelManage
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).unregisterApplication(name));
+        ((AgentChannelManager) targetActor).agentChannelClosed(agentChannel, rp);
     }
 }

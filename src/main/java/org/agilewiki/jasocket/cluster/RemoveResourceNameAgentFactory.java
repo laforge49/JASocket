@@ -21,30 +21,22 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.server;
+package org.agilewiki.jasocket.cluster;
 
-import org.agilewiki.jactor.Actor;
-import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.application.Application;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
-public class RegisterApplication extends Request<Boolean, AgentChannelManager> {
-    private String name;
-    private Application application;
+public class RemoveResourceNameAgentFactory extends AppJidFactory {
+    public final static RemoveResourceNameAgentFactory fac = new RemoveResourceNameAgentFactory();
 
-    public RegisterApplication(String name, Application application) {
-        this.name = name;
-        this.application = application;
+    public RemoveResourceNameAgentFactory() {
+        super(JASocketFactories.REMOVE_REMOTE_APPLICATION_NAME_AGENT_FACTORY, StringJidFactory.fac);
     }
 
     @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof AgentChannelManager;
-    }
-
-    @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).registerApplication(name, application));
+    protected JLPCActor instantiateActor() throws Exception {
+        return new RemoveApplicationNameAgent();
     }
 }
