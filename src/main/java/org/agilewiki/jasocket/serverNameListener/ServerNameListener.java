@@ -21,30 +21,12 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.applicationListener;
+package org.agilewiki.jasocket.serverNameListener;
 
-import org.agilewiki.jactor.Actor;
-import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jactor.lpc.TargetActor;
 
-public class ApplicationNameAdded extends Request<Object, ApplicationNameListener> {
-    private String address;
-    private String name;
+public interface ServerNameListener extends TargetActor {
+    public void serverNameAdded(String address, String name);
 
-    public ApplicationNameAdded(String address, String name) {
-        this.address = address;
-        this.name = name;
-    }
-
-    @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof ApplicationNameListener;
-    }
-
-    @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((ApplicationNameListener) targetActor).applicationNameAdded(address, name);
-        rp.processResponse(null);
-    }
+    public void serverNameRemoved(String address, String name);
 }

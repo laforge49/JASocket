@@ -82,15 +82,15 @@ public class Node {
         startKeepAlive();
     }
 
-    public Server initializeApplication(Class<Server> applicationClass) throws Exception {
-        Server server = applicationClass.newInstance();
+    public Server initializeServer(Class<Server> serverClass) throws Exception {
+        Server server = serverClass.newInstance();
         server.initialize(mailboxFactory.createAsyncMailbox());
         return server;
     }
 
-    public void startup(Class applicationClass, String args) throws Exception {
-        System.out.println("\nstartup " + applicationClass.getName() + args);
-        Server server = initializeApplication(applicationClass);
+    public void startup(Class serverClass, String args) throws Exception {
+        System.out.println("\nstartup " + serverClass.getName() + args);
+        Server server = initializeServer(serverClass);
         BListJid<StringJid> out = (BListJid<StringJid>)
                 factory.newActor(JidFactories.STRING_BLIST_JID_TYPE, mailboxFactory.createMailbox());
         Startup startup = new Startup(this, args, out);

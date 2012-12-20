@@ -21,28 +21,23 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.commands;
+package org.agilewiki.jasocket.cluster;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.cluster.ApplicationNames;
-import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-import java.util.Iterator;
-import java.util.TreeSet;
+public class GetLocalServerAgent extends AgentJid {
+    private StringJid getStringJid() throws Exception {
+        return (StringJid) _iGet(0);
+    }
 
-public class ResourcesAgent extends CommandAgent {
+    public void setServerName(String name) throws Exception {
+        getStringJid().setValue(name);
+    }
+
     @Override
-    public void process(final RP<BListJid<StringJid>> rp) throws Exception {
-        ApplicationNames.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {
-            @Override
-            public void processResponse(TreeSet<String> response) throws Exception {
-                Iterator<String> it = response.iterator();
-                while (it.hasNext()) {
-                    println(it.next());
-                }
-                rp.processResponse(out);
-            }
-        });
+    public void start(RP rp) throws Exception {
+        (new GetLocalServer(getStringJid().getValue())).send(this, agentChannelManager(), rp);
     }
 }

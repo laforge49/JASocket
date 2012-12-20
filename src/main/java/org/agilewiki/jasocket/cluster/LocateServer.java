@@ -28,10 +28,14 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
-import java.util.TreeSet;
+import java.util.List;
 
-public class ApplicationNames extends Request<TreeSet<String>, AgentChannelManager> {
-    public final static ApplicationNames req = new ApplicationNames();
+public class LocateServer extends Request<List<String>, AgentChannelManager> {
+    private String name;
+
+    public LocateServer(String name) {
+        this.name = name;
+    }
 
     @Override
     public boolean isTargetType(Actor targetActor) {
@@ -40,6 +44,6 @@ public class ApplicationNames extends Request<TreeSet<String>, AgentChannelManag
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).applicationNames());
+        rp.processResponse(((AgentChannelManager) targetActor).locateServer(name));
     }
 }

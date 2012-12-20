@@ -27,17 +27,17 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class GetLocalApplicationAgent extends AgentJid {
+public class AddRemoteServerNameAgent extends AgentJid {
     private StringJid getStringJid() throws Exception {
         return (StringJid) _iGet(0);
     }
 
-    public void setApplicationName(String name) throws Exception {
+    public void setServerName(String name) throws Exception {
         getStringJid().setValue(name);
     }
 
     @Override
     public void start(RP rp) throws Exception {
-        (new GetLocalServer(getStringJid().getValue())).send(this, agentChannelManager(), rp);
+        (new AddRemoteServerName(remoteAddress(), getStringJid().getValue())).send(this, agentChannelManager(), rp);
     }
 }

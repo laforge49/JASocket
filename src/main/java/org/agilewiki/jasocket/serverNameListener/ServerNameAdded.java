@@ -21,28 +21,30 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.cluster;
+package org.agilewiki.jasocket.serverNameListener;
 
 import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.applicationListener.ApplicationNameListener;
 
-public class UnsubscribeApplicationNameNotifications extends Request<Boolean, AgentChannelManager> {
-    private ApplicationNameListener applicationNameListener;
+public class ServerNameAdded extends Request<Object, ServerNameListener> {
+    private String address;
+    private String name;
 
-    public UnsubscribeApplicationNameNotifications(ApplicationNameListener applicationNameListener) {
-        this.applicationNameListener = applicationNameListener;
+    public ServerNameAdded(String address, String name) {
+        this.address = address;
+        this.name = name;
     }
 
     @Override
     public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof AgentChannelManager;
+        return targetActor instanceof ServerNameListener;
     }
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).unsubscribeApplicationNameNotifications(applicationNameListener));
+        ((ServerNameListener) targetActor).serverNameAdded(address, name);
+        rp.processResponse(null);
     }
 }

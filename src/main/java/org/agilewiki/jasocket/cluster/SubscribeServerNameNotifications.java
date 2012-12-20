@@ -23,20 +23,26 @@
  */
 package org.agilewiki.jasocket.cluster;
 
+import org.agilewiki.jactor.Actor;
+import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jid.collection.flenc.AppJidFactory;
-import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
+import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.serverNameListener.ServerNameListener;
 
-public class AddRemoteApplicationNameAgentFactory extends AppJidFactory {
-    public final static AddRemoteApplicationNameAgentFactory fac = new AddRemoteApplicationNameAgentFactory();
+public class SubscribeServerNameNotifications extends Request<Boolean, AgentChannelManager> {
+    private ServerNameListener serverNameListener;
 
-    public AddRemoteApplicationNameAgentFactory() {
-        super(JASocketFactories.ADD_REMOTE_APPLICATION_NAME_AGENT_FACTORY, StringJidFactory.fac);
+    public SubscribeServerNameNotifications(ServerNameListener serverNameListener) {
+        this.serverNameListener = serverNameListener;
     }
 
     @Override
-    protected JLPCActor instantiateActor() throws Exception {
-        return new AddRemoteApplicationNameAgent();
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof AgentChannelManager;
+    }
+
+    @Override
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        rp.processResponse(((AgentChannelManager) targetActor).subscribeServerNameNotifications(serverNameListener));
     }
 }

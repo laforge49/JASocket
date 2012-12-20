@@ -23,28 +23,20 @@
  */
 package org.agilewiki.jasocket.cluster;
 
-import org.agilewiki.jactor.Actor;
-import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
-public class RemoveRemoteApplicationName extends Request<Object, AgentChannelManager> {
-    private String address;
-    private String name;
+public class RemoveServerNameAgentFactory extends AppJidFactory {
+    public final static RemoveServerNameAgentFactory fac = new RemoveServerNameAgentFactory();
 
-    public RemoveRemoteApplicationName(String address, String name) {
-        this.address = address;
-        this.name = name;
+    public RemoveServerNameAgentFactory() {
+        super(JASocketFactories.REMOVE_REMOTE_SERVER_NAME_AGENT_FACTORY, StringJidFactory.fac);
     }
 
     @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof AgentChannelManager;
-    }
-
-    @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentChannelManager) targetActor).removeRemoteApplicationName(address, name);
-        rp.processResponse(null);
+    protected JLPCActor instantiateActor() throws Exception {
+        return new RemoveServerNameAgent();
     }
 }

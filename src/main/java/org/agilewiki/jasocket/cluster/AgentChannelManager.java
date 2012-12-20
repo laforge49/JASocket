@@ -24,7 +24,6 @@
 package org.agilewiki.jasocket.cluster;
 
 import org.agilewiki.jactor.Actor;
-import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
@@ -37,10 +36,9 @@ import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.server.Server;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.node.Node;
-import org.agilewiki.jasocket.applicationListener.ApplicationNameAdded;
-import org.agilewiki.jasocket.applicationListener.ApplicationNameListener;
-import org.agilewiki.jasocket.applicationListener.ApplicationRemoved;
-import org.agilewiki.jid.CopyJID;
+import org.agilewiki.jasocket.serverNameListener.ServerNameAdded;
+import org.agilewiki.jasocket.serverNameListener.ServerNameListener;
+import org.agilewiki.jasocket.serverNameListener.ServerRemoved;
 import org.agilewiki.jid.Jid;
 
 import java.net.InetAddress;
@@ -59,10 +57,10 @@ public class AgentChannelManager extends JLPCActor {
     ServerSocketChannel serverSocketChannel;
     public int maxPacketSize;
     HashMap<String, List<AgentChannel>> agentChannels = new HashMap<String, List<AgentChannel>>();
-    protected HashMap<String, Server> localApplications = new HashMap<String, Server>();
+    protected HashMap<String, Server> localServers = new HashMap<String, Server>();
     String agentChannelManagerAddress;
-    private HashSet<String> applicationNames = new HashSet<String>();
-    private HashSet<ApplicationNameListener> applicationNameListeners = new HashSet<ApplicationNameListener>();
+    private HashSet<String> serverNames = new HashSet<String>();
+    private HashSet<ServerNameListener> serverNameListeners = new HashSet<ServerNameListener>();
     private Set<AgentChannel> inactiveReceivers = Collections.newSetFromMap(new ConcurrentHashMap<AgentChannel, Boolean>());
     private Set<AgentChannel> activeReceivers = Collections.newSetFromMap(new ConcurrentHashMap<AgentChannel, Boolean>());
     private Set<String> inactiveSenders = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
@@ -88,7 +86,7 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public AgentChannel getAgentChannel(String address) throws Exception {
-        List<String> locations = locateApplication(address);
+        List<String> locations = locateServer(address);
         if (locations.size() > 0)
             address = locations.get(0);
         List<AgentChannel> dups = agentChannels.get(address);
@@ -170,12 +168,12 @@ public class AgentChannelManager extends JLPCActor {
         timer.scheduleAtFixedRate(ktt, keepaliveTimeout, keepaliveTimeout);
     }
 
-    public TreeSet<String> applicationNames() {
-        return new TreeSet<String>(applicationNames);
+    public TreeSet<String> serverNames() {
+        return new TreeSet<String>(serverNames);
     }
 
-    public List<String> locateApplication(String name) {
-        Iterator<String> it = applicationNames.iterator();
+    public List<String> locateServer(String name) {
+        Iterator<String> it = serverNames.iterator();
         List<String> addresses = new ArrayList<String>();
         String postfix = " " + name;
         while (it.hasNext()) {
@@ -190,24 +188,24 @@ public class AgentChannelManager extends JLPCActor {
         return addresses;
     }
 
-    public boolean subscribeApplicationNameNotifications(ApplicationNameListener applicationNameListener) throws Exception {
-        boolean subscribed = applicationNameListeners.add(applicationNameListener);
+    public boolean subscribeServerNameNotifications(ServerNameListener serverNameListener) throws Exception {
+        boolean subscribed = serverNameListeners.add(serverNameListener);
         if (subscribed) {
-            Iterator<String> it = applicationNames.iterator();
+            Iterator<String> it = serverNames.iterator();
             while (it.hasNext()) {
-                String applicationName = it.next();
-                int p = applicationName.indexOf(" ");
-                String address = applicationName.substring(0, p);
-                String name = applicationName.substring(p + 1);
-                ApplicationNameAdded applicationNameAdded = new ApplicationNameAdded(address, name);
-                applicationNameAdded.sendEvent(this, applicationNameListener);
+                String serverName = it.next();
+                int p = serverName.indexOf(" ");
+                String address = serverName.substring(0, p);
+                String name = serverName.substring(p + 1);
+                ServerNameAdded serverNameAdded = new ServerNameAdded(address, name);
+                serverNameAdded.sendEvent(this, serverNameListener);
             }
         }
         return subscribed;
     }
 
-    public boolean unsubscribeApplicationNameNotifications(ApplicationNameListener applicationNameListener) {
-        return applicationNameListeners.remove(applicationNameListener);
+    public boolean unsubscribeServerNameNotifications(ServerNameListener serverNameListener) {
+        return serverNameListeners.remove(serverNameListener);
     }
 
     public String agentChannelManagerAddress() throws Exception {
@@ -233,7 +231,7 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public Server getLocalServer(String name) {
-        return localApplications.get(name);
+        return localServers.get(name);
     }
 
     protected void shipAgentEventToAll(AgentJid agent) throws Exception {
@@ -247,59 +245,59 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public JLPCActor unregisterService(String name) throws Exception {
-        JLPCActor removed = localApplications.remove(name);
+        JLPCActor removed = localServers.remove(name);
         if (removed == null)
             return null;
-        RemoveApplicationNameAgent agent = (RemoveApplicationNameAgent)
-                JAFactory.newActor(this, JASocketFactories.REMOVE_REMOTE_APPLICATION_NAME_AGENT_FACTORY, getMailbox());
-        agent.setApplicationName(name);
+        RemoveServerNameAgent agent = (RemoveServerNameAgent)
+                JAFactory.newActor(this, JASocketFactories.REMOVE_REMOTE_SERVER_NAME_AGENT_FACTORY, getMailbox());
+        agent.setServerName(name);
         shipAgentEventToAll(agent);
-        removeRemoteApplicationName(agentChannelManagerAddress(), name);
+        removeRemoteServerName(agentChannelManagerAddress(), name);
         return removed;
     }
 
     public boolean registerService(String name, Server server) throws Exception {
-        JLPCActor added = localApplications.get(name);
+        JLPCActor added = localServers.get(name);
         if (added != null)
             return false;
-        localApplications.put(name, server);
-        AddRemoteApplicationNameAgent agent = (AddRemoteApplicationNameAgent)
-                JAFactory.newActor(this, JASocketFactories.ADD_REMOTE_APPLICATION_NAME_AGENT_FACTORY, getMailbox());
-        agent.setApplicationName(name);
+        localServers.put(name, server);
+        AddRemoteServerNameAgent agent = (AddRemoteServerNameAgent)
+                JAFactory.newActor(this, JASocketFactories.ADD_REMOTE_SERVER_NAME_AGENT_FACTORY, getMailbox());
+        agent.setServerName(name);
         shipAgentEventToAll(agent);
-        addRemoteApplicationName(agentChannelManagerAddress(), name);
+        addRemoteServerName(agentChannelManagerAddress(), name);
         return true;
     }
 
-    public void addRemoteApplicationName(String address, String name) throws Exception {
+    public void addRemoteServerName(String address, String name) throws Exception {
         String rn = address + " " + name;
-        if (!applicationNames.add(rn))
+        if (!serverNames.add(rn))
             return;
-        applicationNames.add(rn);
-        ApplicationNameAdded applicationNameAdded = new ApplicationNameAdded(address, name);
-        Iterator<ApplicationNameListener> it = applicationNameListeners.iterator();
+        serverNames.add(rn);
+        ServerNameAdded serverNameAdded = new ServerNameAdded(address, name);
+        Iterator<ServerNameListener> it = serverNameListeners.iterator();
         while (it.hasNext()) {
-            applicationNameAdded.sendEvent(this, it.next());
+            serverNameAdded.sendEvent(this, it.next());
         }
     }
 
-    public void removeRemoteApplicationName(String address, String name) throws Exception {
-        if (!applicationNames.remove(address + " " + name))
+    public void removeRemoteServerName(String address, String name) throws Exception {
+        if (!serverNames.remove(address + " " + name))
             return;
-        ApplicationRemoved applicationRemoved = new ApplicationRemoved(address, name);
-        Iterator<ApplicationNameListener> it = applicationNameListeners.iterator();
+        ServerRemoved serverRemoved = new ServerRemoved(address, name);
+        Iterator<ServerNameListener> it = serverNameListeners.iterator();
         while (it.hasNext()) {
-            applicationRemoved.sendEvent(this, it.next());
+            serverRemoved.sendEvent(this, it.next());
         }
     }
 
-    private void shareApplicationNames(AgentChannel agentChannel) throws Exception {
-        Iterator<String> it = localApplications.keySet().iterator();
+    private void shareServerNames(AgentChannel agentChannel) throws Exception {
+        Iterator<String> it = localServers.keySet().iterator();
         while (it.hasNext()) {
             String name = it.next();
-            AddRemoteApplicationNameAgent agent = (AddRemoteApplicationNameAgent)
-                    JAFactory.newActor(this, JASocketFactories.ADD_REMOTE_APPLICATION_NAME_AGENT_FACTORY, getMailbox());
-            agent.setApplicationName(name);
+            AddRemoteServerNameAgent agent = (AddRemoteServerNameAgent)
+                    JAFactory.newActor(this, JASocketFactories.ADD_REMOTE_SERVER_NAME_AGENT_FACTORY, getMailbox());
+            agent.setServerName(name);
             ShipAgent shipAgent = new ShipAgent(agent);
             shipAgent.sendEvent(this, agentChannel);
         }
@@ -338,7 +336,7 @@ public class AgentChannelManager extends JLPCActor {
                 }
                 dups.add(0, agentChannel);
                 AgentChannel someAgentChannel = dups.get(0);
-                shareApplicationNames(someAgentChannel);
+                shareServerNames(someAgentChannel);
                 rp.processResponse(someAgentChannel);
             }
         });
@@ -372,7 +370,7 @@ public class AgentChannelManager extends JLPCActor {
             agentChannels.put(remoteAddress, dups);
         }
         dups.add(0, agentChannel);
-        shareApplicationNames(agentChannel);
+        shareServerNames(agentChannel);
     }
 
     public void close() {
@@ -393,20 +391,20 @@ public class AgentChannelManager extends JLPCActor {
                 agentChannels.remove(remoteAddress);
         }
         inactiveSenders.remove(remoteAddress);
-        HashSet<String> channelAppliations = new HashSet<String>();
-        Iterator<String> it = applicationNames.iterator();
+        HashSet<String> channelServers = new HashSet<String>();
+        Iterator<String> it = serverNames.iterator();
         String prefix = remoteAddress + " ";
         int offset = prefix.length();
         while (it.hasNext()) {
             String name = it.next();
             if (name.startsWith(prefix)) {
-                channelAppliations.add(name.substring(offset));
+                channelServers.add(name.substring(offset));
             }
         }
-        it = channelAppliations.iterator();
+        it = channelServers.iterator();
         while (it.hasNext()) {
             String name = it.next();
-            removeRemoteApplicationName(remoteAddress, name);
+            removeRemoteServerName(remoteAddress, name);
         }
         rp.processResponse(null);
     }

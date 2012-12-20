@@ -27,14 +27,13 @@ import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.serverNameListener.ServerNameListener;
 
-public class AddRemoteApplicationName extends Request<Object, AgentChannelManager> {
-    private String address;
-    private String name;
+public class UnsubscribeServerNameNotifications extends Request<Boolean, AgentChannelManager> {
+    private ServerNameListener serverNameListener;
 
-    public AddRemoteApplicationName(String address, String name) {
-        this.address = address;
-        this.name = name;
+    public UnsubscribeServerNameNotifications(ServerNameListener serverNameListener) {
+        this.serverNameListener = serverNameListener;
     }
 
     @Override
@@ -44,7 +43,6 @@ public class AddRemoteApplicationName extends Request<Object, AgentChannelManage
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentChannelManager) targetActor).addRemoteApplicationName(address, name);
-        rp.processResponse(null);
+        rp.processResponse(((AgentChannelManager) targetActor).unsubscribeServerNameNotifications(serverNameListener));
     }
 }

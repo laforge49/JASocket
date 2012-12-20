@@ -35,7 +35,7 @@ public class ServerEvalAgent extends CommandStringAgent {
     protected void process(final RP<BListJid<StringJid>> rp) throws Exception {
         String args = getArgString().trim();
         int i = args.indexOf(' ');
-        final String resourceName = args.substring(0, i);
+        final String serverName = args.substring(0, i);
         if (i > -1)
             args = args.substring(i + 1).trim();
         else {
@@ -44,11 +44,11 @@ public class ServerEvalAgent extends CommandStringAgent {
             return;
         }
         final String commandLine = args;
-        (new GetLocalServer(resourceName)).send(this, agentChannelManager(), new RP<JLPCActor>() {
+        (new GetLocalServer(serverName)).send(this, agentChannelManager(), new RP<JLPCActor>() {
             @Override
             public void processResponse(JLPCActor response) throws Exception {
                 if (response == null) {
-                    println("Unable to locate resource " + resourceName);
+                    println("Unable to locate server " + serverName);
                     rp.processResponse(out);
                     return;
                 }

@@ -21,28 +21,28 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.cluster;
+package org.agilewiki.jasocket.commands;
 
-import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.applicationListener.ApplicationNameListener;
+import org.agilewiki.jasocket.cluster.ServerNames;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class SubscribeApplicationNameNotifications extends Request<Boolean, AgentChannelManager> {
-    private ApplicationNameListener applicationNameListener;
+import java.util.Iterator;
+import java.util.TreeSet;
 
-    public SubscribeApplicationNameNotifications(ApplicationNameListener applicationNameListener) {
-        this.applicationNameListener = applicationNameListener;
-    }
-
+public class ServersAgent extends CommandAgent {
     @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof AgentChannelManager;
-    }
-
-    @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).subscribeApplicationNameNotifications(applicationNameListener));
+    public void process(final RP<BListJid<StringJid>> rp) throws Exception {
+        ServerNames.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {
+            @Override
+            public void processResponse(TreeSet<String> response) throws Exception {
+                Iterator<String> it = response.iterator();
+                while (it.hasNext()) {
+                    println(it.next());
+                }
+                rp.processResponse(out);
+            }
+        });
     }
 }

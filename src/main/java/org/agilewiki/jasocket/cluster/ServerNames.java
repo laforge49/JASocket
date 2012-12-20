@@ -23,21 +23,23 @@
  */
 package org.agilewiki.jasocket.cluster;
 
+import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jactor.lpc.Request;
 
-public class RemoveApplicationNameAgent extends AgentJid {
-    private StringJid getStringJid() throws Exception {
-        return (StringJid) _iGet(0);
-    }
+import java.util.TreeSet;
 
-    public void setApplicationName(String name) throws Exception {
-        getStringJid().setValue(name);
+public class ServerNames extends Request<TreeSet<String>, AgentChannelManager> {
+    public final static ServerNames req = new ServerNames();
+
+    @Override
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof AgentChannelManager;
     }
 
     @Override
-    public void start(RP rp) throws Exception {
-        (new RemoveRemoteApplicationName(remoteAddress(), getStringJid().getValue())).send(this, agentChannelManager(), rp);
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        rp.processResponse(((AgentChannelManager) targetActor).serverNames());
     }
 }

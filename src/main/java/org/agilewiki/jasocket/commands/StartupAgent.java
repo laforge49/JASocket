@@ -35,9 +35,9 @@ public class StartupAgent extends CommandStringAgent {
     protected void process(RP<BListJid<StringJid>> rp) throws Exception {
         String args = getArgString().trim();
         int i = args.indexOf(' ');
-        String applicationClassName = args;
+        String serverClassName = args;
         if (i > -1) {
-            applicationClassName = args.substring(0, i);
+            serverClassName = args.substring(0, i);
             args = args.substring(i + 1).trim();
         } else {
             args = "";
@@ -45,8 +45,8 @@ public class StartupAgent extends CommandStringAgent {
         final String a = args;
         Node node = agentChannelManager().node;
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        Class<Server> applicationClass = (Class<Server>) classLoader.loadClass(applicationClassName);
-        Server server = node.initializeApplication(applicationClass);
+        Class<Server> serverClass = (Class<Server>) classLoader.loadClass(serverClassName);
+        Server server = node.initializeServer(serverClass);
         Startup startup = new Startup(node, args, out);
         startup.send(this, server, rp);
     }

@@ -23,27 +23,21 @@
  */
 package org.agilewiki.jasocket.cluster;
 
-import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-import java.util.List;
+public class RemoveServerNameAgent extends AgentJid {
+    private StringJid getStringJid() throws Exception {
+        return (StringJid) _iGet(0);
+    }
 
-public class LocateApplication extends Request<List<String>, AgentChannelManager> {
-    private String name;
-
-    public LocateApplication(String name) {
-        this.name = name;
+    public void setServerName(String name) throws Exception {
+        getStringJid().setValue(name);
     }
 
     @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof AgentChannelManager;
-    }
-
-    @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).locateApplication(name));
+    public void start(RP rp) throws Exception {
+        (new RemoveRemoteServerName(remoteAddress(), getStringJid().getValue())).send(this, agentChannelManager(), rp);
     }
 }

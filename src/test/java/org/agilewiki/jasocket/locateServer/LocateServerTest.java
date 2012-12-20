@@ -1,21 +1,21 @@
-package org.agilewiki.jasocket.locateResource;
+package org.agilewiki.jasocket.locateServer;
 
 import junit.framework.TestCase;
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.cluster.LocateServer;
 import org.agilewiki.jasocket.cluster.RegisterService;
 import org.agilewiki.jasocket.server.HelloWorld;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jasocket.cluster.LocateApplication;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Iterator;
 import java.util.List;
 
-public class LocateResourceTest extends TestCase {
+public class LocateServerTest extends TestCase {
     public void test() throws Exception {
         JAMailboxFactory mailboxFactory = JAMailboxFactory.newMailboxFactory(10);
         JASocketFactories factory = new JASocketFactories();
@@ -47,7 +47,7 @@ public class LocateResourceTest extends TestCase {
                 2000);
         Thread.sleep(100);
 
-        List<String> addresses = (new LocateApplication("a")).send(future, agentChannelManager0);
+        List<String> addresses = (new LocateServer("a")).send(future, agentChannelManager0);
         Iterator<String> it = addresses.iterator();
         while (it.hasNext()) {
             System.out.println(it.next());

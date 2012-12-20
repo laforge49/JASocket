@@ -21,22 +21,30 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.cluster;
+package org.agilewiki.jasocket.serverNameListener;
 
+import org.agilewiki.jactor.Actor;
+import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jid.collection.flenc.AppJidFactory;
-import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
+import org.agilewiki.jactor.lpc.Request;
 
-public class RemoveResourceNameAgentFactory extends AppJidFactory {
-    public final static RemoveResourceNameAgentFactory fac = new RemoveResourceNameAgentFactory();
+public class ServerRemoved extends Request<Object, ServerNameListener> {
+    private String address;
+    private String name;
 
-    public RemoveResourceNameAgentFactory() {
-        super(JASocketFactories.REMOVE_REMOTE_APPLICATION_NAME_AGENT_FACTORY, StringJidFactory.fac);
+    public ServerRemoved(String address, String name) {
+        this.address = address;
+        this.name = name;
     }
 
     @Override
-    protected JLPCActor instantiateActor() throws Exception {
-        return new RemoveApplicationNameAgent();
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof ServerNameListener;
+    }
+
+    @Override
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        ((ServerNameListener) targetActor).serverNameRemoved(address, name);
+        rp.processResponse(null);
     }
 }

@@ -46,7 +46,7 @@ public class ToAgent extends CommandStringAgent {
             address = address.substring(0, p).trim();
         }
         if (address.length() == 0) {
-            println("missing channel or resource name");
+            println("missing channel or server name");
             rp.processResponse(out);
             return;
         }
