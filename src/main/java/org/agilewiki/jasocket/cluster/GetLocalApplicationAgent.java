@@ -38,6 +38,6 @@ public class GetLocalApplicationAgent extends AgentJid {
 
     @Override
     public void start(RP rp) throws Exception {
-        (new GetLocalApplication(getStringJid().getValue())).send(this, agentChannelManager(), rp);
+        (new GetLocalServer(getStringJid().getValue())).send(this, agentChannelManager(), rp);
     }
 }

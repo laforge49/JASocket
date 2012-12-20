@@ -1,25 +1,25 @@
-package org.agilewiki.jasocket.application;
+package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class HelloWorld extends Application {
+public class HelloWorld extends Server {
 
-    protected String applicationName() {
+    protected String serviceName() {
         return "helloWorld";
     }
 
-    protected void startApplication(BListJid<StringJid> out, RP rp) throws Exception {
-        registerApplicationCommand(new ApplicationCommand("hi", "says hello") {
+    protected void startService(BListJid<StringJid> out, RP rp) throws Exception {
+        registerServiceCommand(new ServiceCommand("hi", "says hello") {
             @Override
             public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception {
                 println(out, "Hello!");
                 rp.processResponse(out);
             }
         });
-        super.startApplication(out, rp);
+        super.startService(out, rp);
     }
 
     public static void main(String[] args) throws Exception {

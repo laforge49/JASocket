@@ -4,12 +4,12 @@ import junit.framework.TestCase;
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jasocket.application.HelloWorld;
+import org.agilewiki.jasocket.cluster.RegisterService;
+import org.agilewiki.jasocket.cluster.UnregisterService;
+import org.agilewiki.jasocket.server.HelloWorld;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jasocket.cluster.RegisterApplication;
 import org.agilewiki.jasocket.cluster.SubscribeApplicationNameNotifications;
-import org.agilewiki.jasocket.cluster.UnregisterApplication;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -30,8 +30,8 @@ public class ListenerTest extends TestCase {
         agentChannelManager1.openServerSocket(8881);
 
         System.out.println("\nregister local applicationNames 0a and 1a");
-        (new RegisterApplication("0a", new HelloWorld())).send(future, agentChannelManager0);
-        (new RegisterApplication("1a", new HelloWorld())).send(future, agentChannelManager1);
+        (new RegisterService("0a", new HelloWorld())).send(future, agentChannelManager0);
+        (new RegisterService("1a", new HelloWorld())).send(future, agentChannelManager1);
 
         System.out.println("\nadd listeners");
         Listener listener0 = new Listener();
@@ -57,23 +57,23 @@ public class ListenerTest extends TestCase {
         Thread.sleep(100);
 
         System.out.println("\nregister local applicationNames 0b and 1b");
-        (new RegisterApplication("0b", new HelloWorld())).send(future, agentChannelManager0);
-        (new RegisterApplication("1b", new HelloWorld())).send(future, agentChannelManager1);
+        (new RegisterService("0b", new HelloWorld())).send(future, agentChannelManager0);
+        (new RegisterService("1b", new HelloWorld())).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nregister local applicationNames 0b and 1b, again");
-        (new RegisterApplication("0b", new HelloWorld())).send(future, agentChannelManager0);
-        (new RegisterApplication("1b", new HelloWorld())).send(future, agentChannelManager1);
+        (new RegisterService("0b", new HelloWorld())).send(future, agentChannelManager0);
+        (new RegisterService("1b", new HelloWorld())).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nunregister local applicationNames 0a and 1a");
-        (new UnregisterApplication("0a")).send(future, agentChannelManager0);
-        (new UnregisterApplication("1a")).send(future, agentChannelManager1);
+        (new UnregisterService("0a")).send(future, agentChannelManager0);
+        (new UnregisterService("1a")).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nunregister local applicationNames 0a and 1a, again");
-        (new UnregisterApplication("0a")).send(future, agentChannelManager0);
-        (new UnregisterApplication("1a")).send(future, agentChannelManager1);
+        (new UnregisterService("0a")).send(future, agentChannelManager0);
+        (new UnregisterService("1a")).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nshutdown");

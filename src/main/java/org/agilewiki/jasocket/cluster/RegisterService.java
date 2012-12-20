@@ -27,15 +27,15 @@ import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.application.Application;
+import org.agilewiki.jasocket.server.Server;
 
-public class RegisterApplication extends Request<Boolean, AgentChannelManager> {
+public class RegisterService extends Request<Boolean, AgentChannelManager> {
     private String name;
-    private Application application;
+    private Server server;
 
-    public RegisterApplication(String name, Application application) {
+    public RegisterService(String name, Server server) {
         this.name = name;
-        this.application = application;
+        this.server = server;
     }
 
     @Override
@@ -45,6 +45,6 @@ public class RegisterApplication extends Request<Boolean, AgentChannelManager> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).registerApplication(name, application));
+        rp.processResponse(((AgentChannelManager) targetActor).registerService(name, server));
     }
 }

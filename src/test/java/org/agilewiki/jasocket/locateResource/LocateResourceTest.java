@@ -4,11 +4,11 @@ import junit.framework.TestCase;
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jasocket.application.HelloWorld;
+import org.agilewiki.jasocket.cluster.RegisterService;
+import org.agilewiki.jasocket.server.HelloWorld;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
 import org.agilewiki.jasocket.cluster.LocateApplication;
-import org.agilewiki.jasocket.cluster.RegisterApplication;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -32,8 +32,8 @@ public class LocateResourceTest extends TestCase {
         agentChannelManager1.initialize(mailboxFactory.createMailbox(), factory);
         agentChannelManager1.openServerSocket(8881);
 
-        (new RegisterApplication("a", new HelloWorld())).send(future, agentChannelManager0);
-        (new RegisterApplication("a", new HelloWorld())).send(future, agentChannelManager1);
+        (new RegisterService("a", new HelloWorld())).send(future, agentChannelManager0);
+        (new RegisterService("a", new HelloWorld())).send(future, agentChannelManager1);
 
         new Discovery(agentChannelManager0,
                 NetworkInterface.getByInetAddress(InetAddress.getLocalHost()),

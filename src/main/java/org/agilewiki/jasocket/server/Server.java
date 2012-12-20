@@ -21,27 +21,27 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.application;
+package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.Closable;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.cluster.RegisterService;
+import org.agilewiki.jasocket.cluster.UnregisterService;
 import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jasocket.cluster.RegisterApplication;
-import org.agilewiki.jasocket.cluster.UnregisterApplication;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.util.Iterator;
 import java.util.TreeMap;
 
-abstract public class Application extends JLPCActor implements Closable {
+abstract public class Server extends JLPCActor implements Closable {
     private Node node;
-    protected TreeMap<String, ApplicationCommand> applicationCommands = new TreeMap<String, ApplicationCommand>();
+    protected TreeMap<String, ServiceCommand> serviceCommands = new TreeMap<String, ServiceCommand>();
     protected String startupArgs;
 
-    protected String applicationName() {
+    protected String serviceName() {
         return this.getClass().getName();
     }
 
@@ -53,45 +53,45 @@ abstract public class Application extends JLPCActor implements Closable {
         return node.agentChannelManager();
     }
 
-    protected void registerApplicationCommand(ApplicationCommand applicationCommand) {
-        applicationCommands.put(applicationCommand.name, applicationCommand);
+    protected void registerServiceCommand(ServiceCommand serviceCommand) {
+        serviceCommands.put(serviceCommand.name, serviceCommand);
     }
 
     public void startup(Node node, final String args, final BListJid<StringJid> out, final RP rp) throws Exception {
         this.node = node;
         this.startupArgs = args;
         node.mailboxFactory().addClosable(this);
-        RegisterApplication registerApplication = new RegisterApplication(applicationName(), this);
-        registerApplication.send(this, agentChannelManager(), new RP<Boolean>() {
+        RegisterService registerService = new RegisterService(serviceName(), this);
+        registerService.send(this, agentChannelManager(), new RP<Boolean>() {
             @Override
             public void processResponse(Boolean response) throws Exception {
                 if (response)
-                    startApplication(out, rp);
+                    startService(out, rp);
                 else {
-                    println(out, "Application already registered: " + applicationName());
+                    println(out, "Server already registered: " + serviceName());
                     rp.processResponse(out);
                 }
             }
         });
     }
 
-    protected void startApplication(BListJid<StringJid> out, RP rp) throws Exception {
+    protected void startService(BListJid<StringJid> out, RP rp) throws Exception {
         registerShutdownCommand();
         registerHelpCommand();
-        println(out, applicationName() + " started");
+        println(out, serviceName() + " started");
         rp.processResponse(out);
     }
 
     public void close() {
-        UnregisterApplication unregisterApplication = new UnregisterApplication(applicationName());
+        UnregisterService unregisterService = new UnregisterService(serviceName());
         try {
-            unregisterApplication.sendEvent(agentChannelManager());
+            unregisterService.sendEvent(agentChannelManager());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    public void evalApplicationCommand(String commandString, BListJid<StringJid> out, RP rp) throws Exception {
+    public void evalServerCommand(String commandString, BListJid<StringJid> out, RP rp) throws Exception {
         commandString = commandString.trim();
         int i = commandString.indexOf(' ');
         String command = commandString;
@@ -100,13 +100,13 @@ abstract public class Application extends JLPCActor implements Closable {
             command = commandString.substring(0, i);
             args = commandString.substring(i + 1).trim();
         }
-        ApplicationCommand applicationCommand = applicationCommands.get(command);
-        if (applicationCommand == null) {
-            println(out, "Unknown command for " + applicationName() + ": " + command);
+        ServiceCommand serviceCommand = serviceCommands.get(command);
+        if (serviceCommand == null) {
+            println(out, "Unknown command for " + serviceName() + ": " + command);
             rp.processResponse(out);
             return;
         }
-        applicationCommand.eval(args, out, rp);
+        serviceCommand.eval(args, out, rp);
     }
 
     protected void println(BListJid<StringJid> out, String v) throws Exception {
@@ -116,23 +116,23 @@ abstract public class Application extends JLPCActor implements Closable {
     }
 
     protected void registerShutdownCommand() {
-        registerApplicationCommand(new ApplicationCommand("shutdown", "Stops and unregisters the application") {
+        registerServiceCommand(new ServiceCommand("shutdown", "Stops and unregisters the server") {
             @Override
             public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception {
                 close();
-                println(out, "Stopped " + applicationName());
+                println(out, "Stopped " + serviceName());
                 rp.processResponse(out);
             }
         });
     }
 
     protected void registerHelpCommand() {
-        registerApplicationCommand(new ApplicationCommand("help", "List the commands supported by the application") {
+        registerServiceCommand(new ServiceCommand("help", "List the commands supported by the server") {
             @Override
             public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception {
-                Iterator<String> it = applicationCommands.keySet().iterator();
+                Iterator<String> it = serviceCommands.keySet().iterator();
                 while (it.hasNext()) {
-                    ApplicationCommand ac = applicationCommands.get(it.next());
+                    ServiceCommand ac = serviceCommands.get(it.next());
                     println(out, ac.name + " - " + ac.description);
                 }
                 rp.processResponse(out);

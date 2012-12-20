@@ -24,24 +24,24 @@
 package org.agilewiki.jasocket.sshd;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.application.Application;
+import org.agilewiki.jasocket.server.Server;
 import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
-public class SSHServer extends Application {
+public class SSHServer extends Server {
     private int sshPort;
     private SshServer sshd;
 
     @Override
-    protected String applicationName() {
+    protected String serviceName() {
         return "sshServer";
     }
 
     @Override
-    protected void startApplication(BListJid<StringJid> out, RP rp) throws Exception {
+    protected void startService(BListJid<StringJid> out, RP rp) throws Exception {
         sshPort = sshPort();
         sshd = SshServer.setUpDefaultServer();
         setAuthenticator();
@@ -49,7 +49,7 @@ public class SSHServer extends Application {
         sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider("hostkey.ser"));
         setShellFactory();
         sshd.start();
-        super.startApplication(out, rp);
+        super.startService(out, rp);
     }
 
     @Override

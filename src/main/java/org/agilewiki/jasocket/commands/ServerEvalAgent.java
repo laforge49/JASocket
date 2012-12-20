@@ -25,12 +25,12 @@ package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.application.EvalApplicationCommand;
-import org.agilewiki.jasocket.cluster.GetLocalApplication;
+import org.agilewiki.jasocket.cluster.GetLocalServer;
+import org.agilewiki.jasocket.server.EvalServerCommand;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class ApplicationEvalAgent extends CommandStringAgent {
+public class ServerEvalAgent extends CommandStringAgent {
     @Override
     protected void process(final RP<BListJid<StringJid>> rp) throws Exception {
         String args = getArgString().trim();
@@ -39,12 +39,12 @@ public class ApplicationEvalAgent extends CommandStringAgent {
         if (i > -1)
             args = args.substring(i + 1).trim();
         else {
-            println("Application command name is missing");
+            println("Server command name is missing");
             rp.processResponse(out);
             return;
         }
         final String commandLine = args;
-        (new GetLocalApplication(resourceName)).send(this, agentChannelManager(), new RP<JLPCActor>() {
+        (new GetLocalServer(resourceName)).send(this, agentChannelManager(), new RP<JLPCActor>() {
             @Override
             public void processResponse(JLPCActor response) throws Exception {
                 if (response == null) {
@@ -52,7 +52,7 @@ public class ApplicationEvalAgent extends CommandStringAgent {
                     rp.processResponse(out);
                     return;
                 }
-                (new EvalApplicationCommand(commandLine, out)).send(ApplicationEvalAgent.this, response, rp);
+                (new EvalServerCommand(commandLine, out)).send(ServerEvalAgent.this, response, rp);
             }
         });
     }

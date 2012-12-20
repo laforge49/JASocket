@@ -1,15 +1,15 @@
-package org.agilewiki.jasocket.application;
+package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-abstract public class ApplicationCommand {
+abstract public class ServiceCommand {
     public final String name;
 
     public final String description;
 
-    public ApplicationCommand(String name, String description) {
+    public ServiceCommand(String name, String description) {
         this.name = name;
         this.description = description;
     }

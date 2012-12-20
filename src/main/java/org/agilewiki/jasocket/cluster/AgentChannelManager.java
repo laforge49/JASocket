@@ -34,7 +34,7 @@ import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.CloseChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
-import org.agilewiki.jasocket.application.Application;
+import org.agilewiki.jasocket.server.Server;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jasocket.applicationListener.ApplicationNameAdded;
@@ -59,7 +59,7 @@ public class AgentChannelManager extends JLPCActor {
     ServerSocketChannel serverSocketChannel;
     public int maxPacketSize;
     HashMap<String, List<AgentChannel>> agentChannels = new HashMap<String, List<AgentChannel>>();
-    protected HashMap<String, Application> localApplications = new HashMap<String, Application>();
+    protected HashMap<String, Server> localApplications = new HashMap<String, Server>();
     String agentChannelManagerAddress;
     private HashSet<String> applicationNames = new HashSet<String>();
     private HashSet<ApplicationNameListener> applicationNameListeners = new HashSet<ApplicationNameListener>();
@@ -229,43 +229,11 @@ public class AgentChannelManager extends JLPCActor {
     public boolean isLocalAddress(String address) throws Exception {
         if (agentChannelManagerAddress().equals(address))
             return true;
-        return getLocalApplication(address) != null;
+        return getLocalServer(address) != null;
     }
 
-    public JLPCActor getLocalApplication(String name) {
+    public Server getLocalServer(String name) {
         return localApplications.get(name);
-    }
-
-    public void copyApplication(String address, String name, final RP rp) throws Exception {
-        if (agentChannelManagerAddress().equals(address)) {
-            Jid application = (Jid) getLocalApplication(name);
-            if (application == null) {
-                rp.processResponse(null);
-                return;
-            }
-            Mailbox mailbox = null;
-            if (application instanceof AgentJid) {
-                AgentJid agent = (AgentJid) application;
-                if (agent.async())
-                    mailbox = getMailboxFactory().createAsyncMailbox();
-                else
-                    mailbox = getMailboxFactory().createMailbox();
-            } else {
-                mailbox = getMailboxFactory().createMailbox();
-            }
-            (new CopyJID(mailbox)).send(this, application, rp);
-            return;
-        }
-        final GetLocalApplicationAgent agent = (GetLocalApplicationAgent)
-                JAFactory.newActor(this, JASocketFactories.GET_LOCAL_APPLICATION_AGENT_FACTORY, getMailbox());
-        agent.setApplicationName(name);
-        agentChannel(address, new RP() {
-            @Override
-            public void processResponse(Object response) throws Exception {
-                (new ShipAgent(agent)).send(AgentChannelManager.this, (AgentChannel) response, rp);
-
-            }
-        });
     }
 
     protected void shipAgentEventToAll(AgentJid agent) throws Exception {
@@ -278,7 +246,7 @@ public class AgentChannelManager extends JLPCActor {
         }
     }
 
-    public JLPCActor unregisterApplication(String name) throws Exception {
+    public JLPCActor unregisterService(String name) throws Exception {
         JLPCActor removed = localApplications.remove(name);
         if (removed == null)
             return null;
@@ -290,11 +258,11 @@ public class AgentChannelManager extends JLPCActor {
         return removed;
     }
 
-    public boolean registerApplication(String name, Application application) throws Exception {
+    public boolean registerService(String name, Server server) throws Exception {
         JLPCActor added = localApplications.get(name);
         if (added != null)
             return false;
-        localApplications.put(name, application);
+        localApplications.put(name, server);
         AddRemoteApplicationNameAgent agent = (AddRemoteApplicationNameAgent)
                 JAFactory.newActor(this, JASocketFactories.ADD_REMOTE_APPLICATION_NAME_AGENT_FACTORY, getMailbox());
         agent.setApplicationName(name);

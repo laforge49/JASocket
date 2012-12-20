@@ -24,8 +24,8 @@
 package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.application.Application;
-import org.agilewiki.jasocket.application.Startup;
+import org.agilewiki.jasocket.server.Server;
+import org.agilewiki.jasocket.server.Startup;
 import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
@@ -45,9 +45,9 @@ public class StartupAgent extends CommandStringAgent {
         final String a = args;
         Node node = agentChannelManager().node;
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        Class<Application> applicationClass = (Class<Application>) classLoader.loadClass(applicationClassName);
-        Application application = node.initializeApplication(applicationClass);
+        Class<Server> applicationClass = (Class<Server>) classLoader.loadClass(applicationClassName);
+        Server server = node.initializeApplication(applicationClass);
         Startup startup = new Startup(node, args, out);
-        startup.send(this, application, rp);
+        startup.send(this, server, rp);
     }
 }

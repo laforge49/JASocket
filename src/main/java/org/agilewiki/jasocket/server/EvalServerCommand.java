@@ -21,7 +21,7 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.application;
+package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
@@ -30,22 +30,22 @@ import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class EvalApplicationCommand extends Request<BListJid<StringJid>, Application> {
+public class EvalServerCommand extends Request<BListJid<StringJid>, Server> {
     private String commandLine;
     private BListJid<StringJid> out;
 
-    public EvalApplicationCommand(String commandLine, BListJid<StringJid> out) {
+    public EvalServerCommand(String commandLine, BListJid<StringJid> out) {
         this.commandLine = commandLine;
         this.out = out;
     }
 
     @Override
     public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof Application;
+        return targetActor instanceof Server;
     }
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((Application) targetActor).evalApplicationCommand(commandLine, out, rp);
+        ((Server) targetActor).evalServerCommand(commandLine, out, rp);
     }
 }

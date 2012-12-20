@@ -27,8 +27,8 @@ import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jasocket.application.Application;
-import org.agilewiki.jasocket.application.Startup;
+import org.agilewiki.jasocket.server.Server;
+import org.agilewiki.jasocket.server.Startup;
 import org.agilewiki.jasocket.commands.Commands;
 import org.agilewiki.jasocket.commands.ConsoleCommands;
 import org.agilewiki.jasocket.discovery.Discovery;
@@ -82,19 +82,19 @@ public class Node {
         startKeepAlive();
     }
 
-    public Application initializeApplication(Class<Application> applicationClass) throws Exception {
-        Application application = applicationClass.newInstance();
-        application.initialize(mailboxFactory.createAsyncMailbox());
-        return application;
+    public Server initializeApplication(Class<Server> applicationClass) throws Exception {
+        Server server = applicationClass.newInstance();
+        server.initialize(mailboxFactory.createAsyncMailbox());
+        return server;
     }
 
     public void startup(Class applicationClass, String args) throws Exception {
         System.out.println("\nstartup " + applicationClass.getName() + args);
-        Application application = initializeApplication(applicationClass);
+        Server server = initializeApplication(applicationClass);
         BListJid<StringJid> out = (BListJid<StringJid>)
                 factory.newActor(JidFactories.STRING_BLIST_JID_TYPE, mailboxFactory.createMailbox());
         Startup startup = new Startup(this, args, out);
-        startup.send(new JAFuture(), application);
+        startup.send(new JAFuture(), server);
         int s = out.size();
         int i = 0;
         while (i < s) {

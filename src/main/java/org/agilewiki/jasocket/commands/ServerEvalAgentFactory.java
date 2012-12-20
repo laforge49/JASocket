@@ -21,34 +21,21 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.application;
+package org.agilewiki.jasocket.commands;
 
-import org.agilewiki.jactor.Actor;
-import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.node.Node;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
-public class Startup extends Request<BListJid<StringJid>, Application> {
-    private Node node;
-    private String args;
-    private BListJid<StringJid> out;
+public class ServerEvalAgentFactory extends AppJidFactory {
+    public final static ServerEvalAgentFactory fac = new ServerEvalAgentFactory();
 
-    public Startup(Node node, String args, BListJid<StringJid> out) {
-        this.node = node;
-        this.args = args;
-        this.out = out;
+    public ServerEvalAgentFactory() {
+        super("serverEvalAgent", StringJidFactory.fac);
     }
 
     @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof Application;
-    }
-
-    @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((Application) targetActor).startup(node, args, out, rp);
+    protected JLPCActor instantiateActor() throws Exception {
+        return new ServerEvalAgent();
     }
 }

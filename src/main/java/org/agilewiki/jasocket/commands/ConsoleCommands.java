@@ -32,7 +32,7 @@ public class ConsoleCommands extends Commands {
                 ToAgentFactory.fac);
         cmd("nodes", "List all the accessible nodes in the cluster",
                 NodesAgentFactory.fac);
-        cmd("applications", "list all applications in the cluster",
+        cmd("servers", "list all servers running in the cluster",
                 ResourcesAgentFactory.fac);
         cmd("halt", "Exit (only) the local node",
                 HaltAgentFactory.fac);
@@ -42,9 +42,9 @@ public class ConsoleCommands extends Commands {
                 LatencyBenchmarkAgentFactory.fac);
         cmd("throughputTest", "Benchmark throughput between this node and another node",
                 ThroughputBenchmarkAgentFactory.fac);
-        cmd("application", "Send a command to an application",
-                ApplicationEvalAgentFactory.fac);
-        cmd("startup", "Start an application",
+        cmd("server", "Send a command to a server",
+                ServerEvalAgentFactory.fac);
+        cmd("startup", "Start and register a server",
                 StartupAgentFactory.fac);
     }
 }

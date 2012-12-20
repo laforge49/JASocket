@@ -28,10 +28,10 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
-public class UnregisterApplication extends Request<JLPCActor, AgentChannelManager> {
+public class GetLocalServer extends Request<JLPCActor, AgentChannelManager> {
     private String name;
 
-    public UnregisterApplication(String name) {
+    public GetLocalServer(String name) {
         this.name = name;
     }
 
@@ -42,6 +42,6 @@ public class UnregisterApplication extends Request<JLPCActor, AgentChannelManage
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).unregisterApplication(name));
+        rp.processResponse(((AgentChannelManager) targetActor).getLocalServer(name));
     }
 }
