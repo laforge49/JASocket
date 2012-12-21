@@ -30,6 +30,8 @@ import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SSHServer extends Server {
     private int sshPort;
@@ -43,6 +45,7 @@ public class SSHServer extends Server {
     @Override
     protected void startService(BListJid<StringJid> out, RP rp) throws Exception {
         sshPort = sshPort();
+        println(out, "ssh port: " + sshPort);
         sshd = SshServer.setUpDefaultServer();
         setAuthenticator();
         sshd.setPort(sshPort);

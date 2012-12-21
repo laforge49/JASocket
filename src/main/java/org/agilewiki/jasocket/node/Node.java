@@ -78,6 +78,7 @@ public class Node {
     }
 
     public void process() throws Exception {
+        logger.info("cluster port: " + clusterPort());
         factory();
         setNodeDirectory();
         openAgentChannelManager(clusterPort(), commands());
