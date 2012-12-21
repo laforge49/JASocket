@@ -35,15 +35,13 @@ public class ServerEvalAgent extends CommandStringAgent {
     protected void process(final RP<BListJid<StringJid>> rp) throws Exception {
         String args = getArgString().trim();
         int i = args.indexOf(' ');
-        final String serverName = args.substring(0, i);
-        if (i > -1)
-            args = args.substring(i + 1).trim();
-        else {
+        if (i == -1) {
             println("Server command name is missing");
             rp.processResponse(out);
             return;
         }
-        final String commandLine = args;
+        final String serverName = args.substring(0, i);
+        final String commandLine = args.substring(i + 1).trim();
         (new GetLocalServer(serverName)).send(this, agentChannelManager(), new RP<JLPCActor>() {
             @Override
             public void processResponse(JLPCActor response) throws Exception {
