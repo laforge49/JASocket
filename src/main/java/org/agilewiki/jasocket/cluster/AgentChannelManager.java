@@ -40,6 +40,8 @@ import org.agilewiki.jasocket.serverNameListener.ServerNameAdded;
 import org.agilewiki.jasocket.serverNameListener.ServerNameListener;
 import org.agilewiki.jasocket.serverNameListener.ServerRemoved;
 import org.agilewiki.jid.Jid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -53,6 +55,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AgentChannelManager extends JLPCActor {
+    private static Logger logger = LoggerFactory.getLogger(AgentChannelManager.class);
     public Node node;
     ServerSocketChannel serverSocketChannel;
     public int maxPacketSize;
@@ -99,6 +102,7 @@ public class AgentChannelManager extends JLPCActor {
         Iterator<AgentChannel> it = inactiveReceivers.iterator();
         while (it.hasNext()) {
             AgentChannel agentChannel = it.next();
+            logger.info("socket timeout: " + agentChannel.remoteAddress());
             CloseChannel.req.sendEvent(agentChannel);
         }
         inactiveReceivers.clear();
@@ -189,6 +193,7 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public boolean subscribeServerNameNotifications(ServerNameListener serverNameListener) throws Exception {
+        logger.info("add server name listener: " + serverNameListener.getClass().getName());
         boolean subscribed = serverNameListeners.add(serverNameListener);
         if (subscribed) {
             Iterator<String> it = serverNames.iterator();
@@ -205,6 +210,7 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public boolean unsubscribeServerNameNotifications(ServerNameListener serverNameListener) {
+        logger.info("remove server name listener: " + serverNameListener.getClass().getName());
         return serverNameListeners.remove(serverNameListener);
     }
 
@@ -273,6 +279,7 @@ public class AgentChannelManager extends JLPCActor {
         String rn = address + " " + name;
         if (!serverNames.add(rn))
             return;
+        logger.info("add server name: " + rn);
         serverNames.add(rn);
         ServerNameAdded serverNameAdded = new ServerNameAdded(address, name);
         Iterator<ServerNameListener> it = serverNameListeners.iterator();
@@ -284,6 +291,7 @@ public class AgentChannelManager extends JLPCActor {
     public void removeRemoteServerName(String address, String name) throws Exception {
         if (!serverNames.remove(address + " " + name))
             return;
+        logger.info("remove server name: " + address + " " + name);
         ServerRemoved serverRemoved = new ServerRemoved(address, name);
         Iterator<ServerNameListener> it = serverNameListeners.iterator();
         while (it.hasNext()) {
@@ -336,6 +344,7 @@ public class AgentChannelManager extends JLPCActor {
                 }
                 dups.add(0, agentChannel);
                 AgentChannel someAgentChannel = dups.get(0);
+                logger.info("socket open: " + remoteAddress);
                 shareServerNames(someAgentChannel);
                 rp.processResponse(someAgentChannel);
             }
@@ -370,6 +379,7 @@ public class AgentChannelManager extends JLPCActor {
             agentChannels.put(remoteAddress, dups);
         }
         dups.add(0, agentChannel);
+        logger.info("socket open: " + remoteAddress);
         shareServerNames(agentChannel);
     }
 
@@ -382,8 +392,11 @@ public class AgentChannelManager extends JLPCActor {
 
     public void agentChannelClosed(AgentChannel agentChannel, RP rp) throws Exception {
         String remoteAddress = agentChannel.remoteAddress();
-        if (remoteAddress == null)
+        if (remoteAddress == null) {
             rp.processResponse(null);
+            return;
+        }
+        logger.info("socket closed: " + remoteAddress);
         List<AgentChannel> dups = agentChannels.get(remoteAddress);
         if (dups != null) {
             dups.remove(agentChannel);

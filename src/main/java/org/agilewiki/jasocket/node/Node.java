@@ -36,6 +36,8 @@ import org.agilewiki.jasocket.cluster.AgentChannelManager;
 import org.agilewiki.jid.JidFactories;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +46,7 @@ import java.net.NetworkInterface;
 import java.nio.file.FileSystems;
 
 public class Node {
+    private static Logger logger = LoggerFactory.getLogger(Node.class);
     private String[] args;
     private MailboxFactory mailboxFactory;
     private AgentChannelManager agentChannelManager;
@@ -89,7 +92,6 @@ public class Node {
     }
 
     public void startup(Class serverClass, String args) throws Exception {
-        System.out.println("\nstartup " + serverClass.getName() + args);
         Server server = initializeServer(serverClass);
         BListJid<StringJid> out = (BListJid<StringJid>)
                 factory.newActor(JidFactories.STRING_BLIST_JID_TYPE, mailboxFactory.createMailbox());
@@ -98,7 +100,7 @@ public class Node {
         int s = out.size();
         int i = 0;
         while (i < s) {
-            System.out.println(out.iGet(i).getValue());
+            logger.info(serverClass.getName() + " -> " + out.iGet(i).getValue());
             i += 1;
         }
     }

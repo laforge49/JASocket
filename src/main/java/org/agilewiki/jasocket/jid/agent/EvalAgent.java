@@ -38,9 +38,10 @@ public class EvalAgent extends CommandStringAgent {
 
     @Override
     protected void process(RP<BListJid<StringJid>> rp) throws Exception {
-        if (!isLocal()) {
+        if (isLocal())
+            logger.info(">" + getArgString());
+        else
             logger.info("from " + agentChannel().remoteAddress + ">" + getArgString());
-        }
         String in = getArgString().trim();
         int i = in.indexOf(' ');
         String rem = "";

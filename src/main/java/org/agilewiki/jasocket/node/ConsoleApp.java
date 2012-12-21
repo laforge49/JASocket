@@ -71,7 +71,7 @@ public class ConsoleApp {
                 }
             } catch (InterruptedException ex) {
             } catch (AgentChannelClosedException x) {
-                System.out.println("Channel closed: " + x.getMessage());
+                System.out.println("\nChannel closed: " + x.getMessage());
             } catch (Exception x) {
                 x.printStackTrace();
             }
