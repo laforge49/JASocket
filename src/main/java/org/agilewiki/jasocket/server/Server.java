@@ -31,7 +31,6 @@ import org.agilewiki.jasocket.cluster.RegisterService;
 import org.agilewiki.jasocket.cluster.UnregisterService;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -68,7 +67,7 @@ abstract public class Server extends JLPCActor implements Closable {
                 if (response)
                     startService(out, rp);
                 else {
-                    println(out, "Server already registered: " + serviceName());
+                    out.println("Server already registered: " + serviceName());
                     rp.processResponse(out);
                 }
             }
@@ -78,7 +77,7 @@ abstract public class Server extends JLPCActor implements Closable {
     protected void startService(PrintJid out, RP rp) throws Exception {
         registerShutdownCommand();
         registerHelpCommand();
-        println(out, serviceName() + " started");
+        out.println(serviceName() + " started");
         rp.processResponse(out);
     }
 
@@ -102,17 +101,11 @@ abstract public class Server extends JLPCActor implements Closable {
         }
         ServiceCommand serviceCommand = serviceCommands.get(command);
         if (serviceCommand == null) {
-            println(out, "Unknown command for " + serviceName() + ": " + command);
+            out.println("Unknown command for " + serviceName() + ": " + command);
             rp.processResponse(out);
             return;
         }
         serviceCommand.eval(args, out, rp);
-    }
-
-    protected void println(PrintJid out, String v) throws Exception {
-        out.iAdd(-1);
-        StringJid sj = out.iGet(-1);
-        sj.setValue(v);
     }
 
     protected void registerShutdownCommand() {
@@ -120,7 +113,7 @@ abstract public class Server extends JLPCActor implements Closable {
             @Override
             public void eval(String args, PrintJid out, RP rp) throws Exception {
                 close();
-                println(out, "Stopped " + serviceName());
+                out.println("Stopped " + serviceName());
                 rp.processResponse(out);
             }
         });
@@ -133,7 +126,7 @@ abstract public class Server extends JLPCActor implements Closable {
                 Iterator<String> it = serviceCommands.keySet().iterator();
                 while (it.hasNext()) {
                     ServiceCommand ac = serviceCommands.get(it.next());
-                    println(out, ac.name + " - " + ac.description);
+                    out.println(ac.name + " - " + ac.description);
                 }
                 rp.processResponse(out);
             }

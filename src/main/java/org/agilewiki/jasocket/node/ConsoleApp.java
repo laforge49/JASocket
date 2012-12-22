@@ -62,12 +62,9 @@ public class ConsoleApp {
             evalAgent.setArgString(in);
             try {
                 PrintJid out = (PrintJid) StartAgent.req.send(future, evalAgent);
-                int s = out.size();
-                int i = 0;
-                while (i < s) {
-                    System.out.println(out.iGet(i).getValue());
-                    i += 1;
-                }
+                StringBuilder sb = new StringBuilder();
+                out.appendto(sb);
+                System.out.print(sb.toString());
             } catch (InterruptedException ex) {
             } catch (AgentChannelClosedException x) {
                 System.out.println("Channel closed: " + x.getMessage());

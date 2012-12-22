@@ -96,12 +96,12 @@ public class Node {
                 factory.newActor(JASocketFactories.PRINT_JID_FACTORY, mailboxFactory.createMailbox());
         Startup startup = new Startup(this, args, out);
         startup.send(new JAFuture(), server);
-        int s = out.size();
-        int i = 0;
-        while (i < s) {
-            logger.info(serverClass.getName() + " -> " + out.iGet(i).getValue());
-            i += 1;
-        }
+        if (out.size() == 0)
+            return;
+        StringBuilder sb = new StringBuilder();
+        sb.append(serverClass.getName() + ":\n");
+        out.appendto(sb);
+        logger.info(sb.toString().trim());
     }
 
     public Node(String[] args, int threadCount) throws Exception {

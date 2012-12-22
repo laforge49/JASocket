@@ -109,12 +109,9 @@ public class JASShell implements Command {
                         evalAgent.setArgString(in);
                         try {
                             PrintJid outs = (PrintJid) StartAgent.req.send(future, evalAgent);
-                            int s = outs.size();
-                            int i = 0;
-                            while (i < s) {
-                                out.println(outs.iGet(i).getValue());
-                                i += 1;
-                            }
+                            StringBuilder sb = new StringBuilder();
+                            outs.appendto(sb);
+                            out.print(sb.toString());
                         } catch (InterruptedException ex) {
                         } catch (AgentChannelClosedException x) {
                             out.println("Channel closed: " + x.getMessage());

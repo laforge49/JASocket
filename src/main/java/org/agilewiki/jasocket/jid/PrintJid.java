@@ -23,8 +23,31 @@
  */
 package org.agilewiki.jasocket.jid;
 
+import org.agilewiki.jactor.factory.JAFactory;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 public class PrintJid extends BListJid<StringJid> {
+    public static PrintJid newPrintJid(JLPCActor actor) throws Exception {
+        return (PrintJid) JAFactory.newActor(
+                actor, JASocketFactories.PRINT_JID_FACTORY, actor.getMailboxFactory().createMailbox());
+    }
+
+    public void println(String v) throws Exception {
+        iAdd(-1);
+        StringJid sj = iGet(-1);
+        sj.setValue(v);
+    }
+
+    public void appendto(StringBuilder sb) throws Exception {
+        int s = size();
+        int i = 0;
+        while (i < s) {
+            sb.append(iGet(i).getValue());
+            sb.append("\n");
+            i += 1;
+        }
+    }
 }

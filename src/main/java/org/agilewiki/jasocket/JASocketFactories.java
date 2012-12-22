@@ -30,6 +30,7 @@ import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.cluster.*;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
+import org.agilewiki.jasocket.jid.PrintJidFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jasocket.jid.agent.EvalAgentFactory;
 import org.agilewiki.jid.JidFactories;
@@ -54,6 +55,7 @@ public class JASocketFactories extends JLPCActor {
         }
         super.initialize(mailbox, parent, actorFactory);
 
+        registerActorFactory(PrintJidFactory.fac);
         registerActorFactory(ExceptionJidFactory.fac);
         registerActorFactory(TransportJidFactory.fac);
         registerActorFactory(AddRemoteServerNameAgentFactory.fac);

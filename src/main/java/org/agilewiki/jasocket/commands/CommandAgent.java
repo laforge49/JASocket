@@ -51,17 +51,14 @@ abstract public class CommandAgent extends AgentJid {
     }
 
     protected void println(String v) throws Exception {
-        out.iAdd(-1);
-        StringJid sj = out.iGet(-1);
-        sj.setValue(v);
+        out.println(v);
     }
 
     abstract protected void process(RP<PrintJid> rp) throws Exception;
 
     @Override
     public void start(RP rp) throws Exception {
-        out = (PrintJid) JAFactory.newActor(
-                this, JASocketFactories.PRINT_JID_FACTORY, getMailboxFactory().createMailbox());
+        out = PrintJid.newPrintJid(this);
         process(rp);
     }
 }

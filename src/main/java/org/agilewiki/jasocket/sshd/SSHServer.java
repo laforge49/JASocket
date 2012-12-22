@@ -42,7 +42,7 @@ public class SSHServer extends Server {
     @Override
     protected void startService(PrintJid out, RP rp) throws Exception {
         sshPort = sshPort();
-        println(out, "ssh port: " + sshPort);
+        out.println("ssh port: " + sshPort);
         sshd = SshServer.setUpDefaultServer();
         setAuthenticator();
         sshd.setPort(sshPort);
