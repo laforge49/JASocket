@@ -24,14 +24,11 @@
 package org.agilewiki.jasocket.sshd;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.server.Server;
+import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jasocket.server.Server;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SSHServer extends Server {
     private int sshPort;
@@ -43,7 +40,7 @@ public class SSHServer extends Server {
     }
 
     @Override
-    protected void startService(BListJid<StringJid> out, RP rp) throws Exception {
+    protected void startService(PrintJid out, RP rp) throws Exception {
         sshPort = sshPort();
         println(out, "ssh port: " + sshPort);
         sshd = SshServer.setUpDefaultServer();

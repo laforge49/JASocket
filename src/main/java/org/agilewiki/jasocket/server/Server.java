@@ -26,11 +26,11 @@ package org.agilewiki.jasocket.server;
 import org.agilewiki.jactor.Closable;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.cluster.AgentChannelManager;
 import org.agilewiki.jasocket.cluster.RegisterService;
 import org.agilewiki.jasocket.cluster.UnregisterService;
+import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
-import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.util.Iterator;
@@ -57,7 +57,7 @@ abstract public class Server extends JLPCActor implements Closable {
         serviceCommands.put(serviceCommand.name, serviceCommand);
     }
 
-    public void startup(Node node, final String args, final BListJid<StringJid> out, final RP rp) throws Exception {
+    public void startup(Node node, final String args, final PrintJid out, final RP rp) throws Exception {
         this.node = node;
         this.startupArgs = args;
         node.mailboxFactory().addClosable(this);
@@ -75,7 +75,7 @@ abstract public class Server extends JLPCActor implements Closable {
         });
     }
 
-    protected void startService(BListJid<StringJid> out, RP rp) throws Exception {
+    protected void startService(PrintJid out, RP rp) throws Exception {
         registerShutdownCommand();
         registerHelpCommand();
         println(out, serviceName() + " started");
@@ -91,7 +91,7 @@ abstract public class Server extends JLPCActor implements Closable {
         }
     }
 
-    public void evalServerCommand(String commandString, BListJid<StringJid> out, RP rp) throws Exception {
+    public void evalServerCommand(String commandString, PrintJid out, RP rp) throws Exception {
         commandString = commandString.trim();
         int i = commandString.indexOf(' ');
         String command = commandString;
@@ -109,7 +109,7 @@ abstract public class Server extends JLPCActor implements Closable {
         serviceCommand.eval(args, out, rp);
     }
 
-    protected void println(BListJid<StringJid> out, String v) throws Exception {
+    protected void println(PrintJid out, String v) throws Exception {
         out.iAdd(-1);
         StringJid sj = out.iGet(-1);
         sj.setValue(v);
@@ -118,7 +118,7 @@ abstract public class Server extends JLPCActor implements Closable {
     protected void registerShutdownCommand() {
         registerServiceCommand(new ServiceCommand("shutdown", "Stops and unregisters the server") {
             @Override
-            public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception {
+            public void eval(String args, PrintJid out, RP rp) throws Exception {
                 close();
                 println(out, "Stopped " + serviceName());
                 rp.processResponse(out);
@@ -129,7 +129,7 @@ abstract public class Server extends JLPCActor implements Closable {
     protected void registerHelpCommand() {
         registerServiceCommand(new ServiceCommand("help", "List the commands supported by the server") {
             @Override
-            public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception {
+            public void eval(String args, PrintJid out, RP rp) throws Exception {
                 Iterator<String> it = serviceCommands.keySet().iterator();
                 while (it.hasNext()) {
                     ServiceCommand ac = serviceCommands.get(it.next());

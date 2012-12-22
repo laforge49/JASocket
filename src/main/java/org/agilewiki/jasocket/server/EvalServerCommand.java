@@ -27,14 +27,13 @@ import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jasocket.jid.PrintJid;
 
-public class EvalServerCommand extends Request<BListJid<StringJid>, Server> {
+public class EvalServerCommand extends Request<PrintJid, Server> {
     private String commandLine;
-    private BListJid<StringJid> out;
+    private PrintJid out;
 
-    public EvalServerCommand(String commandLine, BListJid<StringJid> out) {
+    public EvalServerCommand(String commandLine, PrintJid out) {
         this.commandLine = commandLine;
         this.out = out;
     }

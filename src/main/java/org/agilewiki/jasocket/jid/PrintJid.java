@@ -21,14 +21,10 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.commands;
+package org.agilewiki.jasocket.jid;
 
-import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.jid.PrintJid;
+import org.agilewiki.jid.collection.vlenc.BListJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class ExceptionAgent extends CommandAgent {
-    @Override
-    public void process(RP<PrintJid> rp) throws Exception {
-        throw new Exception("User-raised exception");
-    }
+public class PrintJid extends BListJid<StringJid> {
 }

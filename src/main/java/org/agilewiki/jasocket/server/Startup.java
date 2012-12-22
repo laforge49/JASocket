@@ -27,16 +27,15 @@ import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-public class Startup extends Request<BListJid<StringJid>, Server> {
+public class Startup extends Request<PrintJid, Server> {
     private Node node;
     private String args;
-    private BListJid<StringJid> out;
+    private PrintJid out;
 
-    public Startup(Node node, String args, BListJid<StringJid> out) {
+    public Startup(Node node, String args, PrintJid out) {
         this.node = node;
         this.args = args;
         this.out = out;

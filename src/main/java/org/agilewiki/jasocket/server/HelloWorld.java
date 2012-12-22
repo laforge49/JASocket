@@ -1,9 +1,8 @@
 package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 public class HelloWorld extends Server {
 
@@ -11,10 +10,10 @@ public class HelloWorld extends Server {
         return "helloWorld";
     }
 
-    protected void startService(BListJid<StringJid> out, RP rp) throws Exception {
+    protected void startService(PrintJid out, RP rp) throws Exception {
         registerServiceCommand(new ServiceCommand("hi", "says hello") {
             @Override
-            public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception {
+            public void eval(String args, PrintJid out, RP rp) throws Exception {
                 println(out, "Hello!");
                 rp.processResponse(out);
             }

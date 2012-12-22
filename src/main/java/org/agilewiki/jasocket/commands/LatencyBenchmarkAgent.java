@@ -28,12 +28,11 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
-import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.cluster.GetAgentChannel;
 import org.agilewiki.jasocket.cluster.KeepAliveAgent;
 import org.agilewiki.jasocket.cluster.KeepAliveAgentFactory;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jasocket.jid.PrintJid;
+import org.agilewiki.jasocket.jid.agent.StartAgent;
 
 /**
  * >latencyTest 10.0.0.2:8880
@@ -47,7 +46,7 @@ import org.agilewiki.jid.scalar.vlens.string.StringJid;
  */
 public class LatencyBenchmarkAgent extends CommandStringAgent {
     @Override
-    protected void process(final RP<BListJid<StringJid>> rp) throws Exception {
+    protected void process(final RP<PrintJid> rp) throws Exception {
         String address = getArgString();
         String argsString = "";
         int p = address.indexOf(' ');

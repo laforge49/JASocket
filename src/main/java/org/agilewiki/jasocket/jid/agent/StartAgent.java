@@ -28,8 +28,6 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jid.Jid;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 public class StartAgent extends Request<Jid, AgentJid> {
     public final static StartAgent req = new StartAgent();

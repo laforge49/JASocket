@@ -28,16 +28,15 @@ import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
+import org.agilewiki.jasocket.cluster.GetAgentChannel;
+import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
-import org.agilewiki.jasocket.cluster.GetAgentChannel;
 import org.agilewiki.jid.Jid;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 public class ToAgent extends CommandStringAgent {
     @Override
-    protected void process(final RP<BListJid<StringJid>> rp) throws Exception {
+    protected void process(final RP<PrintJid> rp) throws Exception {
         String address = getArgString();
         String argsString = "";
         int p = address.indexOf(' ');
@@ -70,7 +69,7 @@ public class ToAgent extends CommandStringAgent {
                 shipAgent.send(ToAgent.this, agentChannel, new RP<Jid>() {
                     @Override
                     public void processResponse(Jid response) throws Exception {
-                        rp.processResponse((BListJid<StringJid>) response);
+                        rp.processResponse((PrintJid) response);
                     }
                 });
             }

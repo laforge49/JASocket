@@ -30,12 +30,11 @@ import org.agilewiki.jactor.concurrent.ThreadManager;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannelClosedException;
+import org.agilewiki.jasocket.cluster.AgentChannelManager;
+import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.node.Node;
-import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
@@ -109,7 +108,7 @@ public class JASShell implements Command {
                                 agentChannelManager);
                         evalAgent.setArgString(in);
                         try {
-                            BListJid<StringJid> outs = (BListJid) StartAgent.req.send(future, evalAgent);
+                            PrintJid outs = (PrintJid) StartAgent.req.send(future, evalAgent);
                             int s = outs.size();
                             int i = 0;
                             while (i < s) {

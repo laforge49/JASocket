@@ -28,8 +28,7 @@ import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.commands.Command;
 import org.agilewiki.jasocket.commands.CommandAgent;
 import org.agilewiki.jasocket.commands.CommandStringAgent;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jasocket.jid.PrintJid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +36,7 @@ public class EvalAgent extends CommandStringAgent {
     private static Logger logger = LoggerFactory.getLogger(EvalAgent.class);
 
     @Override
-    protected void process(RP<BListJid<StringJid>> rp) throws Exception {
+    protected void process(RP<PrintJid> rp) throws Exception {
         if (isLocal())
             logger.info(">" + getArgString());
         else

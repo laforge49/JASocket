@@ -28,13 +28,14 @@ import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.factory.ActorFactory;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.cluster.*;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jasocket.jid.agent.EvalAgentFactory;
-import org.agilewiki.jasocket.cluster.*;
 import org.agilewiki.jid.JidFactories;
 
 public class JASocketFactories extends JLPCActor {
+    public final static String PRINT_JID_FACTORY = "printJid";
     public final static String EXCEPTION_FACTORY = "ExceptionJid";
     public final static String TRANSPORT_FACTORY = "transportJid";
     public final static String ADD_REMOTE_SERVER_NAME_AGENT_FACTORY = "addRemoteServerNameAgent";

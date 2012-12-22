@@ -4,11 +4,11 @@ import junit.framework.TestCase;
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.cluster.AgentChannelManager;
 import org.agilewiki.jasocket.cluster.LocateServer;
 import org.agilewiki.jasocket.cluster.RegisterService;
-import org.agilewiki.jasocket.server.HelloWorld;
 import org.agilewiki.jasocket.discovery.Discovery;
-import org.agilewiki.jasocket.cluster.AgentChannelManager;
+import org.agilewiki.jasocket.server.HelloWorld;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;

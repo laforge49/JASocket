@@ -27,15 +27,13 @@ import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jasocket.server.Server;
-import org.agilewiki.jasocket.server.Startup;
+import org.agilewiki.jasocket.cluster.AgentChannelManager;
 import org.agilewiki.jasocket.commands.Commands;
 import org.agilewiki.jasocket.commands.ConsoleCommands;
 import org.agilewiki.jasocket.discovery.Discovery;
-import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jid.JidFactories;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jasocket.jid.PrintJid;
+import org.agilewiki.jasocket.server.Server;
+import org.agilewiki.jasocket.server.Startup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,8 +92,8 @@ public class Node {
 
     public void startup(Class serverClass, String args) throws Exception {
         Server server = initializeServer(serverClass);
-        BListJid<StringJid> out = (BListJid<StringJid>)
-                factory.newActor(JidFactories.STRING_BLIST_JID_TYPE, mailboxFactory.createMailbox());
+        PrintJid out = (PrintJid)
+                factory.newActor(JASocketFactories.PRINT_JID_FACTORY, mailboxFactory.createMailbox());
         Startup startup = new Startup(this, args, out);
         startup.send(new JAFuture(), server);
         int s = out.size();

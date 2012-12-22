@@ -24,15 +24,14 @@
 package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jasocket.jid.PrintJid;
+import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jasocket.server.Server;
 import org.agilewiki.jasocket.server.Startup;
-import org.agilewiki.jasocket.node.Node;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 public class StartupAgent extends CommandStringAgent {
     @Override
-    protected void process(RP<BListJid<StringJid>> rp) throws Exception {
+    protected void process(RP<PrintJid> rp) throws Exception {
         String args = getArgString().trim();
         int i = args.indexOf(' ');
         String serverClassName = args;

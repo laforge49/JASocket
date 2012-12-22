@@ -25,15 +25,15 @@ package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jid.JidFactories;
-import org.agilewiki.jid.collection.vlenc.BListJid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.util.Iterator;
 
 abstract public class CommandAgent extends AgentJid {
-    protected BListJid<StringJid> out;
+    protected PrintJid out;
 
     public void setArgString(String commandLine) throws Exception {
     }
@@ -56,12 +56,12 @@ abstract public class CommandAgent extends AgentJid {
         sj.setValue(v);
     }
 
-    abstract protected void process(RP<BListJid<StringJid>> rp) throws Exception;
+    abstract protected void process(RP<PrintJid> rp) throws Exception;
 
     @Override
     public void start(RP rp) throws Exception {
-        out = (BListJid<StringJid>) JAFactory.newActor(
-                this, JidFactories.STRING_BLIST_JID_TYPE, getMailboxFactory().createMailbox());
+        out = (PrintJid) JAFactory.newActor(
+                this, JASocketFactories.PRINT_JID_FACTORY, getMailboxFactory().createMailbox());
         process(rp);
     }
 }

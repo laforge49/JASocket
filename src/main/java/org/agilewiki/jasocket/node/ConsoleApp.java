@@ -27,11 +27,10 @@ import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannelClosedException;
+import org.agilewiki.jasocket.cluster.AgentChannelManager;
+import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
-import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -62,7 +61,7 @@ public class ConsoleApp {
                     agentChannelManager);
             evalAgent.setArgString(in);
             try {
-                BListJid<StringJid> out = (BListJid) StartAgent.req.send(future, evalAgent);
+                PrintJid out = (PrintJid) StartAgent.req.send(future, evalAgent);
                 int s = out.size();
                 int i = 0;
                 while (i < s) {

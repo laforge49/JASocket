@@ -25,8 +25,8 @@ package org.agilewiki.jasocket.jid.agent;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
-import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
+import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.collection.flenc.AppJid;
 

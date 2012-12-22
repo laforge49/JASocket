@@ -26,13 +26,12 @@ package org.agilewiki.jasocket.commands;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.cluster.GetLocalServer;
+import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.server.EvalServerCommand;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 public class ServerEvalAgent extends CommandStringAgent {
     @Override
-    protected void process(final RP<BListJid<StringJid>> rp) throws Exception {
+    protected void process(final RP<PrintJid> rp) throws Exception {
         String args = getArgString().trim();
         int i = args.indexOf(' ');
         if (i == -1) {

@@ -1,8 +1,7 @@
 package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jasocket.jid.PrintJid;
 
 abstract public class ServiceCommand {
     public final String name;
@@ -14,5 +13,5 @@ abstract public class ServiceCommand {
         this.description = description;
     }
 
-    abstract public void eval(String args, BListJid<StringJid> out, RP rp) throws Exception;
+    abstract public void eval(String args, PrintJid out, RP rp) throws Exception;
 }
