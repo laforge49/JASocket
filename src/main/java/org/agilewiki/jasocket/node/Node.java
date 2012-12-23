@@ -75,11 +75,21 @@ public class Node {
         return factory;
     }
 
+    public int clusterPort() throws Exception {
+        int port = 8880;
+        if (args.length > 0) {
+            port = Integer.valueOf(args[0]);
+        }
+        return port;
+    }
+
     public void process() throws Exception {
         logger.info("cluster port: " + clusterPort());
         factory();
         setNodeDirectory();
-        openAgentChannelManager(clusterPort(), commands());
+        Commands commands = new ConsoleCommands();
+        commands.initialize(factory);
+        openAgentChannelManager(clusterPort(), commands);
         startDiscovery();
         startKeepAlive();
     }
@@ -119,14 +129,6 @@ public class Node {
         }
     }
 
-    public int clusterPort() throws Exception {
-        int port = 8880;
-        if (args.length > 0) {
-            port = Integer.valueOf(args[0]);
-        }
-        return port;
-    }
-
     protected void setNodeDirectory() throws Exception {
         int port = clusterPort();
         nodeDirectory = FileSystems.getDefault().getPath("node" + port).toFile();
@@ -134,12 +136,6 @@ public class Node {
             return;
         if (!nodeDirectory.mkdir())
             throw new IOException("unable to create directory " + nodeDirectory.getPath());
-    }
-
-    protected Commands commands() throws Exception {
-        Commands commands = new ConsoleCommands();
-        commands.initialize(factory);
-        return commands;
     }
 
     protected void openAgentChannelManager(int clusterPort, Commands commands) throws Exception {
