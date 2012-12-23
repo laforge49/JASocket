@@ -35,7 +35,7 @@ import org.agilewiki.jasocket.node.Node;
 import java.util.Iterator;
 import java.util.TreeMap;
 
-abstract public class Server extends JLPCActor implements Closable {
+public class Server extends JLPCActor implements Closable {
     private Node node;
     protected TreeMap<String, ServiceCommand> serviceCommands = new TreeMap<String, ServiceCommand>();
     protected String startupArgs;
