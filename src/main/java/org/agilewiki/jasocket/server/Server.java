@@ -111,7 +111,7 @@ abstract public class Server extends JLPCActor implements Closable {
     protected void registerShutdownCommand() {
         registerServiceCommand(new ServiceCommand("shutdown", "Stops and unregisters the server") {
             @Override
-            public void eval(String args, PrintJid out, RP rp) throws Exception {
+            public void eval(String args, PrintJid out, RP<PrintJid> rp) throws Exception {
                 close();
                 out.println("Stopped " + serviceName());
                 rp.processResponse(out);
@@ -122,7 +122,7 @@ abstract public class Server extends JLPCActor implements Closable {
     protected void registerHelpCommand() {
         registerServiceCommand(new ServiceCommand("help", "List the commands supported by the server") {
             @Override
-            public void eval(String args, PrintJid out, RP rp) throws Exception {
+            public void eval(String args, PrintJid out, RP<PrintJid> rp) throws Exception {
                 Iterator<String> it = serviceCommands.keySet().iterator();
                 while (it.hasNext()) {
                     ServiceCommand ac = serviceCommands.get(it.next());

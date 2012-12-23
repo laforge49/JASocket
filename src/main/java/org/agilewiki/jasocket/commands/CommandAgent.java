@@ -24,11 +24,8 @@
 package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.factory.JAFactory;
-import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.util.Iterator;
 

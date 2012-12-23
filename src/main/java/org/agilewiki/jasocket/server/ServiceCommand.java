@@ -13,5 +13,5 @@ abstract public class ServiceCommand {
         this.description = description;
     }
 
-    abstract public void eval(String args, PrintJid out, RP rp) throws Exception;
+    abstract public void eval(String args, PrintJid out, RP<PrintJid> rp) throws Exception;
 }
