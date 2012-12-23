@@ -6,10 +6,12 @@ import org.agilewiki.jasocket.node.Node;
 
 public class HelloWorld extends Server {
 
+    @Override
     protected String serviceName() {
         return "helloWorld";
     }
 
+    @Override
     protected void startService(PrintJid out, RP rp) throws Exception {
         registerServiceCommand(new ServiceCommand("hi", "says hello") {
             @Override
