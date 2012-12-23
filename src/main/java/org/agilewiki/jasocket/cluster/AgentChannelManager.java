@@ -250,7 +250,7 @@ public class AgentChannelManager extends JLPCActor {
         }
     }
 
-    public JLPCActor unregisterService(String name) throws Exception {
+    public JLPCActor unregisterServer(String name) throws Exception {
         JLPCActor removed = localServers.remove(name);
         if (removed == null)
             return null;
@@ -262,7 +262,7 @@ public class AgentChannelManager extends JLPCActor {
         return removed;
     }
 
-    public boolean registerService(String name, Server server) throws Exception {
+    public boolean registerServer(String name, Server server) throws Exception {
         JLPCActor added = localServers.get(name);
         if (added != null)
             return false;

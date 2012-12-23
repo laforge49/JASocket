@@ -35,12 +35,12 @@ public class SSHServer extends Server {
     private SshServer sshd;
 
     @Override
-    protected String serviceName() {
+    protected String serverName() {
         return "sshServer";
     }
 
     @Override
-    protected void startService(PrintJid out, RP rp) throws Exception {
+    protected void startServer(PrintJid out, RP rp) throws Exception {
         sshPort = sshPort();
         out.println("ssh port: " + sshPort);
         sshd = SshServer.setUpDefaultServer();
@@ -49,7 +49,7 @@ public class SSHServer extends Server {
         sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider("hostkey.ser"));
         setShellFactory();
         sshd.start();
-        super.startService(out, rp);
+        super.startServer(out, rp);
     }
 
     @Override

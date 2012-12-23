@@ -27,8 +27,8 @@ import org.agilewiki.jactor.Closable;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jasocket.cluster.RegisterService;
-import org.agilewiki.jasocket.cluster.UnregisterService;
+import org.agilewiki.jasocket.cluster.RegisterServer;
+import org.agilewiki.jasocket.cluster.UnregisterServer;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
 
@@ -37,10 +37,10 @@ import java.util.TreeMap;
 
 public class Server extends JLPCActor implements Closable {
     private Node node;
-    protected TreeMap<String, ServiceCommand> serviceCommands = new TreeMap<String, ServiceCommand>();
+    protected TreeMap<String, ServerCommand> serverCommands = new TreeMap<String, ServerCommand>();
     protected String startupArgs;
 
-    protected String serviceName() {
+    protected String serverName() {
         return this.getClass().getName();
     }
 
@@ -52,39 +52,39 @@ public class Server extends JLPCActor implements Closable {
         return node.agentChannelManager();
     }
 
-    protected void registerServiceCommand(ServiceCommand serviceCommand) {
-        serviceCommands.put(serviceCommand.name, serviceCommand);
+    protected void registerServerCommand(ServerCommand serverCommand) {
+        serverCommands.put(serverCommand.name, serverCommand);
     }
 
     public void startup(Node node, final String args, final PrintJid out, final RP rp) throws Exception {
         this.node = node;
         this.startupArgs = args;
         node.mailboxFactory().addClosable(this);
-        RegisterService registerService = new RegisterService(serviceName(), this);
-        registerService.send(this, agentChannelManager(), new RP<Boolean>() {
+        RegisterServer registerServer = new RegisterServer(serverName(), this);
+        registerServer.send(this, agentChannelManager(), new RP<Boolean>() {
             @Override
             public void processResponse(Boolean response) throws Exception {
                 if (response)
-                    startService(out, rp);
+                    startServer(out, rp);
                 else {
-                    out.println("Server already registered: " + serviceName());
+                    out.println("Server already registered: " + serverName());
                     rp.processResponse(out);
                 }
             }
         });
     }
 
-    protected void startService(PrintJid out, RP rp) throws Exception {
+    protected void startServer(PrintJid out, RP rp) throws Exception {
         registerShutdownCommand();
         registerHelpCommand();
-        out.println(serviceName() + " started");
+        out.println(serverName() + " started");
         rp.processResponse(out);
     }
 
     public void close() {
-        UnregisterService unregisterService = new UnregisterService(serviceName());
+        UnregisterServer unregisterServer = new UnregisterServer(serverName());
         try {
-            unregisterService.sendEvent(agentChannelManager());
+            unregisterServer.sendEvent(agentChannelManager());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -99,33 +99,33 @@ public class Server extends JLPCActor implements Closable {
             command = commandString.substring(0, i);
             args = commandString.substring(i + 1).trim();
         }
-        ServiceCommand serviceCommand = serviceCommands.get(command);
-        if (serviceCommand == null) {
-            out.println("Unknown command for " + serviceName() + ": " + command);
+        ServerCommand serverCommand = serverCommands.get(command);
+        if (serverCommand == null) {
+            out.println("Unknown command for " + serverName() + ": " + command);
             rp.processResponse(out);
             return;
         }
-        serviceCommand.eval(args, out, rp);
+        serverCommand.eval(args, out, rp);
     }
 
     protected void registerShutdownCommand() {
-        registerServiceCommand(new ServiceCommand("shutdown", "Stops and unregisters the server") {
+        registerServerCommand(new ServerCommand("shutdown", "Stops and unregisters the server") {
             @Override
             public void eval(String args, PrintJid out, RP<PrintJid> rp) throws Exception {
                 close();
-                out.println("Stopped " + serviceName());
+                out.println("Stopped " + serverName());
                 rp.processResponse(out);
             }
         });
     }
 
     protected void registerHelpCommand() {
-        registerServiceCommand(new ServiceCommand("help", "List the commands supported by the server") {
+        registerServerCommand(new ServerCommand("help", "List the commands supported by the server") {
             @Override
             public void eval(String args, PrintJid out, RP<PrintJid> rp) throws Exception {
-                Iterator<String> it = serviceCommands.keySet().iterator();
+                Iterator<String> it = serverCommands.keySet().iterator();
                 while (it.hasNext()) {
-                    ServiceCommand ac = serviceCommands.get(it.next());
+                    ServerCommand ac = serverCommands.get(it.next());
                     out.println(ac.name + " - " + ac.description);
                 }
                 rp.processResponse(out);

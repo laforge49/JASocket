@@ -6,7 +6,7 @@ import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
 import org.agilewiki.jasocket.cluster.LocateServer;
-import org.agilewiki.jasocket.cluster.RegisterService;
+import org.agilewiki.jasocket.cluster.RegisterServer;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.HelloWorld;
 
@@ -32,8 +32,8 @@ public class LocateServerTest extends TestCase {
         agentChannelManager1.initialize(mailboxFactory.createMailbox(), factory);
         agentChannelManager1.openServerSocket(8881);
 
-        (new RegisterService("a", new HelloWorld())).send(future, agentChannelManager0);
-        (new RegisterService("a", new HelloWorld())).send(future, agentChannelManager1);
+        (new RegisterServer("a", new HelloWorld())).send(future, agentChannelManager0);
+        (new RegisterServer("a", new HelloWorld())).send(future, agentChannelManager1);
 
         new Discovery(agentChannelManager0,
                 NetworkInterface.getByInetAddress(InetAddress.getLocalHost()),

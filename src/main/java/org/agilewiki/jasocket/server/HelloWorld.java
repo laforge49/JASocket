@@ -7,20 +7,20 @@ import org.agilewiki.jasocket.node.Node;
 public class HelloWorld extends Server {
 
     @Override
-    protected String serviceName() {
+    protected String serverName() {
         return "helloWorld";
     }
 
     @Override
-    protected void startService(PrintJid out, RP rp) throws Exception {
-        registerServiceCommand(new ServiceCommand("hi", "says hello") {
+    protected void startServer(PrintJid out, RP rp) throws Exception {
+        registerServerCommand(new ServerCommand("hi", "says hello") {
             @Override
             public void eval(String args, PrintJid out, RP<PrintJid> rp) throws Exception {
                 out.println("Hello!");
                 rp.processResponse(out);
             }
         });
-        super.startService(out, rp);
+        super.startServer(out, rp);
     }
 
     public static void main(String[] args) throws Exception {

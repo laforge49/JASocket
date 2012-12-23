@@ -5,9 +5,9 @@ import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.JAMailboxFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jasocket.cluster.RegisterService;
+import org.agilewiki.jasocket.cluster.RegisterServer;
 import org.agilewiki.jasocket.cluster.SubscribeServerNameNotifications;
-import org.agilewiki.jasocket.cluster.UnregisterService;
+import org.agilewiki.jasocket.cluster.UnregisterServer;
 import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.server.HelloWorld;
 
@@ -30,8 +30,8 @@ public class ListenerTest extends TestCase {
         agentChannelManager1.openServerSocket(8881);
 
         System.out.println("\nregister local serverNames 0a and 1a");
-        (new RegisterService("0a", new HelloWorld())).send(future, agentChannelManager0);
-        (new RegisterService("1a", new HelloWorld())).send(future, agentChannelManager1);
+        (new RegisterServer("0a", new HelloWorld())).send(future, agentChannelManager0);
+        (new RegisterServer("1a", new HelloWorld())).send(future, agentChannelManager1);
 
         System.out.println("\nadd listeners");
         Listener listener0 = new Listener();
@@ -57,23 +57,23 @@ public class ListenerTest extends TestCase {
         Thread.sleep(100);
 
         System.out.println("\nregister local serverNames 0b and 1b");
-        (new RegisterService("0b", new HelloWorld())).send(future, agentChannelManager0);
-        (new RegisterService("1b", new HelloWorld())).send(future, agentChannelManager1);
+        (new RegisterServer("0b", new HelloWorld())).send(future, agentChannelManager0);
+        (new RegisterServer("1b", new HelloWorld())).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nregister local serverNames 0b and 1b, again");
-        (new RegisterService("0b", new HelloWorld())).send(future, agentChannelManager0);
-        (new RegisterService("1b", new HelloWorld())).send(future, agentChannelManager1);
+        (new RegisterServer("0b", new HelloWorld())).send(future, agentChannelManager0);
+        (new RegisterServer("1b", new HelloWorld())).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nunregister local serverNames 0a and 1a");
-        (new UnregisterService("0a")).send(future, agentChannelManager0);
-        (new UnregisterService("1a")).send(future, agentChannelManager1);
+        (new UnregisterServer("0a")).send(future, agentChannelManager0);
+        (new UnregisterServer("1a")).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nunregister local serverNames 0a and 1a, again");
-        (new UnregisterService("0a")).send(future, agentChannelManager0);
-        (new UnregisterService("1a")).send(future, agentChannelManager1);
+        (new UnregisterServer("0a")).send(future, agentChannelManager0);
+        (new UnregisterServer("1a")).send(future, agentChannelManager1);
         Thread.sleep(100);
 
         System.out.println("\nshutdown");
