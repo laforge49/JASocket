@@ -32,7 +32,7 @@ public class ConsoleCommands extends Commands {
                 ToAgentFactory.fac);
         cmd("nodes", "List all the accessible nodes in the cluster",
                 NodesAgentFactory.fac);
-        cmd("servers", "list all servers running in the cluster",
+        cmd("servers", "list all accessible servers running in the cluster",
                 ServersAgentFactory.fac);
         cmd("halt", "Exit (only) the local node",
                 HaltAgentFactory.fac);
