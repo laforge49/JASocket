@@ -96,7 +96,7 @@ public class Node {
 
     public Server initializeServer(Class<Server> serverClass) throws Exception {
         Server server = serverClass.newInstance();
-        server.initialize(mailboxFactory.createAsyncMailbox());
+        server.initialize(mailboxFactory.createAsyncMailbox(), factory);
         return server;
     }
 
