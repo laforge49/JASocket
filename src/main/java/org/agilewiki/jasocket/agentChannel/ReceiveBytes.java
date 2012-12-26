@@ -29,7 +29,7 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
 public class ReceiveBytes extends Request<Object, AgentChannel> {
-    byte[] bytes;
+    private final byte[] bytes;
 
     public ReceiveBytes(byte[] bytes) {
         this.bytes = bytes;

@@ -27,13 +27,13 @@ import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.serverNameListener.ServerNameListener;
+import org.agilewiki.jasocket.jid.agent.AgentJid;
 
-public class SubscribeServerNameNotifications extends Request<Boolean, AgentChannelManager> {
-    private final ServerNameListener serverNameListener;
+public class ShipAgentEventToAll extends Request<Object, AgentChannelManager> {
+    public final AgentJid request;
 
-    public SubscribeServerNameNotifications(ServerNameListener serverNameListener) {
-        this.serverNameListener = serverNameListener;
+    public ShipAgentEventToAll(AgentJid request) {
+        this.request = request;
     }
 
     @Override
@@ -43,6 +43,7 @@ public class SubscribeServerNameNotifications extends Request<Boolean, AgentChan
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).subscribeServerNameNotifications(serverNameListener));
+        ((AgentChannelManager) targetActor).shipAgentEventToAll(request);
+        rp.processResponse(null);
     }
 }

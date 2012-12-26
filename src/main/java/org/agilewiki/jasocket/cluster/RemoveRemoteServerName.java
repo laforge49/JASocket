@@ -29,8 +29,8 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
 public class RemoveRemoteServerName extends Request<Object, AgentChannelManager> {
-    private String address;
-    private String name;
+    private final String address;
+    private final String name;
 
     public RemoveRemoteServerName(String address, String name) {
         this.address = address;

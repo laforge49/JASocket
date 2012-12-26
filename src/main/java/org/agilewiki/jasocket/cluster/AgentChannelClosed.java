@@ -30,7 +30,7 @@ import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 
 public class AgentChannelClosed extends Request<Object, AgentChannelManager> {
-    private AgentChannel agentChannel;
+    private final AgentChannel agentChannel;
 
     public AgentChannelClosed(AgentChannel agentChannel) {
         this.agentChannel = agentChannel;

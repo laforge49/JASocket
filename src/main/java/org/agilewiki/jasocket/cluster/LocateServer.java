@@ -31,7 +31,7 @@ import org.agilewiki.jactor.lpc.Request;
 import java.util.List;
 
 public class LocateServer extends Request<List<String>, AgentChannelManager> {
-    private String name;
+    private final String name;
 
     public LocateServer(String name) {
         this.name = name;

@@ -31,9 +31,9 @@ import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
 
 public class Startup extends Request<PrintJid, Server> {
-    private Node node;
-    private String args;
-    private PrintJid out;
+    private final Node node;
+    private final String args;
+    private final PrintJid out;
 
     public Startup(Node node, String args, PrintJid out) {
         this.node = node;

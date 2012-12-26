@@ -29,8 +29,8 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
 public class ServerRemoved extends Request<Object, ServerNameListener> {
-    private String address;
-    private String name;
+    private final String address;
+    private final String name;
 
     public ServerRemoved(String address, String name) {
         this.address = address;

@@ -29,7 +29,7 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
 public class UnregisterServer extends Request<JLPCActor, AgentChannelManager> {
-    private String name;
+    private final String name;
 
     public UnregisterServer(String name) {
         this.name = name;

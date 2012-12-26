@@ -33,7 +33,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 public class OpenAgentChannel extends Request<AgentChannel, AgentChannelManager> {
-    private InetSocketAddress inetSocketAddress;
+    private final InetSocketAddress inetSocketAddress;
 
     public OpenAgentChannel(int port) throws Exception {
         InetAddress inetAddress = InetAddress.getLocalHost();

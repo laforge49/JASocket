@@ -29,7 +29,7 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 
 public class GetLocalServer extends Request<JLPCActor, AgentChannelManager> {
-    private String name;
+    private final String name;
 
     public GetLocalServer(String name) {
         this.name = name;

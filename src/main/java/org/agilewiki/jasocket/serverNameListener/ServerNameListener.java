@@ -28,5 +28,5 @@ import org.agilewiki.jactor.lpc.TargetActor;
 public interface ServerNameListener extends TargetActor {
     public void serverNameAdded(String address, String name) throws Exception;
 
-    public void serverNameRemoved(String address, String name)throws Exception;
+    public void serverNameRemoved(String address, String name) throws Exception;
 }

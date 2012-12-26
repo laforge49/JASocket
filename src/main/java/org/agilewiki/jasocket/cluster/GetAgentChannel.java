@@ -30,7 +30,7 @@ import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 
 public class GetAgentChannel extends Request<AgentChannel, AgentChannelManager> {
-    private String address;
+    private final String address;
 
     public GetAgentChannel(String address) {
         this.address = address;

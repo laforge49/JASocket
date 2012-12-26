@@ -30,7 +30,7 @@ import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.serverNameListener.ServerNameListener;
 
 public class UnsubscribeServerNameNotifications extends Request<Boolean, AgentChannelManager> {
-    private ServerNameListener serverNameListener;
+    private final ServerNameListener serverNameListener;
 
     public UnsubscribeServerNameNotifications(ServerNameListener serverNameListener) {
         this.serverNameListener = serverNameListener;

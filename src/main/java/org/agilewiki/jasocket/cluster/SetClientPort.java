@@ -30,8 +30,8 @@ import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 
 public class SetClientPort extends Request<Object, AgentChannelManager> {
-    private AgentChannel agentChannel;
-    private int port;
+    private final AgentChannel agentChannel;
+    private final int port;
 
     public SetClientPort(AgentChannel agentChannel, int port) {
         this.agentChannel = agentChannel;

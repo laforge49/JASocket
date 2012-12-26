@@ -30,8 +30,8 @@ import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.server.Server;
 
 public class RegisterServer extends Request<Boolean, AgentChannelManager> {
-    private String name;
-    private Server server;
+    private final String name;
+    private final Server server;
 
     public RegisterServer(String name, Server server) {
         this.name = name;
