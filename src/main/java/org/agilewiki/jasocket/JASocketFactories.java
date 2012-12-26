@@ -42,7 +42,6 @@ public class JASocketFactories extends JLPCActor {
     public final static String ADD_REMOTE_SERVER_NAME_AGENT_FACTORY = "addRemoteServerNameAgent";
     public final static String REMOVE_REMOTE_SERVER_NAME_AGENT_FACTORY = "removeRemoteServerNameAgent";
     public final static String SET_CLIENT_PORT_AGENT_FACTORY = "setClientPortAgent";
-    public final static String GET_LOCAL_SERVER_AGENT_FACTORY = "getLocalServerAgent";
     public final static String KEEP_ALIVE_FACTORY = "keepAliveAgent";
     public final static String EVAL_FACTORY = "evalAgent";
 
@@ -61,7 +60,6 @@ public class JASocketFactories extends JLPCActor {
         registerActorFactory(AddRemoteServerNameAgentFactory.fac);
         registerActorFactory(RemoveServerNameAgentFactory.fac);
         registerActorFactory(SetClientPortAgentFactory.fac);
-        registerActorFactory(GetLocalServerAgentFactory.fac);
         registerActorFactory(KeepAliveAgentFactory.fac);
         registerActorFactory(EvalAgentFactory.fac);
     }
