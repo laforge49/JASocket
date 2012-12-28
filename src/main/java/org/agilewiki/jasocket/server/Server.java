@@ -57,7 +57,8 @@ public class Server extends JLPCActor implements Closable {
         serverCommands.put(serverCommand.name, serverCommand);
     }
 
-    public void startup(Node node, final String args, final PrintJid out, final RP rp) throws Exception {
+    public void startup(Node node, final String args, final PrintJid out, final RP rp)
+            throws Exception {
         this.node = node;
         this.startupArgs = args;
         setExceptionHandler(new ExceptionHandler() {
