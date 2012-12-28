@@ -24,6 +24,7 @@
 package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.Closable;
+import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
@@ -59,6 +60,13 @@ public class Server extends JLPCActor implements Closable {
     public void startup(Node node, final String args, final PrintJid out, final RP rp) throws Exception {
         this.node = node;
         this.startupArgs = args;
+        setExceptionHandler(new ExceptionHandler() {
+            @Override
+            public void process(Exception exception) throws Exception {
+                close();
+                throw exception;
+            }
+        });
         node.mailboxFactory().addClosable(this);
         RegisterServer registerServer = new RegisterServer(serverName(), this);
         registerServer.send(this, agentChannelManager(), new RP<Boolean>() {
