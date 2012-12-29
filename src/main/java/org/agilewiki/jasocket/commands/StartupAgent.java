@@ -41,7 +41,6 @@ public class StartupAgent extends CommandStringAgent {
         } else {
             args = "";
         }
-        final String a = args;
         Node node = agentChannelManager().node;
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         Class<Server> serverClass = (Class<Server>) classLoader.loadClass(serverClassName);
