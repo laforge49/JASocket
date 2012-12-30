@@ -41,6 +41,10 @@ public class Server extends JLPCActor implements Closable {
     protected TreeMap<String, ServerCommand> serverCommands = new TreeMap<String, ServerCommand>();
     protected String startupArgs;
 
+    protected String startupArgs() {
+        return startupArgs;
+    }
+
     protected String serverName() {
         return this.getClass().getName();
     }
