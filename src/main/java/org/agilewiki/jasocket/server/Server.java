@@ -73,25 +73,26 @@ public class Server extends JLPCActor implements Closable {
             }
         });
         node.mailboxFactory().addClosable(this);
+        startServer(out, rp);
+    }
+
+    protected void startServer(final PrintJid out, final RP rp) throws Exception {
+        registerShutdownCommand();
+        registerHelpCommand();
         RegisterServer registerServer = new RegisterServer(serverName(), this);
         registerServer.send(this, agentChannelManager(), new RP<Boolean>() {
             @Override
             public void processResponse(Boolean response) throws Exception {
-                if (response)
-                    startServer(out, rp);
-                else {
+                if (response) {
+                    out.println(serverName() + " started");
+                    rp.processResponse(out);
+                } else {
+                    close();
                     out.println("Server already registered: " + serverName());
                     rp.processResponse(out);
                 }
             }
         });
-    }
-
-    protected void startServer(PrintJid out, RP rp) throws Exception {
-        registerShutdownCommand();
-        registerHelpCommand();
-        out.println(serverName() + " started");
-        rp.processResponse(out);
     }
 
     public void close() {
