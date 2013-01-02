@@ -43,7 +43,13 @@ public class StartupAgent extends CommandStringAgent {
         }
         Node node = agentChannelManager().node;
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        Class<Server> serverClass = (Class<Server>) classLoader.loadClass(serverClassName);
+        Class<Server> serverClass = null;
+        try {
+            serverClass = (Class<Server>) classLoader.loadClass(serverClassName);
+        } catch (Exception ex) {
+            out.println("unable to load class " + serverClassName);
+            rp.processResponse(out);
+        }
         Server server = node.initializeServer(serverClass);
         Startup startup = new Startup(node, args, out);
         startup.send(this, server, rp);
