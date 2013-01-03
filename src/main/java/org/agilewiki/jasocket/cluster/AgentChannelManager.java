@@ -102,8 +102,13 @@ public class AgentChannelManager extends JLPCActor {
         Iterator<AgentChannel> it = inactiveReceivers.iterator();
         while (it.hasNext()) {
             AgentChannel agentChannel = it.next();
-            logger.info("socket timeout: " + agentChannel.remoteAddress());
-            CloseChannel.req.sendEvent(agentChannel);
+            List<AgentChannel> acl = agentChannels.get(agentChannel.remoteAddress());
+            if (acl != null) {
+                if (acl.contains(agentChannel)) {
+                    logger.info("socket timeout: " + agentChannel.remoteAddress());
+                    CloseChannel.req.sendEvent(agentChannel);
+                }
+            }
         }
         inactiveReceivers.clear();
         Iterator<String> it2 = agentChannels.keySet().iterator();
