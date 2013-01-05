@@ -47,7 +47,7 @@ public class Node {
     private static Logger logger = LoggerFactory.getLogger(Node.class);
     private String[] args;
     private MailboxFactory mailboxFactory;
-    private AgentChannelManager agentChannelManager;
+    protected AgentChannelManager agentChannelManager;
     private File nodeDirectory;
     private JASocketFactories factory;
 
@@ -138,8 +138,12 @@ public class Node {
             throw new IOException("unable to create directory " + nodeDirectory.getPath());
     }
 
-    protected void openAgentChannelManager(int clusterPort, Commands commands) throws Exception {
+    protected void createAgentChannelManager() {
         agentChannelManager = new AgentChannelManager();
+    }
+
+    protected void openAgentChannelManager(int clusterPort, Commands commands) throws Exception {
+        createAgentChannelManager();
         agentChannelManager.node = this;
         agentChannelManager.maxPacketSize = 64000;
         agentChannelManager.initialize(mailboxFactory.createAsyncMailbox(), commands);
