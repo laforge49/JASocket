@@ -89,9 +89,6 @@ public class AgentChannelManager extends JLPCActor {
     }
 
     public AgentChannel getAgentChannel(String address) throws Exception {
-        List<String> locations = locateServer(address);
-        if (locations.size() > 0)
-            address = locations.get(0);
         List<AgentChannel> dups = agentChannels.get(address);
         if (dups == null)
             return null;
@@ -403,11 +400,16 @@ public class AgentChannelManager extends JLPCActor {
         }
         logger.info("socket closed: " + remoteAddress);
         List<AgentChannel> dups = agentChannels.get(remoteAddress);
-        if (dups != null) {
-            dups.remove(agentChannel);
-            if (dups.isEmpty())
-                agentChannels.remove(remoteAddress);
+        if (dups == null) {
+            rp.processResponse(null);
+            return;
         }
+        dups.remove(agentChannel);
+        if (!dups.isEmpty()) {
+            rp.processResponse(null);
+            return;
+        }
+        agentChannels.remove(remoteAddress);
         inactiveSenders.remove(remoteAddress);
         HashSet<String> channelServers = new HashSet<String>();
         Iterator<String> it = serverNames.iterator();

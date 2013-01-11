@@ -68,8 +68,9 @@ public class Discovery {
                         byteBuffer.flip();
                         int port = byteBuffer.getInt();
                         InetSocketAddress remoteInetSocketAddress = new InetSocketAddress(inetAddress, port);
-                        if (!("/" + agentChannelManagerAddress).equals(remoteInetSocketAddress.toString()))
+                        if (!("/" + agentChannelManagerAddress).equals(remoteInetSocketAddress.toString())) {
                             (new OpenAgentChannel(remoteInetSocketAddress)).sendEvent(agentChannelManager);
+                        }
                     } catch (ClosedByInterruptException cbie) {
                         return;
                     } catch (ClosedChannelException cce) {
