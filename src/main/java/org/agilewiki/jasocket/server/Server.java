@@ -32,12 +32,15 @@ import org.agilewiki.jasocket.cluster.RegisterServer;
 import org.agilewiki.jasocket.cluster.UnregisterServer;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
+import org.joda.time.Period;
+import org.joda.time.format.ISOPeriodFormat;
 
 import java.util.Iterator;
 import java.util.TreeMap;
 
 public class Server extends JLPCActor implements Closable {
     private Node node;
+    public long startTime;
     protected TreeMap<String, ServerCommand> serverCommands = new TreeMap<String, ServerCommand>();
     protected String startupArgs;
 
@@ -64,6 +67,7 @@ public class Server extends JLPCActor implements Closable {
     public void startup(Node node, final String args, final PrintJid out, final RP rp)
             throws Exception {
         this.node = node;
+        startTime = System.currentTimeMillis();
         this.startupArgs = args;
         setExceptionHandler(new ExceptionHandler() {
             @Override
@@ -79,6 +83,7 @@ public class Server extends JLPCActor implements Closable {
     protected void startServer(final PrintJid out, final RP rp) throws Exception {
         registerShutdownCommand();
         registerHelpCommand();
+        registerRuntimeCommand();
         RegisterServer registerServer = new RegisterServer(serverName(), this);
         registerServer.send(this, agentChannelManager(), new RP<Boolean>() {
             @Override
@@ -142,6 +147,16 @@ public class Server extends JLPCActor implements Closable {
                     ServerCommand ac = serverCommands.get(it.next());
                     out.println(ac.name + " - " + ac.description);
                 }
+                rp.processResponse(out);
+            }
+        });
+    }
+
+    protected void registerRuntimeCommand() {
+        registerServerCommand(new ServerCommand("runtime", "Displays how long the server has been running") {
+            @Override
+            public void eval(String args, PrintJid out, RP<PrintJid> rp) throws Exception {
+                out.println(ISOPeriodFormat.standard().print(new Period(System.currentTimeMillis() - startTime)));
                 rp.processResponse(out);
             }
         });

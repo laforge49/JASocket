@@ -27,14 +27,17 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jasocket.server.Server;
+import org.agilewiki.jasocket.server.ServerCommand;
 import org.apache.mina.util.ConcurrentHashSet;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
+import java.util.Iterator;
+
 public class SSHServer extends Server {
     private int sshPort;
     private SshServer sshd;
-    public ConcurrentHashSet<JASShell> shells;
+    public ConcurrentHashSet<JASShell> shells = new ConcurrentHashSet<JASShell>();
 
     @Override
     protected String serverName() {
@@ -75,6 +78,35 @@ public class SSHServer extends Server {
 
     protected void setShellFactory() {
         sshd.setShellFactory(new JASShellFactory(this, node()));
+    }
+
+    protected void registerWriteCommand() {
+        registerServerCommand(new ServerCommand("write", "Displays a message on a user's console") {
+            @Override
+            public void eval(String args, PrintJid out, RP<PrintJid> rp) throws Exception {
+                if (shells.size() == 0) {
+                    out.println("no operators present");
+                } else {
+                    int i = args.indexOf(' ');
+                    if (i == -1) {
+                        out.println("no message is present, only operator name " + args);
+                    } else {
+                        String name = args.substring(0, i);
+                        String msg = args.substring(i + 1);
+                        Iterator<JASShell> it = shells.iterator();
+                        boolean found = false;
+                        while (it.hasNext()) {
+                            JASShell sh = it.next();
+                            if (sh.getOperatorName().equals(name)) {
+                                found = true;
+                                sh.notice(": " + msg);
+                            }
+                        }
+                    }
+                }
+                rp.processResponse(out);
+            }
+        });
     }
 
     public static void main(String[] args) throws Exception {

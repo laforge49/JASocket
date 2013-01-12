@@ -63,7 +63,7 @@ public class JASShell implements Command {
     protected int commandCount;
     protected long startTime;
     protected long lastTime;
-    protected ConcurrentLinkedQueue<String> notices;
+    protected ConcurrentLinkedQueue<String> notices = new ConcurrentLinkedQueue<String>();
 
     public String getOperatorName() {
         return operatorName;
