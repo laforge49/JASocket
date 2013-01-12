@@ -38,9 +38,9 @@ public class EvalAgent extends CommandStringAgent {
     @Override
     protected void process(RP<PrintJid> rp) throws Exception {
         if (isLocal())
-            logger.info(">" + getArgString());
+            logger.info(getOperatorName() + ">" + getArgString());
         else
-            logger.info("from " + agentChannel().remoteAddress + ">" + getArgString());
+            logger.info("(" + agentChannel().remoteAddress + ") " + getOperatorName() + ">" + getArgString());
         String in = getArgString().trim();
         int i = in.indexOf(' ');
         String rem = "";

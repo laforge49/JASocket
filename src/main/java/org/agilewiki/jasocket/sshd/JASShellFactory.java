@@ -32,6 +32,7 @@ public class JASShellFactory implements Factory<Command> {
     protected SSHServer sshServer;
 
     public JASShellFactory(SSHServer sshServer, Node node) {
+        this.sshServer = sshServer;
         this.node = node;
     }
 
