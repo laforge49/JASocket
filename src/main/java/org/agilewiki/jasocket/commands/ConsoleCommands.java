@@ -30,8 +30,8 @@ public class ConsoleCommands extends Commands {
                 HelpAgentFactory.fac);
         cmd("to", "Send a command to another node",
                 ToAgentFactory.fac);
-        cmd("nodes", "List all the accessible nodes in the cluster",
-                NodesAgentFactory.fac);
+        cmd("channels", "List all the open channels to other nodes",
+                ChannelsAgentFactory.fac);
         cmd("servers", "list all accessible servers running in the cluster",
                 ServersAgentFactory.fac);
         cmd("halt", "Exit (only) the local node",

@@ -30,7 +30,7 @@ import org.agilewiki.jasocket.jid.PrintJid;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-public class NodesAgent extends CommandAgent {
+public class ChannelsAgent extends CommandAgent {
     @Override
     public void process(final RP<PrintJid> rp) throws Exception {
         Channels.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {

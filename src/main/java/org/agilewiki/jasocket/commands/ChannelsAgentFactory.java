@@ -26,15 +26,15 @@ package org.agilewiki.jasocket.commands;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jid.collection.flenc.AppJidFactory;
 
-public class NodesAgentFactory extends AppJidFactory {
-    public final static NodesAgentFactory fac = new NodesAgentFactory();
+public class ChannelsAgentFactory extends AppJidFactory {
+    public final static ChannelsAgentFactory fac = new ChannelsAgentFactory();
 
-    public NodesAgentFactory() {
+    public ChannelsAgentFactory() {
         super("channelsAgent");
     }
 
     @Override
     protected JLPCActor instantiateActor() throws Exception {
-        return new NodesAgent();
+        return new ChannelsAgent();
     }
 }
