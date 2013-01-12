@@ -83,11 +83,16 @@ public class JASShell implements Command {
 
     public void notice(String n) {
         notices.add(n);
+        boolean wrote = false;
         while (notices.size() > 0 && consoleReader.getCursorBuffer().length() == 0) {
             n = notices.poll();
-            if (n != null)
+            if (n != null) {
                 out.println(n);
+                wrote = true;
+            }
         }
+        if (wrote)
+            out.print((commandCount + 1) + ">");
     }
 
     public JASShell(SSHServer sshServer, Node node) {

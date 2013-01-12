@@ -15,7 +15,7 @@ public class HelloWorld extends Server {
     protected void startServer(PrintJid out, RP rp) throws Exception {
         registerServerCommand(new ServerCommand("hi", "says hello") {
             @Override
-            public void eval(String args, PrintJid out, RP<PrintJid> rp) throws Exception {
+            public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
                 out.println("Hello!");
                 rp.processResponse(out);
             }

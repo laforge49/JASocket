@@ -49,7 +49,8 @@ public class ServerEvalAgent extends CommandStringAgent {
                     rp.processResponse(out);
                     return;
                 }
-                (new EvalServerCommand(commandLine, out)).send(ServerEvalAgent.this, response, rp);
+                (new EvalServerCommand(getOperatorName(), commandLine, out)).
+                        send(ServerEvalAgent.this, response, rp);
             }
         });
     }

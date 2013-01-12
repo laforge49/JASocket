@@ -109,7 +109,7 @@ public class Server extends JLPCActor implements Closable {
         }
     }
 
-    public void evalServerCommand(String commandString, PrintJid out, RP rp) throws Exception {
+    public void evalServerCommand(String operatorName, String commandString, PrintJid out, RP rp) throws Exception {
         commandString = commandString.trim();
         int i = commandString.indexOf(' ');
         String command = commandString;
@@ -124,13 +124,13 @@ public class Server extends JLPCActor implements Closable {
             rp.processResponse(out);
             return;
         }
-        serverCommand.eval(args, out, rp);
+        serverCommand.eval(operatorName, args, out, rp);
     }
 
     protected void registerShutdownCommand() {
         registerServerCommand(new ServerCommand("shutdown", "Stops and unregisters the server") {
             @Override
-            public void eval(String args, PrintJid out, RP<PrintJid> rp) throws Exception {
+            public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
                 close();
                 out.println("Stopped " + serverName());
                 rp.processResponse(out);
@@ -141,7 +141,7 @@ public class Server extends JLPCActor implements Closable {
     protected void registerHelpCommand() {
         registerServerCommand(new ServerCommand("help", "List the commands supported by the server") {
             @Override
-            public void eval(String args, PrintJid out, RP<PrintJid> rp) throws Exception {
+            public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
                 Iterator<String> it = serverCommands.keySet().iterator();
                 while (it.hasNext()) {
                     ServerCommand ac = serverCommands.get(it.next());
@@ -155,7 +155,7 @@ public class Server extends JLPCActor implements Closable {
     protected void registerRuntimeCommand() {
         registerServerCommand(new ServerCommand("runtime", "Displays how long the server has been running") {
             @Override
-            public void eval(String args, PrintJid out, RP<PrintJid> rp) throws Exception {
+            public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
                 out.println(ISOPeriodFormat.standard().print(new Period(System.currentTimeMillis() - startTime)));
                 rp.processResponse(out);
             }

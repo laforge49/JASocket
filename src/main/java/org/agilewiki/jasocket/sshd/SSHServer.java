@@ -46,6 +46,7 @@ public class SSHServer extends Server {
 
     @Override
     protected void startServer(PrintJid out, RP rp) throws Exception {
+        registerWriteCommand();
         sshPort = sshPort();
         out.println("ssh port: " + sshPort);
         sshd = SshServer.setUpDefaultServer();
@@ -83,7 +84,7 @@ public class SSHServer extends Server {
     protected void registerWriteCommand() {
         registerServerCommand(new ServerCommand("write", "Displays a message on a user's console") {
             @Override
-            public void eval(String args, PrintJid out, RP<PrintJid> rp) throws Exception {
+            public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
                 if (shells.size() == 0) {
                     out.println("no operators present");
                 } else {
@@ -99,9 +100,13 @@ public class SSHServer extends Server {
                             JASShell sh = it.next();
                             if (sh.getOperatorName().equals(name)) {
                                 found = true;
-                                sh.notice(": " + msg);
+                                sh.notice(operatorName + ": " + msg);
                             }
                         }
+                        if (found)
+                            out.println("wrote");
+                        else
+                            out.println("no such operator: " + name);
                     }
                 }
                 rp.processResponse(out);
