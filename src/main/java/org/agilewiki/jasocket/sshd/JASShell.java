@@ -91,6 +91,7 @@ public class JASShell implements Command {
     @Override
     public void start(Environment env) throws IOException {
         this.env = env;
+        final String operatorName = env.getEnv().get(env.ENV_USER);
         threadManager.process(new Runnable() {
             @Override
             public void run() {
@@ -108,7 +109,7 @@ public class JASShell implements Command {
                                 JASocketFactories.EVAL_FACTORY,
                                 node.mailboxFactory().createAsyncMailbox(),
                                 agentChannelManager);
-                        evalAgent.configure(sshServer.operatorName, in);
+                        evalAgent.configure(operatorName, in);
                         try {
                             PrintJid outs = (PrintJid) StartAgent.req.send(future, evalAgent);
                             int s = outs.size();
