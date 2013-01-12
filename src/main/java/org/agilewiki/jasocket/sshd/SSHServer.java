@@ -27,13 +27,14 @@ import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jasocket.server.Server;
+import org.apache.mina.util.ConcurrentHashSet;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
 public class SSHServer extends Server {
     private int sshPort;
     private SshServer sshd;
-    public String operatorName;
+    public ConcurrentHashSet<JASShell> shells;
 
     @Override
     protected String serverName() {

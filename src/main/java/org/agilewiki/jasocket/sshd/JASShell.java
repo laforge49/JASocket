@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class JASShell implements Command {
     protected Node node;
@@ -58,6 +59,36 @@ public class JASShell implements Command {
     protected Thread thread;
     protected Environment env;
     protected SSHServer sshServer;
+    protected String operatorName;
+    protected int commandCount;
+    protected long startTime;
+    protected long lastTime;
+    protected ConcurrentLinkedQueue<String> notices;
+
+    public String getOperatorName() {
+        return operatorName;
+    }
+
+    public int getCommandCount() {
+        return commandCount;
+    }
+
+    public long getLogonTime() {
+        return System.currentTimeMillis() - startTime;
+    }
+
+    public long getIdleTime() {
+        return System.currentTimeMillis() - lastTime;
+    }
+
+    public void notice(String n) {
+        notices.add(n);
+        while (notices.size() > 0 && consoleReader.getCursorBuffer().length() == 0) {
+            n = notices.poll();
+            if (n != null)
+                out.println(n);
+        }
+    }
 
     public JASShell(SSHServer sshServer, Node node) {
         this.sshServer = sshServer;
@@ -91,7 +122,10 @@ public class JASShell implements Command {
     @Override
     public void start(Environment env) throws IOException {
         this.env = env;
-        final String operatorName = env.getEnv().get(env.ENV_USER);
+        operatorName = env.getEnv().get(env.ENV_USER);
+        startTime = System.currentTimeMillis();
+        lastTime = startTime;
+        sshServer.shells.add(this);
         threadManager.process(new Runnable() {
             @Override
             public void run() {
@@ -102,8 +136,14 @@ public class JASShell implements Command {
                             "\n*** JASocket ConsoleApp " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
                     JAFuture future = new JAFuture();
                     while (true) {
-                        out.print(">");
+                        while (notices.size() > 0) {
+                            String n = notices.poll();
+                            if (n != null)
+                                out.println(n);
+                        }
+                        out.print((commandCount + 1) + ">");
                         String in = consoleReader.readLine();
+                        lastTime = System.currentTimeMillis();
                         EvalAgent evalAgent = (EvalAgent) JAFactory.newActor(
                                 agentChannelManager,
                                 JASocketFactories.EVAL_FACTORY,
@@ -111,6 +151,7 @@ public class JASShell implements Command {
                                 agentChannelManager);
                         evalAgent.configure(operatorName, in);
                         try {
+                            commandCount += 1;
                             PrintJid outs = (PrintJid) StartAgent.req.send(future, evalAgent);
                             int s = outs.size();
                             int i = 0;
@@ -136,6 +177,8 @@ public class JASShell implements Command {
 
     @Override
     public void destroy() {
+        sshServer.shells.remove(this);
+        consoleReader.shutdown();
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

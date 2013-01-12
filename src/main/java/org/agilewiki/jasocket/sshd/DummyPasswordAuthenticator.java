@@ -35,7 +35,6 @@ public class DummyPasswordAuthenticator implements PasswordAuthenticator {
 
     @Override
     public boolean authenticate(String username, String password, ServerSession serverSession) {
-        sshServer.operatorName = username;
         return true;
     }
 }
