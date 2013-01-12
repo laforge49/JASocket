@@ -26,13 +26,27 @@ package org.agilewiki.jasocket.commands;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.util.Iterator;
 
 abstract public class CommandAgent extends AgentJid {
     protected PrintJid out;
 
-    public void setArgString(String commandLine) throws Exception {
+    private StringJid getOperatorJid() throws Exception {
+        return (StringJid) _iGet(0);
+    }
+
+    public void setOperatorName(String operatorName) throws Exception {
+        getOperatorJid().setValue(operatorName);
+    }
+
+    protected String getOperatorName() throws Exception {
+        return getOperatorJid().getValue();
+    }
+
+    public void configure(String operatorName, String commandLine) throws Exception {
+        setOperatorName(operatorName);
     }
 
     protected Commands commands() {
@@ -55,6 +69,8 @@ abstract public class CommandAgent extends AgentJid {
 
     @Override
     public void start(RP rp) throws Exception {
+        if (getOperatorName() == null)
+            throw new IllegalArgumentException("missing operator name");
         out = PrintJid.newPrintJid(this);
         process(rp);
     }

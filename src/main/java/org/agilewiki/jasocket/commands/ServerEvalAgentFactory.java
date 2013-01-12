@@ -31,7 +31,7 @@ public class ServerEvalAgentFactory extends AppJidFactory {
     public final static ServerEvalAgentFactory fac = new ServerEvalAgentFactory();
 
     public ServerEvalAgentFactory() {
-        super("serverEvalAgent", StringJidFactory.fac);
+        super("serverEvalAgent", StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

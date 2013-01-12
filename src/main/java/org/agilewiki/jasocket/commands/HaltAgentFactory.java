@@ -25,12 +25,13 @@ package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
 public class HaltAgentFactory extends AppJidFactory {
     public final static HaltAgentFactory fac = new HaltAgentFactory();
 
     public HaltAgentFactory() {
-        super("haltAgent");
+        super("haltAgent", StringJidFactory.fac);
     }
 
     @Override

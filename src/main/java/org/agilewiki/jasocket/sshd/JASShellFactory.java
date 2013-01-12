@@ -29,13 +29,14 @@ import org.apache.sshd.server.Command;
 
 public class JASShellFactory implements Factory<Command> {
     protected Node node;
+    protected SSHServer sshServer;
 
-    public JASShellFactory(Node node) {
+    public JASShellFactory(SSHServer sshServer, Node node) {
         this.node = node;
     }
 
     @Override
     public Command create() {
-        return new JASShell(node);
+        return new JASShell(sshServer, node);
     }
 }

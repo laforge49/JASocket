@@ -51,7 +51,7 @@ public class ToAgent extends CommandStringAgent {
         }
         final EvalAgent evalAgent = (EvalAgent)
                 JAFactory.newActor(this, JASocketFactories.EVAL_FACTORY, getMailbox(), agentChannelManager());
-        evalAgent.setArgString(argsString);
+        evalAgent.configure(getOperatorName(), argsString);
         if (isLocalAddress(address)) {
             StartAgent.req.send(this, evalAgent, (RP) rp);
             return;

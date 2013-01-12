@@ -32,7 +32,7 @@ public class EvalAgentFactory extends AppJidFactory {
     public final static EvalAgentFactory fac = new EvalAgentFactory();
 
     public EvalAgentFactory() {
-        super(JASocketFactories.EVAL_FACTORY, StringJidFactory.fac);
+        super(JASocketFactories.EVAL_FACTORY, StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

@@ -57,8 +57,9 @@ public class JASShell implements Command {
     protected ExitCallback exitCallback;
     protected Thread thread;
     protected Environment env;
+    protected SSHServer sshServer;
 
-    public JASShell(Node node) {
+    public JASShell(SSHServer sshServer, Node node) {
         this.node = node;
         agentChannelManager = node.agentChannelManager();
         mailboxFactory = node.mailboxFactory();
@@ -106,7 +107,7 @@ public class JASShell implements Command {
                                 JASocketFactories.EVAL_FACTORY,
                                 node.mailboxFactory().createAsyncMailbox(),
                                 agentChannelManager);
-                        evalAgent.setArgString(in);
+                        evalAgent.configure(sshServer.operatorName, in);
                         try {
                             PrintJid outs = (PrintJid) StartAgent.req.send(future, evalAgent);
                             StringBuilder sb = new StringBuilder();

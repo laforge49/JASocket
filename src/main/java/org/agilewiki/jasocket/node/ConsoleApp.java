@@ -59,7 +59,7 @@ public class ConsoleApp {
                     JASocketFactories.EVAL_FACTORY,
                     node.mailboxFactory().createAsyncMailbox(),
                     agentChannelManager);
-            evalAgent.setArgString(in);
+            evalAgent.configure("console", in);
             try {
                 PrintJid out = (PrintJid) StartAgent.req.send(future, evalAgent);
                 StringBuilder sb = new StringBuilder();

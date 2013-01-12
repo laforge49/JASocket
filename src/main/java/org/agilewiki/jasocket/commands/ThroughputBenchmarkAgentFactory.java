@@ -31,7 +31,7 @@ public class ThroughputBenchmarkAgentFactory extends AppJidFactory {
     public final static ThroughputBenchmarkAgentFactory fac = new ThroughputBenchmarkAgentFactory();
 
     public ThroughputBenchmarkAgentFactory() {
-        super("throughputBenchmarkAgent", StringJidFactory.fac);
+        super("throughputBenchmarkAgent", StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

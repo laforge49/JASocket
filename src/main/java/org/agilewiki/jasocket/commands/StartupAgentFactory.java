@@ -31,7 +31,7 @@ public class StartupAgentFactory extends AppJidFactory {
     public final static StartupAgentFactory fac = new StartupAgentFactory();
 
     public StartupAgentFactory() {
-        super("startupAgent", StringJidFactory.fac);
+        super("startupAgent", StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

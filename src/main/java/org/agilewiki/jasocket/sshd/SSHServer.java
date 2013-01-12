@@ -33,6 +33,7 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 public class SSHServer extends Server {
     private int sshPort;
     private SshServer sshd;
+    public String operatorName;
 
     @Override
     protected String serverName() {
@@ -68,11 +69,11 @@ public class SSHServer extends Server {
     }
 
     protected void setAuthenticator() {
-        sshd.setPasswordAuthenticator(new DummyPasswordAuthenticator());
+        sshd.setPasswordAuthenticator(new DummyPasswordAuthenticator(this));
     }
 
     protected void setShellFactory() {
-        sshd.setShellFactory(new JASShellFactory(node()));
+        sshd.setShellFactory(new JASShellFactory(this, node()));
     }
 
     public static void main(String[] args) throws Exception {

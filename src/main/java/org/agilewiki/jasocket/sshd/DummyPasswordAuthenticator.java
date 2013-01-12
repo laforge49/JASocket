@@ -27,8 +27,15 @@ import org.apache.sshd.server.PasswordAuthenticator;
 import org.apache.sshd.server.session.ServerSession;
 
 public class DummyPasswordAuthenticator implements PasswordAuthenticator {
+    private SSHServer sshServer;
+
+    public DummyPasswordAuthenticator(SSHServer sshServer) {
+        this.sshServer = sshServer;
+    }
+
     @Override
-    public boolean authenticate(String s, String s2, ServerSession serverSession) {
+    public boolean authenticate(String username, String password, ServerSession serverSession) {
+        sshServer.operatorName = username;
         return true;
     }
 }
