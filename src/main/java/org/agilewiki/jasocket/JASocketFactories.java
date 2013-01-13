@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Bill La Forge
+ * Copyright 2013 Bill La Forge
  *
  * This file is part of AgileWiki and is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,6 +36,7 @@ import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.PrintJidFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jasocket.jid.agent.EvalAgentFactory;
+import org.agilewiki.jasocket.sshd.BroadcastAgentFactory;
 import org.agilewiki.jid.JidFactories;
 
 public class JASocketFactories extends JLPCActor {
@@ -47,6 +48,7 @@ public class JASocketFactories extends JLPCActor {
     public final static String SET_CLIENT_PORT_AGENT_FACTORY = "setClientPortAgent";
     public final static String KEEP_ALIVE_FACTORY = "keepAliveAgent";
     public final static String EVAL_FACTORY = "evalAgent";
+    public final static String BROADCAST_AGENT_FACTORY = "broadcastAgent";
 
     @Override
     public void initialize(Mailbox mailbox, Actor parent, ActorFactory actorFactory)
@@ -65,6 +67,7 @@ public class JASocketFactories extends JLPCActor {
         registerActorFactory(SetClientPortAgentFactory.fac);
         registerActorFactory(KeepAliveAgentFactory.fac);
         registerActorFactory(EvalAgentFactory.fac);
+        registerActorFactory(BroadcastAgentFactory.fac);
     }
 
     public void registerActorFactory(ActorFactory actorFactory) throws Exception {

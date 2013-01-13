@@ -24,10 +24,14 @@
 package org.agilewiki.jasocket.sshd;
 
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jactor.factory.JAFactory;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.cluster.ShipAgentEventToAll;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jasocket.server.Server;
 import org.agilewiki.jasocket.server.ServerCommand;
+import org.agilewiki.jid.Jid;
 import org.apache.mina.util.ConcurrentHashSet;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
@@ -47,6 +51,7 @@ public class SSHServer extends Server {
     @Override
     protected void startServer(PrintJid out, RP rp) throws Exception {
         registerWriteCommand();
+        registerBroadcastCommand();
         sshPort = sshPort();
         out.println("ssh port: " + sshPort);
         sshd = SshServer.setUpDefaultServer();
@@ -82,7 +87,7 @@ public class SSHServer extends Server {
     }
 
     protected void registerWriteCommand() {
-        registerServerCommand(new ServerCommand("write", "Displays a message on a user's console") {
+        registerServerCommand(new ServerCommand("write", "Send a message to a user's ssh client") {
             @Override
             public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
                 if (shells.size() == 0) {
@@ -110,6 +115,27 @@ public class SSHServer extends Server {
                     }
                 }
                 rp.processResponse(out);
+            }
+        });
+    }
+
+    protected void registerBroadcastCommand() {
+        registerServerCommand(new ServerCommand("broadcast", "Send a message to all ssh clients") {
+            @Override
+            public void eval(String operatorName, String args, final PrintJid out, final RP<PrintJid> rp) throws Exception {
+                BroadcastAgent broadcastAgent = (BroadcastAgent) JAFactory.newActor(
+                        SSHServer.this,
+                        JASocketFactories.BROADCAST_AGENT_FACTORY,
+                        getMailbox(),
+                        agentChannelManager());
+                broadcastAgent.configure(operatorName, args);
+                (new ShipAgentEventToAll(broadcastAgent)).sendEvent(SSHServer.this, agentChannelManager());
+                broadcastAgent.start(new RP<Jid>() {
+                    @Override
+                    public void processResponse(Jid response) throws Exception {
+                        rp.processResponse(out);
+                    }
+                });
             }
         });
     }
