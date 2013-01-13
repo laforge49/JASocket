@@ -104,7 +104,7 @@ public class Node {
         Server server = initializeServer(serverClass);
         PrintJid out = (PrintJid)
                 factory.newActor(JASocketFactories.PRINT_JID_FACTORY, mailboxFactory.createMailbox());
-        Startup startup = new Startup(this, args, out);
+        Startup startup = new Startup(this, "*node*", args, out);
         startup.send(new JAFuture(), server);
         if (out.size() == 0)
             return;

@@ -51,7 +51,7 @@ public class StartupAgent extends CommandStringAgent {
             rp.processResponse(out);
         }
         Server server = node.initializeServer(serverClass);
-        Startup startup = new Startup(node, args, out);
+        Startup startup = new Startup(node, getOperatorName(), args, out);
         startup.send(this, server, rp);
     }
 }

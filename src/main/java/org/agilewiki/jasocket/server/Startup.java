@@ -32,11 +32,13 @@ import org.agilewiki.jasocket.node.Node;
 
 public class Startup extends Request<PrintJid, Server> {
     private final Node node;
+    private final String operatorName;
     private final String args;
     private final PrintJid out;
 
-    public Startup(Node node, String args, PrintJid out) {
+    public Startup(Node node, String operatorName, String args, PrintJid out) {
         this.node = node;
+        this.operatorName = operatorName;
         this.args = args;
         this.out = out;
     }
@@ -48,6 +50,6 @@ public class Startup extends Request<PrintJid, Server> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((Server) targetActor).startup(node, args, out, rp);
+        ((Server) targetActor).startup(node, operatorName, args, out, rp);
     }
 }

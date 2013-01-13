@@ -43,8 +43,13 @@ public class Server extends JLPCActor implements Closable {
     public long startTime;
     protected TreeMap<String, ServerCommand> serverCommands = new TreeMap<String, ServerCommand>();
     protected String startupArgs;
+    private String operatorName;
 
-    protected String startupArgs() {
+    public String getOperatorName() {
+        return operatorName;
+    }
+
+    public String startupArgs() {
         return startupArgs;
     }
 
@@ -52,7 +57,7 @@ public class Server extends JLPCActor implements Closable {
         return this.getClass().getName();
     }
 
-    protected Node node() {
+    public Node node() {
         return node;
     }
 
@@ -64,9 +69,10 @@ public class Server extends JLPCActor implements Closable {
         serverCommands.put(serverCommand.name, serverCommand);
     }
 
-    public void startup(Node node, final String args, final PrintJid out, final RP rp)
+    public void startup(Node node, String operatorName, final String args, final PrintJid out, final RP rp)
             throws Exception {
         this.node = node;
+        this.operatorName = operatorName;
         startTime = System.currentTimeMillis();
         this.startupArgs = args;
         setExceptionHandler(new ExceptionHandler() {
