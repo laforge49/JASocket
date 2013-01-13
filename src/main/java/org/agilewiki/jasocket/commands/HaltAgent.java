@@ -29,6 +29,10 @@ import org.agilewiki.jasocket.jid.PrintJid;
 public class HaltAgent extends CommandAgent {
     @Override
     public void process(RP<PrintJid> rp) throws Exception {
+        rp.processResponse(out);
+        try {
+            Thread.sleep(100);
+        } catch (Exception ex) {}
         getMailboxFactory().close();
         System.exit(0);
     }

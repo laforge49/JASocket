@@ -65,9 +65,17 @@ public class SSHServer extends Server {
 
     @Override
     public void close() {
+        Iterator<JASShell> it = shells.iterator();
+        while(it.hasNext()) {
+            JASShell shell = it.next();
+            try {
+                shell.exitCallback.onExit(0);
+            } catch (Exception ex) {}
+        }
         try {
-            if (sshd != null)
-                sshd.stop(true);
+            if (sshd != null) {
+    //            sshd.stop();    Hangs!
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -55,7 +55,7 @@ public class JASShell implements Command {
     protected PrintStream out;
     protected OutputStream outputStream;
     protected PrintStream err;
-    protected ExitCallback exitCallback;
+    public ExitCallback exitCallback;
     protected Thread thread;
     protected Environment env;
     protected SSHServer sshServer;
