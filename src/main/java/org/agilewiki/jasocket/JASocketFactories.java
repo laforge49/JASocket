@@ -37,6 +37,7 @@ import org.agilewiki.jasocket.jid.PrintJidFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jasocket.jid.agent.EvalAgentFactory;
 import org.agilewiki.jasocket.sshd.BroadcastAgentFactory;
+import org.agilewiki.jasocket.sshd.WhoAgentFactory;
 import org.agilewiki.jid.JidFactories;
 
 public class JASocketFactories extends JLPCActor {
@@ -49,6 +50,7 @@ public class JASocketFactories extends JLPCActor {
     public final static String KEEP_ALIVE_FACTORY = "keepAliveAgent";
     public final static String EVAL_FACTORY = "evalAgent";
     public final static String BROADCAST_AGENT_FACTORY = "broadcastAgent";
+    public final static String WHO_AGENT_FACTORY = "whoAgent";
 
     @Override
     public void initialize(Mailbox mailbox, Actor parent, ActorFactory actorFactory)
@@ -68,6 +70,7 @@ public class JASocketFactories extends JLPCActor {
         registerActorFactory(KeepAliveAgentFactory.fac);
         registerActorFactory(EvalAgentFactory.fac);
         registerActorFactory(BroadcastAgentFactory.fac);
+        registerActorFactory(WhoAgentFactory.fac);
     }
 
     public void registerActorFactory(ActorFactory actorFactory) throws Exception {

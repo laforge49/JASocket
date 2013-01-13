@@ -23,9 +23,14 @@
  */
 package org.agilewiki.jasocket.sshd;
 
+import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.agentChannel.AgentChannel;
+import org.agilewiki.jasocket.agentChannel.ShipAgent;
+import org.agilewiki.jasocket.cluster.GetAgentChannel;
+import org.agilewiki.jasocket.cluster.ServerNames;
 import org.agilewiki.jasocket.cluster.ShipAgentEventToAll;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
@@ -37,6 +42,7 @@ import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
 import java.util.Iterator;
+import java.util.TreeSet;
 
 public class SSHServer extends Server {
     private int sshPort;
@@ -52,6 +58,7 @@ public class SSHServer extends Server {
     protected void startServer(PrintJid out, RP rp) throws Exception {
         registerWriteCommand();
         registerBroadcastCommand();
+        registerWhoCommand();
         sshPort = sshPort();
         out.println("ssh port: " + sshPort);
         sshd = SshServer.setUpDefaultServer();
@@ -66,15 +73,16 @@ public class SSHServer extends Server {
     @Override
     public void close() {
         Iterator<JASShell> it = shells.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             JASShell shell = it.next();
             try {
                 shell.exitCallback.onExit(0);
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+            }
         }
         try {
             if (sshd != null) {
-    //            sshd.stop();    Hangs!
+                //            sshd.stop();    Hangs!
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -146,6 +154,87 @@ public class SSHServer extends Server {
                 });
             }
         });
+    }
+
+    protected void registerWhoCommand() {
+        registerServerCommand(new ServerCommand("who", "Lists operators/node/logonTime/commandCount/idleTime") {
+            @Override
+            public void eval(String operatorName, String args, final PrintJid out, final RP<PrintJid> rp) throws Exception {
+                final WhoAgent whoAgent = (WhoAgent) JAFactory.newActor(
+                        SSHServer.this,
+                        JASocketFactories.WHO_AGENT_FACTORY,
+                        getMailbox(),
+                        agentChannelManager());
+                final ShipAgent shipAgent = new ShipAgent(whoAgent);
+                ServerNames.req.send(SSHServer.this, agentChannelManager(), new RP<TreeSet<String>>() {
+                    @Override
+                    public void processResponse(TreeSet<String> response) throws Exception {
+                        Iterator<String> itan = response.iterator();
+                        TreeSet<String> addresses = new TreeSet<String>();
+                        while (itan.hasNext()) {
+                            String an = itan.next();
+                            if (an.endsWith(" sshServer")) {
+                                int l = an.length() - " sshServer".length();
+                                addresses.add(an.substring(0, l));
+                            }
+                        }
+                        final WhoRP whoRP = new WhoRP(rp, addresses.size(), out);
+                        setExceptionHandler(new ExceptionHandler() {
+                            @Override
+                            public void process(Exception exception) throws Exception {
+                                whoRP.processResponse(PrintJid.newPrintJid(SSHServer.this));
+                            }
+                        });
+                        Iterator<String> ita = addresses.iterator();
+                        while (ita.hasNext()) {
+                            String address = ita.next();
+                            if (agentChannelManager().isLocalAddress(address)) {
+                                whoAgent.start(whoRP);
+                            } else
+                                (new GetAgentChannel(address)).send(SSHServer.this, agentChannelManager(), new RP<AgentChannel>() {
+                                    @Override
+                                    public void processResponse(AgentChannel response) throws Exception {
+                                        shipAgent.send(SSHServer.this, response, whoRP);
+                                    }
+                                });
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    class WhoRP extends RP {
+        private int expecting;
+        private final RP rp;
+        private final PrintJid out;
+        private final TreeSet<String> ts = new TreeSet<String>();
+
+        public WhoRP(RP rp, int expecting, PrintJid out) {
+            this.rp = rp;
+            this.expecting = expecting;
+            this.out = out;
+        }
+
+        @Override
+        public void processResponse(Object response) throws Exception {
+            PrintJid o = (PrintJid) response;
+            int s = o.size();
+            int i = 0;
+            while (i < s) {
+                ts.add(o.iGet(i).getValue());
+                i += 1;
+            }
+            expecting -= 1;
+            if (expecting > 0)
+                return;
+            s = ts.size();
+            Iterator<String> it = ts.iterator();
+            while (it.hasNext()) {
+                out.println(it.next());
+            }
+            rp.processResponse(out);
+        }
     }
 
     public static void main(String[] args) throws Exception {

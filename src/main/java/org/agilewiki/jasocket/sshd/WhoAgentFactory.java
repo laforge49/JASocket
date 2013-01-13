@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Bill La Forge
+ * Copyright 2013 Bill La Forge
  *
  * This file is part of AgileWiki and is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,20 +21,21 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.commands;
+package org.agilewiki.jasocket.sshd;
 
-import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.jid.PrintJid;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
 
-public class HaltAgent extends CommandAgent {
+public class WhoAgentFactory extends AppJidFactory {
+    public final static WhoAgentFactory fac = new WhoAgentFactory();
+
+    public WhoAgentFactory() {
+        super(JASocketFactories.WHO_AGENT_FACTORY);
+    }
+
     @Override
-    public void process(RP<PrintJid> rp) throws Exception {
-        rp.processResponse(out);
-        try {
-            Thread.sleep(100);
-        } catch (Exception ex) {
-        }
-        getMailboxFactory().close();
-        System.exit(0);
+    protected JLPCActor instantiateActor() throws Exception {
+        return new WhoAgent();
     }
 }
