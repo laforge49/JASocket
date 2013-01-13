@@ -90,6 +90,7 @@ public class Server extends JLPCActor implements Closable {
         registerShutdownCommand();
         registerHelpCommand();
         registerRuntimeCommand();
+        registerOperatorCommand();
         RegisterServer registerServer = new RegisterServer(serverName(), this);
         registerServer.send(this, agentChannelManager(), new RP<Boolean>() {
             @Override
@@ -163,6 +164,18 @@ public class Server extends JLPCActor implements Closable {
             @Override
             public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
                 out.println(ISOPeriodFormat.standard().print(new Period(System.currentTimeMillis() - startTime)));
+                rp.processResponse(out);
+            }
+        });
+    }
+
+    protected void registerOperatorCommand() {
+        registerServerCommand(new ServerCommand(
+                "operator",
+                "Displays the name of the operator or server that started the server") {
+            @Override
+            public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
+                out.println(Server.this.operatorName);
                 rp.processResponse(out);
             }
         });
