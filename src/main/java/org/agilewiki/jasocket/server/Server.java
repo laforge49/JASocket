@@ -32,8 +32,6 @@ import org.agilewiki.jasocket.cluster.RegisterServer;
 import org.agilewiki.jasocket.cluster.UnregisterServer;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
-import org.joda.time.Period;
-import org.joda.time.format.ISOPeriodFormat;
 
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -89,8 +87,6 @@ public class Server extends JLPCActor implements Closable {
     protected void startServer(final PrintJid out, final RP rp) throws Exception {
         registerShutdownCommand();
         registerHelpCommand();
-        registerRuntimeCommand();
-        registerOperatorCommand();
         RegisterServer registerServer = new RegisterServer(serverName(), this);
         registerServer.send(this, agentChannelManager(), new RP<Boolean>() {
             @Override
@@ -135,7 +131,9 @@ public class Server extends JLPCActor implements Closable {
     }
 
     protected void registerShutdownCommand() {
-        registerServerCommand(new ServerCommand("shutdown", "Stops and unregisters the server") {
+        registerServerCommand(new ServerCommand(
+                "shutdown",
+                "Stops and unregisters the server") {
             @Override
             public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
                 close();
@@ -146,7 +144,9 @@ public class Server extends JLPCActor implements Closable {
     }
 
     protected void registerHelpCommand() {
-        registerServerCommand(new ServerCommand("help", "List the commands supported by the server") {
+        registerServerCommand(new ServerCommand(
+                "help",
+                "List the commands supported by the server") {
             @Override
             public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
                 Iterator<String> it = serverCommands.keySet().iterator();
@@ -154,28 +154,6 @@ public class Server extends JLPCActor implements Closable {
                     ServerCommand ac = serverCommands.get(it.next());
                     out.println(ac.name + " - " + ac.description);
                 }
-                rp.processResponse(out);
-            }
-        });
-    }
-
-    protected void registerRuntimeCommand() {
-        registerServerCommand(new ServerCommand("runtime", "Displays how long the server has been running") {
-            @Override
-            public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
-                out.println(ISOPeriodFormat.standard().print(new Period(System.currentTimeMillis() - startTime)));
-                rp.processResponse(out);
-            }
-        });
-    }
-
-    protected void registerOperatorCommand() {
-        registerServerCommand(new ServerCommand(
-                "operator",
-                "Displays the name of the operator or server that started the server") {
-            @Override
-            public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
-                out.println(Server.this.operatorName);
                 rp.processResponse(out);
             }
         });

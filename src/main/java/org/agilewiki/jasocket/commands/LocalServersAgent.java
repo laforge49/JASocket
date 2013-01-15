@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Bill La Forge
+ * Copyright 2012 Bill La Forge
  *
  * This file is part of AgileWiki and is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,44 +21,36 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.sshd;
+package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.cluster.GetLocalServer;
+import org.agilewiki.jasocket.cluster.GetLocalServers;
 import org.agilewiki.jasocket.jid.PrintJid;
-import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.server.Server;
-import org.agilewiki.jid.Jid;
-import org.apache.mina.util.ConcurrentHashSet;
 import org.joda.time.Period;
 import org.joda.time.format.ISOPeriodFormat;
 
 import java.util.Iterator;
+import java.util.TreeMap;
 
-public class WhoAgent extends AgentJid {
+public class LocalServersAgent extends CommandAgent {
     @Override
-    public void start(final RP<Jid> rp) throws Exception {
-        (new GetLocalServer("sshServer")).send(this, agentChannelManager(), new RP<Server>() {
+    public void process(final RP<PrintJid> rp) throws Exception {
+        GetLocalServers.req.send(this, agentChannelManager(), new RP<TreeMap<String, Server>>() {
             @Override
-            public void processResponse(Server response) throws Exception {
-                PrintJid out = PrintJid.newPrintJid(WhoAgent.this);
-                if (response != null) {
-                    SSHServer sshServer = (SSHServer) response;
-                    ConcurrentHashSet<JASShell> shells = sshServer.shells;
-                    Iterator<JASShell> it = shells.iterator();
-                    long ct = System.currentTimeMillis();
-                    while (it.hasNext()) {
-                        JASShell sh = it.next();
-                        out.println(sh.getOperatorName() + " " +
-                                agentChannelManager().agentChannelManagerAddress() + " " +
-                                ISOPeriodFormat.standard().print(new Period(sh.getLogonTime())) + " " +
-                                sh.getCommandCount() + " " +
-                                ISOPeriodFormat.standard().print(new Period(sh.getIdleTime())));
-                    }
+            public void processResponse(TreeMap<String, Server> response) throws Exception {
+                Iterator<String> it = response.keySet().iterator();
+                while (it.hasNext()) {
+                    String name = it.next();
+                    Server server = response.get(name);
+                    out.println(name + " " +
+                            server.getOperatorName() + " " +
+                            ISOPeriodFormat.standard().
+                                    print(new Period(System.currentTimeMillis() - server.startTime)) + " " +
+                            server.startupArgs());
                 }
                 rp.processResponse(out);
             }
         });
-
     }
 }

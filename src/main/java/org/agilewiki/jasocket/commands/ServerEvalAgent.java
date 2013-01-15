@@ -24,10 +24,10 @@
 package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.cluster.GetLocalServer;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.server.EvalServerCommand;
+import org.agilewiki.jasocket.server.Server;
 
 public class ServerEvalAgent extends CommandStringAgent {
     @Override
@@ -41,9 +41,9 @@ public class ServerEvalAgent extends CommandStringAgent {
         }
         final String serverName = args.substring(0, i);
         final String commandLine = args.substring(i + 1).trim();
-        (new GetLocalServer(serverName)).send(this, agentChannelManager(), new RP<JLPCActor>() {
+        (new GetLocalServer(serverName)).send(this, agentChannelManager(), new RP<Server>() {
             @Override
-            public void processResponse(JLPCActor response) throws Exception {
+            public void processResponse(Server response) throws Exception {
                 if (response == null) {
                     println("Unable to locate server " + serverName);
                     rp.processResponse(out);

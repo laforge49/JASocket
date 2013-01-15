@@ -24,9 +24,9 @@
 package org.agilewiki.jasocket.sshd;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.cluster.GetLocalServer;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jasocket.server.Server;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
 import org.apache.mina.util.ConcurrentHashSet;
@@ -49,9 +49,9 @@ public class BroadcastAgent extends AgentJid {
 
     @Override
     public void start(final RP<Jid> rp) throws Exception {
-        (new GetLocalServer("sshServer")).send(this, agentChannelManager(), new RP<JLPCActor>() {
+        (new GetLocalServer("sshServer")).send(this, agentChannelManager(), new RP<Server>() {
             @Override
-            public void processResponse(JLPCActor response) throws Exception {
+            public void processResponse(Server response) throws Exception {
                 if (response == null) {
                     rp.processResponse(null);
                     return;

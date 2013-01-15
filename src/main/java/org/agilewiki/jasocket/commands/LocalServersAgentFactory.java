@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Bill La Forge
+ * Copyright 2013 Bill La Forge
  *
  * This file is part of AgileWiki and is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,28 +21,21 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.cluster;
+package org.agilewiki.jasocket.commands;
 
-import org.agilewiki.jactor.Actor;
-import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
-import org.agilewiki.jasocket.server.Server;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
-public class GetLocalServer extends Request<Server, AgentChannelManager> {
-    private final String name;
+public class LocalServersAgentFactory extends AppJidFactory {
+    public final static LocalServersAgentFactory fac = new LocalServersAgentFactory();
 
-    public GetLocalServer(String name) {
-        this.name = name;
+    public LocalServersAgentFactory() {
+        super("localServersAgent", StringJidFactory.fac);
     }
 
     @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof AgentChannelManager;
-    }
-
-    @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).getLocalServer(name));
+    protected JLPCActor instantiateActor() throws Exception {
+        return new LocalServersAgent();
     }
 }

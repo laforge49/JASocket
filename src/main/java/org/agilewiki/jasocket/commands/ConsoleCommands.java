@@ -34,6 +34,8 @@ public class ConsoleCommands extends Commands {
                 ChannelsAgentFactory.fac);
         cmd("servers", "list all accessible servers running in the cluster",
                 ServersAgentFactory.fac);
+        cmd("localServers", "list the local server names/operators/runtime/startupArgs",
+                LocalServersAgentFactory.fac);
         cmd("halt", "Exit (only) the local node",
                 HaltAgentFactory.fac);
         cmd("exception", "Throw an exception",

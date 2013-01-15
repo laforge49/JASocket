@@ -245,6 +245,10 @@ public class AgentChannelManager extends JLPCActor {
         return localServers.get(name);
     }
 
+    public TreeMap<String, Server> getLocalServers() {
+        return new TreeMap(localServers);
+    }
+
     protected void shipAgentEventToAll(AgentJid agent) throws Exception {
         ShipAgent shipAgent = new ShipAgent(agent);
         Iterator<String> ksit = agentChannels.keySet().iterator();

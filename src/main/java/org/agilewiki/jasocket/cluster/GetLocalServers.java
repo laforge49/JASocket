@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Bill La Forge
+ * Copyright 2013 Bill La Forge
  *
  * This file is part of AgileWiki and is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,12 +29,10 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.server.Server;
 
-public class GetLocalServer extends Request<Server, AgentChannelManager> {
-    private final String name;
+import java.util.TreeMap;
 
-    public GetLocalServer(String name) {
-        this.name = name;
-    }
+public class GetLocalServers extends Request<TreeMap<String, Server>, AgentChannelManager> {
+    public static final GetLocalServers req = new GetLocalServers();
 
     @Override
     public boolean isTargetType(Actor targetActor) {
@@ -43,6 +41,6 @@ public class GetLocalServer extends Request<Server, AgentChannelManager> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        rp.processResponse(((AgentChannelManager) targetActor).getLocalServer(name));
+        rp.processResponse(((AgentChannelManager) targetActor).getLocalServers());
     }
 }
