@@ -182,7 +182,7 @@ public class SSHServer extends Server {
                         setExceptionHandler(new ExceptionHandler() {
                             @Override
                             public void process(Exception exception) throws Exception {
-                                whoRP.processResponse(PrintJid.newPrintJid(SSHServer.this));
+                                whoRP.processResponse(null);
                             }
                         });
                         Iterator<String> ita = addresses.iterator();
@@ -191,10 +191,14 @@ public class SSHServer extends Server {
                             if (agentChannelManager().isLocalAddress(address)) {
                                 whoAgent.start(whoRP);
                             } else
-                                (new GetAgentChannel(address)).send(SSHServer.this, agentChannelManager(), new RP<AgentChannel>() {
+                                (new GetAgentChannel(address)).
+                                        send(SSHServer.this, agentChannelManager(), new RP<AgentChannel>() {
                                     @Override
                                     public void processResponse(AgentChannel response) throws Exception {
-                                        shipAgent.send(SSHServer.this, response, whoRP);
+                                        if (response == null)
+                                            whoRP.processResponse(null);
+                                        else
+                                            shipAgent.send(SSHServer.this, response, whoRP);
                                     }
                                 });
                         }
@@ -218,17 +222,18 @@ public class SSHServer extends Server {
 
         @Override
         public void processResponse(Object response) throws Exception {
-            PrintJid o = (PrintJid) response;
-            int s = o.size();
-            int i = 0;
-            while (i < s) {
-                ts.add(o.iGet(i).getValue());
-                i += 1;
+            if (response != null) {
+                PrintJid o = (PrintJid) response;
+                int s = o.size();
+                int i = 0;
+                while (i < s) {
+                    ts.add(o.iGet(i).getValue());
+                    i += 1;
+                }
             }
             expecting -= 1;
             if (expecting > 0)
                 return;
-            s = ts.size();
             Iterator<String> it = ts.iterator();
             while (it.hasNext()) {
                 out.println(it.next());
