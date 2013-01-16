@@ -48,5 +48,7 @@ public class ConsoleCommands extends Commands {
                 ServerEvalAgentFactory.fac);
         cmd("startup", "Start and register a server",
                 StartupAgentFactory.fac);
+        cmd("pause", "pause for n seconds, where n defaults to 5",
+                PauseAgentFactory.fac);
     }
 }
