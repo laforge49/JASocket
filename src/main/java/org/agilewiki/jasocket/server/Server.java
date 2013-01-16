@@ -59,7 +59,7 @@ public class Server extends JLPCActor implements Closable {
         return node;
     }
 
-    protected AgentChannelManager agentChannelManager() {
+    public AgentChannelManager agentChannelManager() {
         return node.agentChannelManager();
     }
 
