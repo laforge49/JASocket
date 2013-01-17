@@ -44,17 +44,39 @@ public class Interpreter extends JLPCActor {
     private PrintStream ps;
     private AgentChannelManager agentChannelManager;
 
+    private int commandCount;
+    private long startTime;
+    private long lastTime;
     private RP _rp;
+
+    public String getOperatorName() {
+        return operatorName;
+    }
+
+    public int getCommandCount() {
+        return commandCount;
+    }
+
+    public long getLogonTime() {
+        return System.currentTimeMillis() - startTime;
+    }
+
+    public long getIdleTime() {
+        return System.currentTimeMillis() - lastTime;
+    }
 
     public void configure(String operatorName, Node node, PrintStream out) throws Exception {
         this.operatorName = operatorName;
         this.node = node;
         this.ps = out;
         agentChannelManager = node.agentChannelManager();
+        startTime = System.currentTimeMillis();
+        lastTime = startTime;
     }
 
     public void interpret(String commandLine, RP rp) throws Exception {
         _rp = rp;
+        lastTime = System.currentTimeMillis();
         EvalAgent evalAgent = (EvalAgent) JAFactory.newActor(
                 agentChannelManager,
                 JASocketFactories.EVAL_FACTORY,
@@ -76,6 +98,7 @@ public class Interpreter extends JLPCActor {
 
             }
         });
+        commandCount += 1;
         StartAgent.req.send(this, evalAgent, new RP<Jid>() {
             @Override
             public void processResponse(Jid response) throws Exception {
@@ -95,5 +118,9 @@ public class Interpreter extends JLPCActor {
             _rp.processResponse(null);
             _rp = null;
         }
+    }
+
+    public void prompt() {
+        ps.print((commandCount + 1) + ">");
     }
 }

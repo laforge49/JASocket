@@ -57,12 +57,12 @@ public class ConsoleApp {
         while (true) {
             String commandLine = null;
             while (commandLine == null) {
-                if (first)
-                    System.out.print(">");
+                if (!first)
+                    System.out.println();
                 else
-                    System.out.print("\n>");
+                    first = false;
+                interpreter.prompt();
                 commandLine = input();
-                first = false;
             }
             (new Interpret(commandLine)).send(future, interpreter);
         }
