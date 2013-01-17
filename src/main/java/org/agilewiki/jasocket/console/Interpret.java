@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Bill La Forge
+ * Copyright 2013 Bill La Forge
  *
  * This file is part of AgileWiki and is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,41 +21,27 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.jid;
+package org.agilewiki.jasocket.console;
 
-import org.agilewiki.jactor.factory.JAFactory;
+import org.agilewiki.jactor.Actor;
+import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jid.collection.vlenc.BListJid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jactor.lpc.Request;
 
-public class PrintJid extends BListJid<StringJid> {
-    public static PrintJid newPrintJid(JLPCActor actor) throws Exception {
-        return (PrintJid) JAFactory.newActor(
-                actor, JASocketFactories.PRINT_JID_FACTORY, actor.getMailboxFactory().createMailbox());
+public class Interpret extends Request<Object, Interpreter> {
+    private final String commandLine;
+
+    public Interpret(String commandLine) {
+        this.commandLine = commandLine;
     }
 
-    public void println(String v) throws Exception {
-        iAdd(-1);
-        StringJid sj = iGet(-1);
-        sj.setValue(v);
+    @Override
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof Interpreter;
     }
 
-    public void appendto(StringBuilder sb) throws Exception {
-        int s = size();
-        int i = 0;
-        while (i < s) {
-            sb.append(iGet(i).getValue());
-            sb.append("\n");
-            i += 1;
-        }
-    }
-
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        try {
-            appendto(sb);
-        } catch (Exception ex) {}
-        return sb.toString();
+    @Override
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        ((Interpreter) targetActor).interpret(commandLine, rp);
     }
 }

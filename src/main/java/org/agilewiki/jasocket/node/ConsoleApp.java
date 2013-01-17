@@ -24,13 +24,10 @@
 package org.agilewiki.jasocket.node;
 
 import org.agilewiki.jactor.JAFuture;
-import org.agilewiki.jactor.factory.JAFactory;
-import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jasocket.agentChannel.AgentChannelClosedException;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jasocket.jid.PrintJid;
-import org.agilewiki.jasocket.jid.agent.EvalAgent;
-import org.agilewiki.jasocket.jid.agent.StartAgent;
+import org.agilewiki.jasocket.console.Interpret;
+import org.agilewiki.jasocket.console.Interpreter;
+import org.agilewiki.jasocket.console.Interrupter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,33 +41,30 @@ public class ConsoleApp {
         return inbr.readLine();
     }
 
-    public void create(Node node) throws Exception {
+    public void create(Node node, Interrupter interrupter) throws Exception {
+        Interpreter interpreter = new Interpreter();
+        interpreter.initialize(node.mailboxFactory().createAsyncMailbox());
+        interpreter.configure("*console*", node, System.out);
+        if (interrupter != null)
+            interrupter.activate(interpreter);
         this.node = node;
         AgentChannelManager agentChannelManager = node.agentChannelManager();
         System.out.println(
                 "\n*** JASocket ConsoleApp " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
         inbr = new BufferedReader(new InputStreamReader(System.in));
         JAFuture future = new JAFuture();
+        boolean first = true;
         while (true) {
-            System.out.print(">");
-            String in = input();
-            EvalAgent evalAgent = (EvalAgent) JAFactory.newActor(
-                    agentChannelManager,
-                    JASocketFactories.EVAL_FACTORY,
-                    node.mailboxFactory().createAsyncMailbox(),
-                    agentChannelManager);
-            evalAgent.configure("*console*", in);
-            try {
-                PrintJid out = (PrintJid) StartAgent.req.send(future, evalAgent);
-                StringBuilder sb = new StringBuilder();
-                out.appendto(sb);
-                System.out.print(sb.toString());
-            } catch (InterruptedException ex) {
-            } catch (AgentChannelClosedException x) {
-                System.out.println("Channel closed: " + x.getMessage());
-            } catch (Exception x) {
-                x.printStackTrace();
+            String commandLine = null;
+            while (commandLine == null) {
+                if (first)
+                    System.out.print(">");
+                else
+                    System.out.print("\n>");
+                commandLine = input();
+                first = false;
             }
+            (new Interpret(commandLine)).send(future, interpreter);
         }
     }
 
@@ -78,7 +72,7 @@ public class ConsoleApp {
         Node node = new Node(args, 100);
         try {
             node.process();
-            (new ConsoleApp()).create(node);
+            (new ConsoleApp()).create(node, null);
         } catch (Exception ex) {
             node.mailboxFactory().close();
             throw ex;
