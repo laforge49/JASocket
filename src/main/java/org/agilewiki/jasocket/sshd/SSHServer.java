@@ -47,7 +47,7 @@ public class SSHServer extends Server {
         sshPort = sshPort();
         out.println("ssh port: " + sshPort);
         sshd = SshServer.setUpDefaultServer();
-        setAuthenticator();
+        sshd.setPasswordAuthenticator(node().passwordAuthenticator());
         sshd.setPort(sshPort);
         sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider("hostkey.ser"));
         setShellFactory();
@@ -77,10 +77,6 @@ public class SSHServer extends Server {
 
     protected int sshPort() throws Exception {
         return node().clusterPort() + 1;
-    }
-
-    protected void setAuthenticator() {
-        sshd.setPasswordAuthenticator(new DummyPasswordAuthenticator(this));
     }
 
     protected void setShellFactory() {

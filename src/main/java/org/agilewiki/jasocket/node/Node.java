@@ -34,6 +34,8 @@ import org.agilewiki.jasocket.discovery.Discovery;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.server.Server;
 import org.agilewiki.jasocket.server.Startup;
+import org.agilewiki.jasocket.sshd.DummyPasswordAuthenticator;
+import org.apache.sshd.server.PasswordAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -161,5 +163,9 @@ public class Node {
 
     protected void startKeepAlive() throws Exception {
         agentChannelManager.startKeepAlive(10000, 1000);
+    }
+
+    public PasswordAuthenticator passwordAuthenticator() {
+        return new DummyPasswordAuthenticator(this);
     }
 }

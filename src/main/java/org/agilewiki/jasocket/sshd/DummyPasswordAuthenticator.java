@@ -23,14 +23,15 @@
  */
 package org.agilewiki.jasocket.sshd;
 
+import org.agilewiki.jasocket.node.Node;
 import org.apache.sshd.server.PasswordAuthenticator;
 import org.apache.sshd.server.session.ServerSession;
 
 public class DummyPasswordAuthenticator implements PasswordAuthenticator {
-    private SSHServer sshServer;
+    private Node node;
 
-    public DummyPasswordAuthenticator(SSHServer sshServer) {
-        this.sshServer = sshServer;
+    public DummyPasswordAuthenticator(Node node) {
+        this.node = node;
     }
 
     @Override

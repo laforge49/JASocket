@@ -31,6 +31,7 @@ import org.agilewiki.jasocket.console.Interrupter;
 import org.agilewiki.jasocket.console.Shell;
 
 import java.io.BufferedReader;
+import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -38,6 +39,7 @@ public class ConsoleApp implements Shell {
     private Node node;
     private Interpreter interpreter;
     private BufferedReader inbr;
+    private String operatorName;
 
     public boolean hasInput() {
         try {
@@ -52,18 +54,30 @@ public class ConsoleApp implements Shell {
     }
 
     public void create(Node node, Interrupter interrupter) throws Exception {
+        AgentChannelManager agentChannelManager = node.agentChannelManager();
+        System.out.println("\n*** ConsoleApp " +
+                agentChannelManager.agentChannelManagerAddress() +
+                " ***\n");
+        Console cons = System.console();
+        boolean authenticated = false;
+        while (!authenticated) {
+            operatorName = cons.readLine("name: ");
+            authenticated = node.passwordAuthenticator().authenticate(
+                    operatorName,
+                    new String(cons.readPassword("password: ")),
+                    null);
+            if (!authenticated)
+                cons.printf("invalid\n\n");
+        }
         interpreter = new Interpreter();
         interpreter.initialize(node.mailboxFactory().createAsyncMailbox());
-        interpreter.configure("*console*", node, this, System.out);
+        interpreter.configure(operatorName, node, this, System.out);
         if (interrupter != null) {
             node.mailboxFactory().addClosable(interrupter);
             interrupter.activate(interpreter);
         }
         this.node = node;
-        AgentChannelManager agentChannelManager = node.agentChannelManager();
         agentChannelManager.interpreters.add(interpreter);
-        System.out.println(
-                "\n*** ConsoleApp " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
         inbr = new BufferedReader(new InputStreamReader(System.in));
         JAFuture future = new JAFuture();
         boolean first = true;
