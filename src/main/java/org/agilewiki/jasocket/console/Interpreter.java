@@ -71,16 +71,18 @@ public class Interpreter extends JLPCActor implements Closable {
 
     public void notice(String n) {
         notices.add(n);
-        boolean wrote = false;
-        while (notices.size() > 0 && !shell.hasInput()) {
-            n = notices.poll();
-            if (n != null) {
-                ps.println(n);
-                wrote = true;
+        if (_rp == null) {
+            boolean wrote = false;
+            while (notices.size() > 0 && !shell.hasInput()) {
+                n = notices.poll();
+                if (n != null) {
+                    ps.println(n);
+                    wrote = true;
+                }
             }
+            if (wrote)
+                prompt();
         }
-        if (wrote)
-            prompt();
     }
 
     public void configure(

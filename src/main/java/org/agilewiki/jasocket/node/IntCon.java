@@ -30,7 +30,8 @@ class SunInterrupter implements Interrupter {
             public void handle(Signal signal) {
                 try {
                     Interrupt.req.sendEvent(interpreter);
-                } catch (Exception ex) {}
+                } catch (Exception ex) {
+                }
             }
         });
     }

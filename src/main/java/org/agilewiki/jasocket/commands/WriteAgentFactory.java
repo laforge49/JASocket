@@ -23,31 +23,19 @@
  */
 package org.agilewiki.jasocket.commands;
 
-import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.continuation.Continuation;
-import org.agilewiki.jasocket.jid.PrintJid;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
-import java.util.Timer;
-import java.util.TimerTask;
+public class WriteAgentFactory extends AppJidFactory {
+    public final static WriteAgentFactory fac = new WriteAgentFactory();
 
-public class PauseAgent extends CommandStringAgent {
+    public WriteAgentFactory() {
+        super("writeAgent", StringJidFactory.fac, StringJidFactory.fac);
+    }
+
     @Override
-    public void process(final RP<PrintJid> rp) throws Exception {
-        String arg = getArgString();
-        int sec = 5;
-        if (arg.length() > 0) {
-            sec = Integer.valueOf(arg);
-        }
-        Timer timer = getMailboxFactory().timer();
-        final Continuation<PrintJid> c = new Continuation<PrintJid>(this, rp);
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    c.processResponse(out);
-                } catch (Exception ex) {
-                }
-            }
-        }, sec * 1000);
+    protected JLPCActor instantiateActor() throws Exception {
+        return new WriteAgent();
     }
 }

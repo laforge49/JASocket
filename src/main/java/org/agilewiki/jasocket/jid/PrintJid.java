@@ -55,7 +55,8 @@ public class PrintJid extends BListJid<StringJid> {
         StringBuilder sb = new StringBuilder();
         try {
             appendto(sb);
-        } catch (Exception ex) {}
+        } catch (Exception ex) {
+        }
         return sb.toString();
     }
 }

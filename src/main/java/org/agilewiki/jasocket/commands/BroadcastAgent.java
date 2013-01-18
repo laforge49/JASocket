@@ -24,30 +24,32 @@
 package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.continuation.Continuation;
+import org.agilewiki.jactor.factory.JAFactory;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.cluster.BroadcasterAgent;
+import org.agilewiki.jasocket.cluster.ShipAgentEventToAll;
+import org.agilewiki.jasocket.console.Interpreter;
 import org.agilewiki.jasocket.jid.PrintJid;
+import org.agilewiki.jid.Jid;
+import org.apache.mina.util.ConcurrentHashSet;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-public class PauseAgent extends CommandStringAgent {
+public class BroadcastAgent extends CommandStringAgent {
     @Override
     public void process(final RP<PrintJid> rp) throws Exception {
-        String arg = getArgString();
-        int sec = 5;
-        if (arg.length() > 0) {
-            sec = Integer.valueOf(arg);
-        }
-        Timer timer = getMailboxFactory().timer();
-        final Continuation<PrintJid> c = new Continuation<PrintJid>(this, rp);
-        timer.schedule(new TimerTask() {
+        ConcurrentHashSet<Interpreter> interpreters = agentChannelManager().interpreters;
+        String args = getArgString();
+        BroadcasterAgent broadcasterAgent = (BroadcasterAgent) JAFactory.newActor(
+                this,
+                JASocketFactories.BROADCASTER_AGENT_FACTORY,
+                getMailbox(),
+                agentChannelManager());
+        broadcasterAgent.configure(getOperatorName(), args);
+        (new ShipAgentEventToAll(broadcasterAgent)).sendEvent(this, agentChannelManager());
+        broadcasterAgent.start(new RP<Jid>() {
             @Override
-            public void run() {
-                try {
-                    c.processResponse(out);
-                } catch (Exception ex) {
-                }
+            public void processResponse(Jid response) throws Exception {
+                rp.processResponse(out);
             }
-        }, sec * 1000);
+        });
     }
 }

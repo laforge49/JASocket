@@ -21,17 +21,17 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.sshd;
+package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
 public class WhoAgentFactory extends AppJidFactory {
     public final static WhoAgentFactory fac = new WhoAgentFactory();
 
     public WhoAgentFactory() {
-        super(JASocketFactories.WHO_AGENT_FACTORY);
+        super("whoAgent", StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

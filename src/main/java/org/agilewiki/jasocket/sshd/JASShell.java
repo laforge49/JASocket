@@ -28,9 +28,9 @@ import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jactor.concurrent.ThreadManager;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jasocket.console.Shell;
 import org.agilewiki.jasocket.console.Interpret;
 import org.agilewiki.jasocket.console.Interpreter;
+import org.agilewiki.jasocket.console.Shell;
 import org.agilewiki.jasocket.node.Node;
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.Environment;
@@ -123,11 +123,11 @@ public class JASShell implements Command, Shell {
                     interpreter = new Interpreter();
                     interpreter.initialize(node.mailboxFactory().createAsyncMailbox());
                     interpreter.configure(operatorName, node, JASShell.this, ps);
-                    sshServer.interpreters.add(interpreter);
+                    agentChannelManager.interpreters.add(interpreter);
                     consoleReader = new ConsoleReader(in, outputStream);
                     thread = Thread.currentThread();
                     ps.println(
-                            "\n*** JASocket ConsoleApp " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
+                            "\n*** JASShel " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
                     JAFuture future = new JAFuture();
                     while (true) {
                         interpreter.prompt();
@@ -145,7 +145,7 @@ public class JASShell implements Command, Shell {
 
     @Override
     public void destroy() {
-        sshServer.interpreters.remove(this);
+        agentChannelManager.interpreters.remove(this);
         consoleReader.shutdown();
         try {
             Thread.sleep(1000);

@@ -50,5 +50,11 @@ public class ConsoleCommands extends Commands {
                 StartupAgentFactory.fac);
         cmd("pause", "pause for n seconds, where n defaults to 5",
                 PauseAgentFactory.fac);
+        cmd("write", "send a message to a user",
+                WriteAgentFactory.fac);
+        cmd("broadcast", "send a message to all users",
+                BroadcastAgentFactory.fac);
+        cmd("who", "List all user names/node/logonTime/commandCount/idleTime",
+                WhoAgentFactory.fac);
     }
 }

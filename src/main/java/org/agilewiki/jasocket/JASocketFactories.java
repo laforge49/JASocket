@@ -28,16 +28,11 @@ import org.agilewiki.jactor.Mailbox;
 import org.agilewiki.jactor.factory.ActorFactory;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.cluster.AddRemoteServerNameAgentFactory;
-import org.agilewiki.jasocket.cluster.KeepAliveAgentFactory;
-import org.agilewiki.jasocket.cluster.RemoveServerNameAgentFactory;
-import org.agilewiki.jasocket.cluster.SetClientPortAgentFactory;
+import org.agilewiki.jasocket.cluster.*;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.PrintJidFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
 import org.agilewiki.jasocket.jid.agent.EvalAgentFactory;
-import org.agilewiki.jasocket.sshd.BroadcastAgentFactory;
-import org.agilewiki.jasocket.sshd.WhoAgentFactory;
 import org.agilewiki.jid.JidFactories;
 
 public class JASocketFactories extends JLPCActor {
@@ -49,8 +44,8 @@ public class JASocketFactories extends JLPCActor {
     public final static String SET_CLIENT_PORT_AGENT_FACTORY = "setClientPortAgent";
     public final static String KEEP_ALIVE_FACTORY = "keepAliveAgent";
     public final static String EVAL_FACTORY = "evalAgent";
-    public final static String BROADCAST_AGENT_FACTORY = "broadcastAgent";
-    public final static String WHO_AGENT_FACTORY = "whoAgent";
+    public final static String BROADCASTER_AGENT_FACTORY = "broadcasterAgent";
+    public final static String WHOER_AGENT_FACTORY = "whoerAgent";
 
     @Override
     public void initialize(Mailbox mailbox, Actor parent, ActorFactory actorFactory)
@@ -69,8 +64,8 @@ public class JASocketFactories extends JLPCActor {
         registerActorFactory(SetClientPortAgentFactory.fac);
         registerActorFactory(KeepAliveAgentFactory.fac);
         registerActorFactory(EvalAgentFactory.fac);
-        registerActorFactory(BroadcastAgentFactory.fac);
-        registerActorFactory(WhoAgentFactory.fac);
+        registerActorFactory(BroadcasterAgentFactory.fac);
+        registerActorFactory(WhoerAgentFactory.fac);
     }
 
     public void registerActorFactory(ActorFactory actorFactory) throws Exception {

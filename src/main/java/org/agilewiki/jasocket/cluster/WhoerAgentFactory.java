@@ -21,33 +21,21 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.commands;
+package org.agilewiki.jasocket.cluster;
 
-import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.continuation.Continuation;
-import org.agilewiki.jasocket.jid.PrintJid;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
 
-import java.util.Timer;
-import java.util.TimerTask;
+public class WhoerAgentFactory extends AppJidFactory {
+    public final static WhoerAgentFactory fac = new WhoerAgentFactory();
 
-public class PauseAgent extends CommandStringAgent {
+    public WhoerAgentFactory() {
+        super(JASocketFactories.WHOER_AGENT_FACTORY);
+    }
+
     @Override
-    public void process(final RP<PrintJid> rp) throws Exception {
-        String arg = getArgString();
-        int sec = 5;
-        if (arg.length() > 0) {
-            sec = Integer.valueOf(arg);
-        }
-        Timer timer = getMailboxFactory().timer();
-        final Continuation<PrintJid> c = new Continuation<PrintJid>(this, rp);
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    c.processResponse(out);
-                } catch (Exception ex) {
-                }
-            }
-        }, sec * 1000);
+    protected JLPCActor instantiateActor() throws Exception {
+        return new WhoerAgent();
     }
 }

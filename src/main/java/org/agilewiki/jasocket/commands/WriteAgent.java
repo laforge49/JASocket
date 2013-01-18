@@ -21,54 +21,44 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.sshd;
+package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jasocket.cluster.GetLocalServer;
 import org.agilewiki.jasocket.console.Interpreter;
-import org.agilewiki.jasocket.jid.agent.AgentJid;
-import org.agilewiki.jasocket.server.Server;
-import org.agilewiki.jid.Jid;
-import org.agilewiki.jid.scalar.vlens.string.StringJid;
+import org.agilewiki.jasocket.jid.PrintJid;
 import org.apache.mina.util.ConcurrentHashSet;
 
 import java.util.Iterator;
 
-public class BroadcastAgent extends AgentJid {
-    private StringJid getOperatorNameJid() throws Exception {
-        return (StringJid) _iGet(0);
-    }
-
-    private StringJid getMessageJid() throws Exception {
-        return (StringJid) _iGet(1);
-    }
-
-    public void configure(String operatorName, String message) throws Exception {
-        getOperatorNameJid().setValue(operatorName);
-        getMessageJid().setValue(message);
-    }
-
+public class WriteAgent extends CommandStringAgent {
     @Override
-    public void start(final RP<Jid> rp) throws Exception {
-        (new GetLocalServer("sshServer")).send(this, agentChannelManager(), new RP<Server>() {
-            @Override
-            public void processResponse(Server response) throws Exception {
-                if (response == null) {
-                    rp.processResponse(null);
-                    return;
-                }
-                SSHServer sshServer = (SSHServer) response;
-                ConcurrentHashSet<Interpreter> interpreters = sshServer.interpreters;
+    public void process(RP<PrintJid> rp) throws Exception {
+        ConcurrentHashSet<Interpreter> interpreters = agentChannelManager().interpreters;
+        String args = getArgString();
+        if (interpreters.size() == 0) {
+            out.println("no operators present");
+        } else {
+            int i = args.indexOf(' ');
+            if (i == -1) {
+                out.println("no message is present, only operator name " + args);
+            } else {
+                String name = args.substring(0, i);
+                String msg = args.substring(i + 1);
                 Iterator<Interpreter> it = interpreters.iterator();
-                String notice =
-                        "[broadcast] " + getOperatorNameJid().getValue() + ": " + getMessageJid().getValue();
+                boolean found = false;
                 while (it.hasNext()) {
                     Interpreter interpreter = it.next();
-                    interpreter.notice(notice);
+                    if (interpreter.getOperatorName().equals(name)) {
+                        found = true;
+                        interpreter.notice(getOperatorName() + ": " + msg);
+                    }
                 }
-                rp.processResponse(null);
+                if (found)
+                    out.println("wrote");
+                else
+                    out.println("no such operator: " + name);
             }
-        });
-
+        }
+        rp.processResponse(out);
     }
 }

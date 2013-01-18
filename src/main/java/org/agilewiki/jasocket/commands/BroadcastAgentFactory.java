@@ -21,10 +21,9 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.sshd;
+package org.agilewiki.jasocket.commands;
 
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jid.collection.flenc.AppJidFactory;
 import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
@@ -32,10 +31,7 @@ public class BroadcastAgentFactory extends AppJidFactory {
     public final static BroadcastAgentFactory fac = new BroadcastAgentFactory();
 
     public BroadcastAgentFactory() {
-        super(
-                JASocketFactories.BROADCAST_AGENT_FACTORY,
-                StringJidFactory.fac,
-                StringJidFactory.fac);
+        super("broadcastAgent", StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

@@ -1,0 +1,114 @@
+/*
+ * Copyright 2013 Bill La Forge
+ *
+ * This file is part of AgileWiki and is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License (LGPL) as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This code is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * or navigate to the following url http://www.gnu.org/licenses/lgpl-2.1.txt
+ *
+ * Note however that only Scala, Java and JavaScript files are being covered by LGPL.
+ * All other files are covered by the Common Public License (CPL).
+ * A copy of this license is also included and can be
+ * found as well at http://www.opensource.org/licenses/cpl1.0.txt
+ */
+package org.agilewiki.jasocket.commands;
+
+import org.agilewiki.jactor.ExceptionHandler;
+import org.agilewiki.jactor.RP;
+import org.agilewiki.jactor.factory.JAFactory;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.agentChannel.AgentChannel;
+import org.agilewiki.jasocket.agentChannel.ShipAgent;
+import org.agilewiki.jasocket.cluster.Channels;
+import org.agilewiki.jasocket.cluster.GetAgentChannel;
+import org.agilewiki.jasocket.cluster.WhoerAgent;
+import org.agilewiki.jasocket.console.Interpreter;
+import org.agilewiki.jasocket.jid.PrintJid;
+import org.apache.mina.util.ConcurrentHashSet;
+
+import java.util.Iterator;
+import java.util.TreeSet;
+
+public class WhoAgent extends CommandStringAgent {
+    @Override
+    public void process(final RP<PrintJid> rp) throws Exception {
+        ConcurrentHashSet<Interpreter> interpreters = agentChannelManager().interpreters;
+        final WhoerAgent whoerAgent = (WhoerAgent) JAFactory.newActor(
+                this,
+                JASocketFactories.WHOER_AGENT_FACTORY,
+                getMailbox(),
+                agentChannelManager());
+        final ShipAgent shipAgent = new ShipAgent(whoerAgent);
+        Channels.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {
+            @Override
+            public void processResponse(TreeSet<String> addresses) throws Exception {
+                final WhoRP whoRP = new WhoRP(rp, addresses.size(), out);
+                setExceptionHandler(new ExceptionHandler() {
+                    @Override
+                    public void process(Exception exception) throws Exception {
+                        whoRP.processResponse(null);
+                    }
+                });
+                Iterator<String> ita = addresses.iterator();
+                while (ita.hasNext()) {
+                    String address = ita.next();
+                    (new GetAgentChannel(address)).
+                            send(WhoAgent.this, agentChannelManager(), new RP<AgentChannel>() {
+                                @Override
+                                public void processResponse(AgentChannel response) throws Exception {
+                                    if (response == null)
+                                        whoRP.processResponse(null);
+                                    else
+                                        shipAgent.send(WhoAgent.this, response, whoRP);
+                                }
+                            });
+                }
+                whoerAgent.start(whoRP);
+            }
+        });
+    }
+
+    class WhoRP extends RP {
+        private int expecting;
+        private final RP rp;
+        private final PrintJid out;
+        private final TreeSet<String> ts = new TreeSet<String>();
+
+        public WhoRP(RP rp, int expecting, PrintJid out) {
+            this.rp = rp;
+            this.expecting = expecting;
+            this.out = out;
+        }
+
+        @Override
+        public void processResponse(Object response) throws Exception {
+            if (response != null) {
+                PrintJid o = (PrintJid) response;
+                int s = o.size();
+                int i = 0;
+                while (i < s) {
+                    ts.add(o.iGet(i).getValue());
+                    i += 1;
+                }
+            }
+            expecting -= 1;
+            if (expecting > 0)
+                return;
+            Iterator<String> it = ts.iterator();
+            while (it.hasNext()) {
+                out.println(it.next());
+            }
+            rp.processResponse(out);
+        }
+    }
+}

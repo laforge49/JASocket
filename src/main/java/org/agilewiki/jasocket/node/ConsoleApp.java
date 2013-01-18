@@ -25,10 +25,10 @@ package org.agilewiki.jasocket.node;
 
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jasocket.console.Shell;
 import org.agilewiki.jasocket.console.Interpret;
 import org.agilewiki.jasocket.console.Interpreter;
 import org.agilewiki.jasocket.console.Interrupter;
+import org.agilewiki.jasocket.console.Shell;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -61,8 +61,9 @@ public class ConsoleApp implements Shell {
         }
         this.node = node;
         AgentChannelManager agentChannelManager = node.agentChannelManager();
+        agentChannelManager.interpreters.add(interpreter);
         System.out.println(
-                "\n*** JASocket ConsoleApp " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
+                "\n*** ConsoleApp " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
         inbr = new BufferedReader(new InputStreamReader(System.in));
         JAFuture future = new JAFuture();
         boolean first = true;
