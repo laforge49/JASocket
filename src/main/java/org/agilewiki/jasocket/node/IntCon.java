@@ -1,6 +1,10 @@
 package org.agilewiki.jasocket.node;
 
-import org.agilewiki.jasocket.console.SunInterrupter;
+import org.agilewiki.jasocket.console.Interpreter;
+import org.agilewiki.jasocket.console.Interrupt;
+import org.agilewiki.jasocket.console.Interrupter;
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 public class IntCon {
     public static void main(String[] args) throws Exception {
@@ -12,5 +16,27 @@ public class IntCon {
             node.mailboxFactory().close();
             throw ex;
         }
+    }
+}
+
+class SunInterrupter implements Interrupter {
+    private Signal intSignal = new Signal("INT");
+    private SignalHandler signalHandler;
+
+    @Override
+    public void activate(final Interpreter interpreter) {
+        signalHandler = Signal.handle(intSignal, new SignalHandler() {
+            @Override
+            public void handle(Signal signal) {
+                try {
+                    Interrupt.req.sendEvent(interpreter);
+                } catch (Exception ex) {}
+            }
+        });
+    }
+
+    @Override
+    public void close() {
+        Signal.handle(intSignal, signalHandler);
     }
 }

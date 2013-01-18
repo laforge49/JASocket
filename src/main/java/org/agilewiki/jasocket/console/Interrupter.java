@@ -23,8 +23,8 @@
  */
 package org.agilewiki.jasocket.console;
 
-import sun.misc.SignalHandler;
+import org.agilewiki.jactor.Closable;
 
-public interface Interrupter {
-    public SignalHandler activate(Interpreter interpreter) throws Exception;
+public interface Interrupter extends Closable {
+    public void activate(Interpreter interpreter) throws Exception;
 }

@@ -45,8 +45,10 @@ public class ConsoleApp {
         Interpreter interpreter = new Interpreter();
         interpreter.initialize(node.mailboxFactory().createAsyncMailbox());
         interpreter.configure("*console*", node, System.out);
-        if (interrupter != null)
+        if (interrupter != null) {
+            node.mailboxFactory().addClosable(interrupter);
             interrupter.activate(interpreter);
+        }
         this.node = node;
         AgentChannelManager agentChannelManager = node.agentChannelManager();
         System.out.println(
