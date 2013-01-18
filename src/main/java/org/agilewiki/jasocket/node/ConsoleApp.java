@@ -25,6 +25,7 @@ package org.agilewiki.jasocket.node;
 
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
+import org.agilewiki.jasocket.console.Shell;
 import org.agilewiki.jasocket.console.Interpret;
 import org.agilewiki.jasocket.console.Interpreter;
 import org.agilewiki.jasocket.console.Interrupter;
@@ -33,18 +34,27 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class ConsoleApp {
+public class ConsoleApp implements Shell {
     private Node node;
-    protected BufferedReader inbr;
+    private Interpreter interpreter;
+    private BufferedReader inbr;
+
+    public boolean hasInput() {
+        try {
+            return inbr.ready();
+        } catch (Exception ex) {
+            return false;
+        }
+    }
 
     protected String input() throws IOException {
         return inbr.readLine();
     }
 
     public void create(Node node, Interrupter interrupter) throws Exception {
-        Interpreter interpreter = new Interpreter();
+        interpreter = new Interpreter();
         interpreter.initialize(node.mailboxFactory().createAsyncMailbox());
-        interpreter.configure("*console*", node, System.out);
+        interpreter.configure("*console*", node, this, System.out);
         if (interrupter != null) {
             node.mailboxFactory().addClosable(interrupter);
             interrupter.activate(interpreter);
@@ -79,5 +89,9 @@ public class ConsoleApp {
             node.mailboxFactory().close();
             throw ex;
         }
+    }
+
+    @Override
+    public void close() {
     }
 }

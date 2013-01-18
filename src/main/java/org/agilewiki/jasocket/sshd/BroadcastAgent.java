@@ -25,6 +25,7 @@ package org.agilewiki.jasocket.sshd;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.cluster.GetLocalServer;
+import org.agilewiki.jasocket.console.Interpreter;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.server.Server;
 import org.agilewiki.jid.Jid;
@@ -57,13 +58,13 @@ public class BroadcastAgent extends AgentJid {
                     return;
                 }
                 SSHServer sshServer = (SSHServer) response;
-                ConcurrentHashSet<JASShell> shells = sshServer.shells;
-                Iterator<JASShell> it = shells.iterator();
+                ConcurrentHashSet<Interpreter> interpreters = sshServer.interpreters;
+                Iterator<Interpreter> it = interpreters.iterator();
                 String notice =
                         "[broadcast] " + getOperatorNameJid().getValue() + ": " + getMessageJid().getValue();
                 while (it.hasNext()) {
-                    JASShell shell = it.next();
-                    shell.notice(notice);
+                    Interpreter interpreter = it.next();
+                    interpreter.notice(notice);
                 }
                 rp.processResponse(null);
             }

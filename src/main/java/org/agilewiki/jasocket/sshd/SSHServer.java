@@ -32,6 +32,7 @@ import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.cluster.GetAgentChannel;
 import org.agilewiki.jasocket.cluster.ServerNames;
 import org.agilewiki.jasocket.cluster.ShipAgentEventToAll;
+import org.agilewiki.jasocket.console.Interpreter;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jasocket.server.Server;
@@ -47,7 +48,7 @@ import java.util.TreeSet;
 public class SSHServer extends Server {
     private int sshPort;
     private SshServer sshd;
-    public ConcurrentHashSet<JASShell> shells = new ConcurrentHashSet<JASShell>();
+    public ConcurrentHashSet<Interpreter> interpreters = new ConcurrentHashSet<Interpreter>();
 
     @Override
     protected String serverName() {
@@ -72,11 +73,11 @@ public class SSHServer extends Server {
 
     @Override
     public void close() {
-        Iterator<JASShell> it = shells.iterator();
+        Iterator<Interpreter> it = interpreters.iterator();
         while (it.hasNext()) {
-            JASShell shell = it.next();
+            Interpreter interpreter = it.next();
             try {
-                shell.exitCallback.onExit(0);
+                interpreter.close();
             } catch (Exception ex) {
             }
         }
@@ -106,7 +107,7 @@ public class SSHServer extends Server {
         registerServerCommand(new ServerCommand("write", "Send a message to a user's ssh client") {
             @Override
             public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
-                if (shells.size() == 0) {
+                if (interpreters.size() == 0) {
                     out.println("no operators present");
                 } else {
                     int i = args.indexOf(' ');
@@ -115,13 +116,13 @@ public class SSHServer extends Server {
                     } else {
                         String name = args.substring(0, i);
                         String msg = args.substring(i + 1);
-                        Iterator<JASShell> it = shells.iterator();
+                        Iterator<Interpreter> it = interpreters.iterator();
                         boolean found = false;
                         while (it.hasNext()) {
-                            JASShell sh = it.next();
-                            if (sh.getOperatorName().equals(name)) {
+                            Interpreter interpreter = it.next();
+                            if (interpreter.getOperatorName().equals(name)) {
                                 found = true;
-                                sh.notice(operatorName + ": " + msg);
+                                interpreter.notice(operatorName + ": " + msg);
                             }
                         }
                         if (found)

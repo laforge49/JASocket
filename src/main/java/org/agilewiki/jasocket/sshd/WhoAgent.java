@@ -25,6 +25,7 @@ package org.agilewiki.jasocket.sshd;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.cluster.GetLocalServer;
+import org.agilewiki.jasocket.console.Interpreter;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.server.Server;
@@ -44,16 +45,16 @@ public class WhoAgent extends AgentJid {
                 PrintJid out = PrintJid.newPrintJid(WhoAgent.this);
                 if (response != null) {
                     SSHServer sshServer = (SSHServer) response;
-                    ConcurrentHashSet<JASShell> shells = sshServer.shells;
-                    Iterator<JASShell> it = shells.iterator();
+                    ConcurrentHashSet<Interpreter> interpreters = sshServer.interpreters;
+                    Iterator<Interpreter> it = interpreters.iterator();
                     long ct = System.currentTimeMillis();
                     while (it.hasNext()) {
-                        JASShell sh = it.next();
-                        out.println(sh.getOperatorName() + " " +
+                        Interpreter interpreter = it.next();
+                        out.println(interpreter.getOperatorName() + " " +
                                 agentChannelManager().agentChannelManagerAddress() + " " +
-                                ISOPeriodFormat.standard().print(new Period(sh.getLogonTime())) + " " +
-                                sh.getCommandCount() + " " +
-                                ISOPeriodFormat.standard().print(new Period(sh.getIdleTime())));
+                                ISOPeriodFormat.standard().print(new Period(interpreter.getLogonTime())) + " " +
+                                interpreter.getCommandCount() + " " +
+                                ISOPeriodFormat.standard().print(new Period(interpreter.getIdleTime())));
                     }
                 }
                 rp.processResponse(out);

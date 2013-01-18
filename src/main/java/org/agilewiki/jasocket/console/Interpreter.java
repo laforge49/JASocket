@@ -23,6 +23,7 @@
  */
 package org.agilewiki.jasocket.console;
 
+import org.agilewiki.jactor.Closable;
 import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
@@ -37,13 +38,16 @@ import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jid.Jid;
 
 import java.io.PrintStream;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class Interpreter extends JLPCActor {
+public class Interpreter extends JLPCActor implements Closable {
     private String operatorName;
     private Node node;
     private PrintStream ps;
     private AgentChannelManager agentChannelManager;
+    private Shell shell;
 
+    private ConcurrentLinkedQueue<String> notices = new ConcurrentLinkedQueue<String>();
     private int commandCount;
     private long startTime;
     private long lastTime;
@@ -65,9 +69,28 @@ public class Interpreter extends JLPCActor {
         return System.currentTimeMillis() - lastTime;
     }
 
-    public void configure(String operatorName, Node node, PrintStream out) throws Exception {
+    public void notice(String n) {
+        notices.add(n);
+        boolean wrote = false;
+        while (notices.size() > 0 && !shell.hasInput()) {
+            n = notices.poll();
+            if (n != null) {
+                ps.println(n);
+                wrote = true;
+            }
+        }
+        if (wrote)
+            prompt();
+    }
+
+    public void configure(
+            String operatorName,
+            Node node,
+            Shell shell,
+            PrintStream out) throws Exception {
         this.operatorName = operatorName;
         this.node = node;
+        this.shell = shell;
         this.ps = out;
         agentChannelManager = node.agentChannelManager();
         startTime = System.currentTimeMillis();
@@ -105,7 +128,12 @@ public class Interpreter extends JLPCActor {
                 if (_rp == null)
                     return;
                 PrintJid out = (PrintJid) response;
-                ps.println(out.toString());
+                int s = out.size();
+                int i = 0;
+                while (i < s) {
+                    ps.println(out.iGet(i).getValue());
+                    i += 1;
+                }
                 _rp.processResponse(null);
                 _rp = null;
             }
@@ -121,6 +149,16 @@ public class Interpreter extends JLPCActor {
     }
 
     public void prompt() {
+        while (notices.size() > 0) {
+            String n = notices.poll();
+            if (n != null)
+                ps.println(n);
+        }
         ps.print((commandCount + 1) + ">");
+    }
+
+    @Override
+    public void close() {
+        shell.close();
     }
 }
