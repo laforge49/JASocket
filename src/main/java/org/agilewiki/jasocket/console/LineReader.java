@@ -27,6 +27,7 @@ import org.agilewiki.jactor.Closable;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -39,18 +40,21 @@ public class LineReader extends JLPCActor implements Closable {
         this.out = out;
         lineEditor = new LineEditor();
         lineEditor.initialize(getMailboxFactory().createAsyncMailbox());
-        (new StartLineEditor(in, out, this)).sendEvent(this, lineEditor);
+        (new StartLineEditor(in, new EchoStream(this), this)).sendEvent(this, lineEditor);
     }
 
     public void readLine(RP<String> rp) throws Exception {
-        System.out.println("read line "+rp);
         _rp = rp;
     }
 
     public void line(String line) throws Exception {
-        System.out.println("got line "+_rp);
         _rp.processResponse(line);
         _rp = null;
+    }
+
+    public void echo(int b) throws IOException {
+        out.write(b);
+        out.flush();
     }
 
     @Override

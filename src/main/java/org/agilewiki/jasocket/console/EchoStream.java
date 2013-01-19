@@ -23,36 +23,38 @@
  */
 package org.agilewiki.jasocket.console;
 
-import jline.console.ConsoleReader;
-import org.agilewiki.jactor.Closable;
+import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jactor.lpc.Request;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
-public class LineEditor extends JLPCActor implements Closable {
-    private ConsoleReader consoleReader;
-    private volatile boolean halt;
+public class EchoStream extends OutputStream {
+    private final LineReader lineReader;
+    private ArrayList<Byte> bytes = new ArrayList<Byte>();
 
-    public void start(InputStream in, OutputStream out, LineReader lineReader, RP rp)
-            throws Exception {
-        consoleReader = new ConsoleReader(in, out);
-        while (!halt) {
-            try {
-                String line = consoleReader.readLine();
-                (new Line(line)).sendEvent(this, lineReader);
-                getMailbox().sendPendingMessages();
-            } catch (Exception ex) {
-                break;
-            }
-        }
-        consoleReader.shutdown();
+    public EchoStream(LineReader lineReader) {
+        this.lineReader = lineReader;
     }
 
-
     @Override
-    public void close() {
-        halt = true;
+    public void write(final int b) throws IOException {
+        try {
+            (new Request<Object, LineReader>() {
+                @Override
+                public boolean isTargetType(Actor targetActor) {
+                    return targetActor instanceof LineReader;
+                }
+
+                @Override
+                public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+                    ((LineReader) targetActor).echo(b);
+                }
+            }).sendEvent(lineReader);
+        } catch (Exception ex) {
+        }
     }
 }
