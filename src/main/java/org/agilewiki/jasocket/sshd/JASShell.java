@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Bill La Forge
+ * Copyright 2013 Bill La Forge
  *
  * This file is part of AgileWiki and is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,14 +23,11 @@
  */
 package org.agilewiki.jasocket.sshd;
 
-import jline.console.ConsoleReader;
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jactor.MailboxFactory;
 import org.agilewiki.jactor.concurrent.ThreadManager;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jasocket.console.Interpret;
-import org.agilewiki.jasocket.console.Interpreter;
-import org.agilewiki.jasocket.console.Shell;
+import org.agilewiki.jasocket.console.*;
 import org.agilewiki.jasocket.node.Node;
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.Environment;
@@ -47,7 +44,6 @@ public class JASShell implements Command, Shell {
     protected MailboxFactory mailboxFactory;
     protected ThreadManager threadManager;
     protected InputStream in;
-    protected ConsoleReader consoleReader;
     protected PrintStream ps;
     protected OutputStream outputStream;
     protected PrintStream err;
@@ -57,6 +53,7 @@ public class JASShell implements Command, Shell {
     protected SSHServer sshServer;
     protected String operatorName;
     private Interpreter interpreter;
+    private LineReader lineReader;
 
     public String getOperatorName() {
         return operatorName;
@@ -76,7 +73,7 @@ public class JASShell implements Command, Shell {
 
     @Override
     public boolean hasInput() {
-        return consoleReader.getCursorBuffer().length() == 0;
+        return false;
     }
 
     public void notice(String n) {
@@ -124,14 +121,17 @@ public class JASShell implements Command, Shell {
                     interpreter.initialize(node.mailboxFactory().createAsyncMailbox());
                     interpreter.configure(operatorName, node, JASShell.this, ps);
                     agentChannelManager.interpreters.add(interpreter);
-                    consoleReader = new ConsoleReader(in, outputStream);
+                    lineReader = new LineReader();
+                    lineReader.initialize(node.mailboxFactory().createAsyncMailbox());
+                    (new StartLineReader(in, outputStream)).sendEvent(lineReader);
                     thread = Thread.currentThread();
                     ps.println(
-                            "\n*** JASShel " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
+                            "\n*** JASShell " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
                     JAFuture future = new JAFuture();
                     while (true) {
                         interpreter.prompt();
-                        String commandLine = consoleReader.readLine();
+                        String commandLine = ReadLine.req.send(future, lineReader);
+                        System.out.println("command: "+commandLine);
                         (new Interpret(commandLine)).send(future, interpreter);
                     }
                 } catch (InterruptedException ex) {
@@ -145,8 +145,8 @@ public class JASShell implements Command, Shell {
 
     @Override
     public void destroy() {
+        lineReader.close();
         agentChannelManager.interpreters.remove(this);
-        consoleReader.shutdown();
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
