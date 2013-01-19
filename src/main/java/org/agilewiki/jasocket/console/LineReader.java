@@ -35,6 +35,8 @@ public class LineReader extends JLPCActor implements Closable {
     private OutputStream out;
     private LineEditor lineEditor;
     private RP<String> _rp;
+    private byte[] bytes = new byte[10240];
+    int sz;
 
     public void start(InputStream in, OutputStream out) throws Exception {
         this.out = out;
@@ -44,6 +46,11 @@ public class LineReader extends JLPCActor implements Closable {
     }
 
     public void readLine(RP<String> rp) throws Exception {
+        if (sz > 0) {
+            out.write(bytes, 0, sz);
+            sz = 0;
+            out.flush();
+        }
         _rp = rp;
     }
 
@@ -53,8 +60,15 @@ public class LineReader extends JLPCActor implements Closable {
     }
 
     public void echo(int b) throws IOException {
-        out.write(b);
-        out.flush();
+        if (_rp == null) {
+            if (sz < 10240) {
+                bytes[sz] = (byte) b;
+                sz += 1;
+            }
+        } else {
+            out.write(b);
+            out.flush();
+        }
     }
 
     @Override
