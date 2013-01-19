@@ -136,6 +136,7 @@ public class Interpreter extends JLPCActor implements Closable {
                     ps.println(out.iGet(i).getValue());
                     i += 1;
                 }
+                ps.flush();
                 _rp.processResponse(null);
                 _rp = null;
             }
@@ -157,6 +158,7 @@ public class Interpreter extends JLPCActor implements Closable {
                 ps.println(n);
         }
         ps.print((commandCount + 1) + ">");
+        ps.flush();
     }
 
     @Override

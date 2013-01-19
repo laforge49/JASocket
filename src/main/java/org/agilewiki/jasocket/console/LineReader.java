@@ -30,33 +30,56 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.ArrayDeque;
 
 public class LineReader extends JLPCActor implements Closable {
     private OutputStream out;
+    private Interpreter interpreter;
     private LineEditor lineEditor;
     private RP<String> _rp;
     private byte[] bytes = new byte[10240];
-    int sz;
+    private int sz;
+    private ArrayDeque<String> pendingLines = new ArrayDeque<String>();
+    private PrintStream ps;
 
-    public void start(InputStream in, OutputStream out) throws Exception {
+    public void start(
+            InputStream in,
+            OutputStream out,
+            Interpreter interpreter) throws Exception {
         this.out = out;
+        this.interpreter = interpreter;
+        ps = new PrintStream(out);
         lineEditor = new LineEditor();
         lineEditor.initialize(getMailboxFactory().createAsyncMailbox());
         (new StartLineEditor(in, new EchoStream(this), this)).sendEvent(this, lineEditor);
     }
 
     public void readLine(RP<String> rp) throws Exception {
-        if (sz > 0) {
-            out.write(bytes, 0, sz);
-            sz = 0;
-            out.flush();
+        interpreter.prompt();
+        if (pendingLines.isEmpty()) {
+            if (sz > 0) {
+                out.write(bytes, 0, sz);
+                sz = 0;
+                out.flush();
+            }
+            _rp = rp;
+        } else {
+            String line = pendingLines.poll();
+            ps.println(line);
+            ps.flush();
+            rp.processResponse(line);
         }
-        _rp = rp;
     }
 
     public void line(String line) throws Exception {
-        _rp.processResponse(line);
-        _rp = null;
+        if (_rp == null) {
+            sz = 0;
+            pendingLines.add(line);
+        } else {
+            _rp.processResponse(line);
+            _rp = null;
+        }
     }
 
     public void echo(int b) throws IOException {

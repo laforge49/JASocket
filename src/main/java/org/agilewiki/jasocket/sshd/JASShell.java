@@ -123,13 +123,13 @@ public class JASShell implements Command, Shell {
                     agentChannelManager.interpreters.add(interpreter);
                     lineReader = new LineReader();
                     lineReader.initialize(node.mailboxFactory().createAsyncMailbox());
-                    (new StartLineReader(in, outputStream)).sendEvent(lineReader);
+                    (new StartLineReader(in, outputStream, interpreter)).
+                            sendEvent(lineReader);
                     thread = Thread.currentThread();
                     ps.println(
                             "\n*** JASShell " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
                     JAFuture future = new JAFuture();
                     while (true) {
-                        interpreter.prompt();
                         String commandLine = ReadLine.req.send(future, lineReader);
                         System.out.println("command: "+commandLine);
                         (new Interpret(commandLine)).send(future, interpreter);

@@ -34,10 +34,12 @@ import java.io.OutputStream;
 public class StartLineReader extends Request<Object, LineReader> {
     final private InputStream in;
     final private OutputStream out;
+    final private Interpreter interpreter;
 
-    public StartLineReader(InputStream in, OutputStream out) {
+    public StartLineReader(InputStream in, OutputStream out, Interpreter interpreter) {
         this.in = in;
         this.out = out;
+        this.interpreter = interpreter;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class StartLineReader extends Request<Object, LineReader> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((LineReader) targetActor).start(in, out);
+        ((LineReader) targetActor).start(in, out, interpreter);
         rp.processResponse(null);
     }
 }
