@@ -23,6 +23,7 @@
  */
 package org.agilewiki.jasocket.console;
 
+import jline.TerminalSupport;
 import jline.console.ConsoleReader;
 import org.agilewiki.jactor.Closable;
 import org.agilewiki.jactor.RP;
@@ -37,7 +38,7 @@ public class LineEditor extends JLPCActor implements Closable {
 
     public void start(InputStream in, OutputStream out, LineReader lineReader, RP rp)
             throws Exception {
-        consoleReader = new ConsoleReader(in, out);
+        consoleReader = new ConsoleReader(in, out, new TerminalSupport(true) {});
         while (!halt) {
             try {
                 String line = consoleReader.readLine();
