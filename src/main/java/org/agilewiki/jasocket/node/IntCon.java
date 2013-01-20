@@ -6,7 +6,11 @@ import org.agilewiki.jasocket.console.Interrupter;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
-public class IntCon {
+public class IntCon extends ConsoleApp {
+    public void create(Node node) throws Exception {
+        super.create(node, new SunInterrupter());
+    }
+
     public static void main(String[] args) throws Exception {
         Node node = new Node(args, 100);
         try {
