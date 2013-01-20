@@ -40,7 +40,7 @@ import org.agilewiki.jid.Jid;
 import java.io.PrintStream;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class Interpreter extends JLPCActor implements Closable {
+public class Interpreter extends JLPCActor implements Closable, Interruptable {
     private String operatorName;
     private Node node;
     private PrintStream ps;

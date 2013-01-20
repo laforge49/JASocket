@@ -23,7 +23,6 @@
  */
 package org.agilewiki.jasocket.console;
 
-import org.agilewiki.jactor.Closable;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 
@@ -33,7 +32,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayDeque;
 
-public class LineReader extends JLPCActor implements Closable {
+public class LineReader extends JLPCActor implements Shell, Interruptable {
     private OutputStream out;
     private Interpreter interpreter;
     private LineEditor lineEditor;
@@ -52,7 +51,10 @@ public class LineReader extends JLPCActor implements Closable {
         ps = new PrintStream(out);
         lineEditor = new LineEditor();
         lineEditor.initialize(getMailboxFactory().createAsyncMailbox());
-        (new StartLineEditor(in, new EchoStream(this), this)).sendEvent(this, lineEditor);
+        (new StartLineEditor(
+                new InterruptFilter(in, this),
+                new EchoStream(this),
+                this)).sendEvent(this, lineEditor);
     }
 
     public void readLine(RP<String> rp) throws Exception {
@@ -97,5 +99,16 @@ public class LineReader extends JLPCActor implements Closable {
     @Override
     public void close() {
         lineEditor.close();
+    }
+
+    @Override
+    public boolean hasInput() {
+        return sz > 0;
+    }
+
+    @Override
+    public void interrupt() throws Exception {
+        pendingLines.clear();
+        Interrupt.req.sendEvent(this, interpreter);
     }
 }

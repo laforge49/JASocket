@@ -73,7 +73,7 @@ public class JASShell implements Command, Shell {
 
     @Override
     public boolean hasInput() {
-        return false;
+        return lineReader.hasInput();
     }
 
     public void notice(String n) {

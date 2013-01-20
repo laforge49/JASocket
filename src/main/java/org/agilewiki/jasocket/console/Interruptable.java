@@ -23,22 +23,8 @@
  */
 package org.agilewiki.jasocket.console;
 
-import org.agilewiki.jactor.Actor;
-import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jactor.lpc.TargetActor;
 
-public class Interrupt extends Request<Object, Interruptable> {
-    public final static Interrupt req = new Interrupt();
-
-    @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof Interruptable;
-    }
-
-    @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((Interruptable) targetActor).interrupt();
-        rp.processResponse(null);
-    }
+public interface Interruptable extends TargetActor {
+    public void interrupt() throws Exception;
 }
