@@ -52,7 +52,7 @@ public class WhoAgent extends CommandStringAgent {
         Channels.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {
             @Override
             public void processResponse(TreeSet<String> addresses) throws Exception {
-                final WhoRP whoRP = new WhoRP(rp, addresses.size(), out);
+                final WhoRP whoRP = new WhoRP(rp, addresses.size() + 1, out);
                 setExceptionHandler(new ExceptionHandler() {
                     @Override
                     public void process(Exception exception) throws Exception {

@@ -21,7 +21,7 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.sshd;
+package org.agilewiki.jasocket.console;
 
 import org.agilewiki.jasocket.node.Node;
 import org.apache.sshd.server.PasswordAuthenticator;
@@ -35,7 +35,10 @@ public class DummyPasswordAuthenticator implements PasswordAuthenticator {
     }
 
     @Override
-    public boolean authenticate(String username, String password, ServerSession serverSession) {
-        return true;
+    public boolean authenticate(
+            String username,
+            String password,
+            ServerSession serverSession) {
+        return !username.contains(" ");
     }
 }
