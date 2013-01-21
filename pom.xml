@@ -5,7 +5,7 @@
 
     <groupId>org.agilewiki.jasocket</groupId>
     <artifactId>jasocket</artifactId>
-    <version>2.4.0.0</version>
+    <version>3.0.0.0-RC1</version>
     <packaging>jar</packaging>
     <name>JASocket</name>
     <description>Lightweight Mobile Agent Cluster</description>
