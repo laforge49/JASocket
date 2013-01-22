@@ -28,6 +28,7 @@ import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.commands.Command;
 import org.agilewiki.jasocket.commands.CommandAgent;
 import org.agilewiki.jasocket.commands.CommandStringAgent;
+import org.agilewiki.jasocket.commands.UserInterrupt;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,12 +36,19 @@ import org.slf4j.LoggerFactory;
 public class EvalAgent extends CommandStringAgent {
     private static Logger logger = LoggerFactory.getLogger(EvalAgent.class);
 
+    private CommandAgent agent;
+
     @Override
     protected void process(RP<PrintJid> rp) throws Exception {
         if (isLocal())
             logger.info(getOperatorName() + ">" + getArgString());
         else
-            logger.info("(" + agentChannel().remoteAddress + ") " + getOperatorName() + ">" + getArgString());
+            logger.info("(" +
+                    agentChannel().remoteAddress +
+                    ") " +
+                    getOperatorName() +
+                    ">" +
+                    getArgString());
         String in = getArgString().trim();
         int i = in.indexOf(' ');
         String rem = "";
@@ -56,9 +64,21 @@ public class EvalAgent extends CommandStringAgent {
             return;
         }
         String type = cmd.type();
-        CommandAgent agent = (CommandAgent)
+        agent = (CommandAgent)
                 JAFactory.newActor(this, type, getMailboxFactory().createAsyncMailbox(), agentChannelManager());
         agent.configure(getOperatorName(), rem);
         StartAgent.req.send(this, agent, (RP) rp);
+    }
+
+    public void userInterrupt() throws Exception {
+        if (isLocal())
+            logger.info(getOperatorName() + ">^C");
+        else
+            logger.info("(" +
+                    agentChannel().remoteAddress +
+                    ") " +
+                    getOperatorName() +
+                    ">^C");
+        UserInterrupt.req.sendEvent(this, agent);
     }
 }

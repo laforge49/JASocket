@@ -32,6 +32,7 @@ import java.util.Iterator;
 
 abstract public class CommandAgent extends AgentJid {
     protected PrintJid out;
+    protected RP commandRP;
 
     private StringJid getOperatorJid() throws Exception {
         return (StringJid) _iGet(0);
@@ -72,6 +73,12 @@ abstract public class CommandAgent extends AgentJid {
         if (getOperatorName() == null)
             throw new IllegalArgumentException("missing operator name");
         out = PrintJid.newPrintJid(this);
+        commandRP = rp;
         process(rp);
+    }
+
+    public void userInterrupt() throws Exception {
+        out.println("*** Command Interrupted ***");
+        commandRP.processResponse(out);
     }
 }

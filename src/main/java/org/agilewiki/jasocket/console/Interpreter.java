@@ -31,6 +31,7 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannelClosedException;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
+import org.agilewiki.jasocket.commands.UserInterrupt;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
@@ -52,6 +53,7 @@ public class Interpreter extends JLPCActor implements Closable, Interruptable {
     private long startTime;
     private long lastTime;
     private RP _rp;
+    private EvalAgent evalAgent;
 
     public String getOperatorName() {
         return operatorName;
@@ -102,7 +104,7 @@ public class Interpreter extends JLPCActor implements Closable, Interruptable {
     public void interpret(String commandLine, RP rp) throws Exception {
         _rp = rp;
         lastTime = System.currentTimeMillis();
-        EvalAgent evalAgent = (EvalAgent) JAFactory.newActor(
+        evalAgent = (EvalAgent) JAFactory.newActor(
                 agentChannelManager,
                 JASocketFactories.EVAL_FACTORY,
                 getMailboxFactory().createAsyncMailbox(),
@@ -145,9 +147,14 @@ public class Interpreter extends JLPCActor implements Closable, Interruptable {
 
     public void interrupt() throws Exception {
         if (_rp != null) {
-            ps.println("*** Interrupted ***");
-            _rp.processResponse(null);
-            _rp = null;
+            if (evalAgent != null) {
+                UserInterrupt.req.sendEvent(this, evalAgent);
+                evalAgent = null;
+            } else {
+                ps.println("*** Interrupted ***");
+                _rp.processResponse(null);
+                _rp = null;
+            }
         }
     }
 
