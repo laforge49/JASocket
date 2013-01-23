@@ -40,6 +40,9 @@ import java.util.Iterator;
 import java.util.TreeSet;
 
 public class WhoAgent extends CommandStringAgent {
+    private final TreeSet<String> ts = new TreeSet<String>();
+    private int expecting;
+
     @Override
     public void process(final RP<PrintJid> rp) throws Exception {
         ConcurrentHashSet<Interpreter> interpreters = agentChannelManager().interpreters;
@@ -52,7 +55,26 @@ public class WhoAgent extends CommandStringAgent {
         Channels.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {
             @Override
             public void processResponse(TreeSet<String> addresses) throws Exception {
-                final WhoRP whoRP = new WhoRP(rp, addresses.size() + 1, out);
+                expecting = addresses.size() + 1;
+                final RP whoRP = new RP() {
+                    @Override
+                    public void processResponse(Object response) throws Exception {
+                        if (response != null) {
+                            PrintJid o = (PrintJid) response;
+                            int s = o.size();
+                            int i = 0;
+                            while (i < s) {
+                                ts.add(o.iGet(i).getValue());
+                                i += 1;
+                            }
+                        }
+                        expecting -= 1;
+                        if (expecting > 0)
+                            return;
+                        respond();
+                        rp.processResponse(out);
+                    }
+                };
                 setExceptionHandler(new ExceptionHandler() {
                     @Override
                     public void process(Exception exception) throws Exception {
@@ -78,37 +100,17 @@ public class WhoAgent extends CommandStringAgent {
         });
     }
 
-    class WhoRP extends RP {
-        private int expecting;
-        private final RP rp;
-        private final PrintJid out;
-        private final TreeSet<String> ts = new TreeSet<String>();
-
-        public WhoRP(RP rp, int expecting, PrintJid out) {
-            this.rp = rp;
-            this.expecting = expecting;
-            this.out = out;
+    private void respond() throws Exception {
+        Iterator<String> it = ts.iterator();
+        while (it.hasNext()) {
+            out.println(it.next());
         }
+    }
 
-        @Override
-        public void processResponse(Object response) throws Exception {
-            if (response != null) {
-                PrintJid o = (PrintJid) response;
-                int s = o.size();
-                int i = 0;
-                while (i < s) {
-                    ts.add(o.iGet(i).getValue());
-                    i += 1;
-                }
-            }
-            expecting -= 1;
-            if (expecting > 0)
-                return;
-            Iterator<String> it = ts.iterator();
-            while (it.hasNext()) {
-                out.println(it.next());
-            }
-            rp.processResponse(out);
-        }
+    public void userInterrupt() throws Exception {
+        respond();
+        out.println("*** Who Interrupted ***");
+        out.println("No response from " + expecting + " nodes.");
+        commandRP.processResponse(out);
     }
 }
