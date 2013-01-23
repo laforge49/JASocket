@@ -49,6 +49,7 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AgentChannel extends JLPCActor implements SocketProtocol {
     HashMap<Long, RP> rps = new HashMap<Long, RP>();
@@ -56,6 +57,7 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
     private AgentSocket agentSocket;
     private boolean client;
     public String remoteAddress;
+    public ConcurrentHashMap<Long, AgentJid> agents = new ConcurrentHashMap<Long, AgentJid>();
 
     public AgentChannelManager agentChannelManager() {
         return (AgentChannelManager) getParent();
@@ -133,7 +135,7 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         }
     }
 
-    protected void gotEvent(Jid jid) throws Exception {
+    protected void gotEvent(AgentJid agentJid) throws Exception {
         final Request request = getMailbox().getCurrentRequest().getUnwrappedRequest();
         setExceptionHandler(new ExceptionHandler() {
             @Override
@@ -141,30 +143,28 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
                 getMailboxFactory().eventException(request, exception);
             }
         });
-        receiveRequest(jid, JANoResponse.nrp);
+        StartAgent.req.send(this, agentJid, JANoResponse.nrp);
     }
 
-    private void gotReq(final Long id, Jid jid) throws Exception {
+    private void gotReq(final Long requestId, AgentJid agentJid) throws Exception {
         setExceptionHandler(new ExceptionHandler() {
             @Override
             public void process(Exception exception) throws Exception {
                 RemoteException re = new RemoteException(exception);
                 ExceptionJid bj = (ExceptionJid) ExceptionJidFactory.fac.newActor(getMailbox(), null);
                 bj.setObject(re);
-                write(false, id, bj);
+                agents.remove(requestId);
+                write(false, requestId, bj);
             }
         });
-        receiveRequest(jid, new RP<Jid>() {
+        agentJid.setRequestId(requestId);
+        StartAgent.req.send(this, agentJid, new RP<Jid>() {
             @Override
             public void processResponse(Jid response) throws Exception {
-                write(false, id, response);
+                agents.remove(requestId);
+                write(false, requestId, response);
             }
         });
-    }
-
-    protected void receiveRequest(Jid jid, RP<Jid> rp) throws Exception {
-        AgentJid agentJid = (AgentJid) jid;
-        StartAgent.req.send(this, agentJid, rp);
     }
 
     @Override
@@ -178,19 +178,19 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         root.load(bytes, 1, bytes.length - 1);
         TransportJid transport = (TransportJid) root.getValue();
         boolean requestFlag = transport.isRequest();
-        Long id = transport.getId();
+        Long requestId = transport.getId();
         Jid jid = transport.getContent();
         if (requestFlag)
-            if (id == -1)
-                gotEvent(jid);
+            if (requestId == -1)
+                gotEvent((AgentJid) jid);
             else
-                gotReq(id, jid);
+                gotReq(requestId, (AgentJid) jid);
         else
-            gotRsp(id, jid);
+            gotRsp(requestId, jid);
     }
 
-    protected void gotRsp(Long id, Jid jid) throws Exception {
-        RP rp = rps.remove(id);
+    protected void gotRsp(Long requestId, Jid jid) throws Exception {
+        RP rp = rps.remove(requestId);
         if (rp != null) {
             if (jid instanceof ExceptionJid) {
                 ExceptionJid ej = (ExceptionJid) jid;
@@ -201,18 +201,17 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         }
     }
 
-    public void shipAgentEvent(AgentJid jid) throws Exception {
-        shipAgent(jid, JANoResponse.nrp);
-    }
-
-    public void shipAgent(final AgentJid jid, final RP rp) throws Exception {
+    public void shipAgent(final AgentJid agent, final RP rp) throws Exception {
         try {
             if (rp.isEvent()) {
-                write(true, -1, jid);
+                write(true, -1, agent);
             } else {
                 requestId += 1;
-                requestId %= 1000000000000000000L;
-                write(true, requestId, jid);
+                if (requestId == Long.MAX_VALUE)
+                    requestId = 0;
+                if (agent != null)
+                    agent.setRequestId(requestId);
+                write(true, requestId, agent);
                 rps.put(requestId, rp);
             }
         } catch (Exception e) {
@@ -220,25 +219,25 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
         }
     }
 
-    private void write(final boolean requestFlag, final long id, Jid jid) throws Exception {
+    private void write(final boolean requestFlag, final long requestId, Jid jid) throws Exception {
         if (jid == null)
-            writeCopy(requestFlag, id, jid);
+            writeCopy(requestFlag, requestId, jid);
         else
             (new CopyJID(getMailbox())).send(this, jid, new RP<Actor>() {
                 @Override
                 public void processResponse(Actor response) throws Exception {
-                    writeCopy(requestFlag, id, (Jid) response);
+                    writeCopy(requestFlag, requestId, (Jid) response);
                 }
             });
     }
 
-    private void writeCopy(boolean requestFlag, long id, Jid jid) throws Exception {
+    private void writeCopy(boolean requestFlag, long requestId, Jid jid) throws Exception {
         RootJid root = new RootJid();
         root.initialize(this);
         root.setValue(JASocketFactories.TRANSPORT_FACTORY);
         TransportJid transport = (TransportJid) root.getValue();
         transport.setRequest(requestFlag);
-        transport.setId(id);
+        transport.setId(requestId);
         transport.setContent(jid);
         byte[] bytes = new byte[root.getSerializedLength() + 1];
         if (requestFlag && ((AgentJid) jid).async()) {

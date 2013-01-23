@@ -62,4 +62,6 @@ abstract public class AgentJid extends AppJid {
     public boolean async() {
         return true;
     }
+
+    public void setRequestId(long requestId) {}
 }

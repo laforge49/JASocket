@@ -30,11 +30,13 @@ import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.cluster.GetAgentChannel;
 import org.agilewiki.jasocket.jid.PrintJid;
-import org.agilewiki.jasocket.jid.agent.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jid.Jid;
 
 public class ToAgent extends CommandStringAgent {
+    private EvalAgent evalAgent;
+    private AgentChannel agentChannel;
+
     @Override
     protected void process(final RP<PrintJid> rp) throws Exception {
         String address = getArgString();
@@ -49,8 +51,11 @@ public class ToAgent extends CommandStringAgent {
             rp.processResponse(out);
             return;
         }
-        final EvalAgent evalAgent = (EvalAgent)
-                JAFactory.newActor(this, JASocketFactories.EVAL_FACTORY, getMailbox(), agentChannelManager());
+        evalAgent = (EvalAgent)JAFactory.newActor(
+                this,
+                JASocketFactories.EVAL_FACTORY,
+                getMailbox(),
+                agentChannelManager());
         evalAgent.configure(getOperatorName(), argsString);
         if (isLocalAddress(address)) {
             StartAgent.req.send(this, evalAgent, (RP) rp);
@@ -65,6 +70,7 @@ public class ToAgent extends CommandStringAgent {
                     rp.processResponse(out);
                     return;
                 }
+                ToAgent.this.agentChannel = agentChannel;
                 ShipAgent shipAgent = new ShipAgent(evalAgent);
                 shipAgent.send(ToAgent.this, agentChannel, new RP<Jid>() {
                     @Override
@@ -74,5 +80,21 @@ public class ToAgent extends CommandStringAgent {
                 });
             }
         });
+    }
+
+    public void userInterrupt() throws Exception {
+        long requestId = evalAgent.getRequestId();
+        if (requestId == -1) {
+            UserInterrupt.req.sendEvent(this, evalAgent);
+            return;
+        }
+        UserInterruptAgent userInterruptAgent = (UserInterruptAgent) JAFactory.newActor(
+                this,
+                JASocketFactories.USER_INTERRUPT_AGENT_FACTORY,
+                getMailbox(),
+                agentChannelManager());
+        userInterruptAgent.configure(requestId);
+        ShipAgent shipAgent = new ShipAgent(userInterruptAgent);
+        shipAgent.sendEvent(this, agentChannel);
     }
 }
