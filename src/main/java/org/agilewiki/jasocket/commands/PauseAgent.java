@@ -31,6 +31,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class PauseAgent extends CommandStringAgent {
+    private TimerTask timerTask;
+
     @Override
     public void process(final RP<PrintJid> rp) throws Exception {
         String arg = getArgString();
@@ -40,7 +42,7 @@ public class PauseAgent extends CommandStringAgent {
         }
         Timer timer = getMailboxFactory().timer();
         final Continuation<PrintJid> c = new Continuation<PrintJid>(this, rp);
-        timer.schedule(new TimerTask() {
+        timerTask = new TimerTask() {
             @Override
             public void run() {
                 try {
@@ -48,6 +50,14 @@ public class PauseAgent extends CommandStringAgent {
                 } catch (Exception ex) {
                 }
             }
-        }, sec * 1000);
+        };
+        timer.schedule(timerTask, sec * 1000);
+    }
+
+    @Override
+    public void userInterrupt() throws Exception {
+        timerTask.cancel();
+        out.println("*** Pause Interrupted ***");
+        commandRP.processResponse(out);
     }
 }
