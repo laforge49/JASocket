@@ -77,9 +77,7 @@ abstract public class InterruptableServerCommand<CONTEXT_TYPE> extends ServerCom
         rp.processResponse(out);
     }
 
-    public void serverUserInterrupt(String args,
+    abstract public void serverUserInterrupt(String args,
                                     PrintJid out,
-                                    long requestId) throws Exception {
-        out.println("*** Server Command Interrupted ***");
-    }
+                                    long requestId) throws Exception;
 }
