@@ -132,7 +132,7 @@ public class Server extends JLPCActor implements Closable {
             rp.processResponse(out);
             return;
         }
-        serverCommand.eval(operatorName, args, out, requestId, rp);
+        serverCommand._eval(this, operatorName, args, out, requestId, rp);
     }
 
     public void serverUserInterrupt(String commandLine,
@@ -148,8 +148,7 @@ public class Server extends JLPCActor implements Closable {
             args = commandLine.substring(i + 1).trim();
         }
         ServerCommand serverCommand = serverCommands.get(command);
-        serverCommand.serverUserInterrupt(args, out, requestId);
-        rp.processResponse(out);
+        serverCommand._serverUserInterrupt(this, args, out, requestId, rp);
     }
 
     protected void registerShutdownCommand() {
