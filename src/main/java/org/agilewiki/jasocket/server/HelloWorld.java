@@ -13,6 +13,12 @@ public class HelloWorld extends Server {
 
     @Override
     protected void startServer(PrintJid out, RP rp) throws Exception {
+        registerHi();
+        registerException();
+        super.startServer(out, rp);
+    }
+
+    public void registerHi() {
         registerServerCommand(new ServerCommand("hi", "says hello") {
             @Override
             public void eval(String operatorName,
@@ -24,7 +30,19 @@ public class HelloWorld extends Server {
                 rp.processResponse(out);
             }
         });
-        super.startServer(out, rp);
+    }
+
+    public void registerException() {
+        registerServerCommand(new ServerCommand("exception", "User-raised exception") {
+            @Override
+            public void eval(String operatorName,
+                             String args,
+                             PrintJid out,
+                             long requestId,
+                             RP<PrintJid> rp) throws Exception {
+                throw new Exception("User-raised exception");
+            }
+        });
     }
 
     public static void main(String[] args) throws Exception {
