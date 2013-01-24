@@ -75,8 +75,11 @@ public class SSHServer extends Server {
         super.close();
     }
 
-    protected int sshPort() throws Exception {
-        return node().clusterPort() + 1;
+    public int sshPort() throws Exception {
+        if (startupArgs.length() == 0)
+            return node().clusterPort() + 1;
+        else
+            return Integer.valueOf(startupArgs);
     }
 
     protected void setShellFactory() {
