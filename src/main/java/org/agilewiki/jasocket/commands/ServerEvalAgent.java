@@ -28,8 +28,12 @@ import org.agilewiki.jasocket.cluster.GetLocalServer;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.server.EvalServerCommand;
 import org.agilewiki.jasocket.server.Server;
+import org.agilewiki.jasocket.server.ServerUserInterrupt;
 
 public class ServerEvalAgent extends CommandStringAgent {
+    private Server server;
+    private String commandLine;
+
     @Override
     protected void process(final RP<PrintJid> rp) throws Exception {
         String args = getArgString().trim();
@@ -40,18 +44,25 @@ public class ServerEvalAgent extends CommandStringAgent {
             return;
         }
         final String serverName = args.substring(0, i);
-        final String commandLine = args.substring(i + 1).trim();
+        commandLine = args.substring(i + 1).trim();
         (new GetLocalServer(serverName)).send(this, agentChannelManager(), new RP<Server>() {
             @Override
-            public void processResponse(Server response) throws Exception {
-                if (response == null) {
+            public void processResponse(Server server) throws Exception {
+                if (server == null) {
                     println("Unable to locate server " + serverName);
                     rp.processResponse(out);
                     return;
                 }
-                (new EvalServerCommand(getOperatorName(), commandLine, out)).
-                        send(ServerEvalAgent.this, response, rp);
+                ServerEvalAgent.this.server = server;
+                (new EvalServerCommand(getOperatorName(), commandLine, out, getRequestId())).
+                        send(ServerEvalAgent.this, server, rp);
             }
         });
+    }
+
+    @Override
+    public void userInterrupt() throws Exception {
+        (new ServerUserInterrupt(commandLine, out, getRequestId())).
+                send(this, server, commandRP);
     }
 }

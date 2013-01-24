@@ -112,14 +112,19 @@ public class Server extends JLPCActor implements Closable {
         }
     }
 
-    public void evalServerCommand(String operatorName, String commandString, PrintJid out, RP rp) throws Exception {
-        commandString = commandString.trim();
-        int i = commandString.indexOf(' ');
-        String command = commandString;
+    public void evalServerCommand(
+            String operatorName,
+            String commandLine,
+            PrintJid out,
+            long requestId,
+            RP rp) throws Exception {
+        commandLine = commandLine.trim();
+        int i = commandLine.indexOf(' ');
+        String command = commandLine;
         String args = "";
         if (i > -1) {
-            command = commandString.substring(0, i);
-            args = commandString.substring(i + 1).trim();
+            command = commandLine.substring(0, i);
+            args = commandLine.substring(i + 1).trim();
         }
         ServerCommand serverCommand = serverCommands.get(command);
         if (serverCommand == null) {
@@ -127,7 +132,24 @@ public class Server extends JLPCActor implements Closable {
             rp.processResponse(out);
             return;
         }
-        serverCommand.eval(operatorName, args, out, rp);
+        serverCommand.eval(operatorName, args, out, requestId, rp);
+    }
+
+    public void serverUserInterrupt(String commandLine,
+                                    PrintJid out,
+                                    long requestId,
+                                    RP rp) throws Exception {
+        commandLine = commandLine.trim();
+        int i = commandLine.indexOf(' ');
+        String command = commandLine;
+        String args = "";
+        if (i > -1) {
+            command = commandLine.substring(0, i);
+            args = commandLine.substring(i + 1).trim();
+        }
+        ServerCommand serverCommand = serverCommands.get(command);
+        serverCommand.serverUserInterrupt(args, out, requestId);
+        rp.processResponse(out);
     }
 
     protected void registerShutdownCommand() {
@@ -135,7 +157,12 @@ public class Server extends JLPCActor implements Closable {
                 "shutdown",
                 "Stops and unregisters the server") {
             @Override
-            public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
+            public void eval(
+                    String operatorName,
+                    String args,
+                    PrintJid out,
+                    long requestId,
+                    RP<PrintJid> rp) throws Exception {
                 close();
                 out.println("Stopped " + serverName());
                 rp.processResponse(out);
@@ -148,7 +175,12 @@ public class Server extends JLPCActor implements Closable {
                 "help",
                 "List the commands supported by the server") {
             @Override
-            public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception {
+            public void eval(
+                    String operatorName,
+                    String args,
+                    PrintJid out,
+                    long requestId,
+                    RP<PrintJid> rp) throws Exception {
                 Iterator<String> it = serverCommands.keySet().iterator();
                 while (it.hasNext()) {
                     ServerCommand ac = serverCommands.get(it.next());

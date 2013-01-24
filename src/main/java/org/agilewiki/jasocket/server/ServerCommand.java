@@ -13,5 +13,16 @@ abstract public class ServerCommand {
         this.description = description;
     }
 
-    abstract public void eval(String operatorName, String args, PrintJid out, RP<PrintJid> rp) throws Exception;
+    abstract public void eval(
+            String operatorName,
+            String args,
+            PrintJid out,
+            long requestId,
+            RP<PrintJid> rp) throws Exception;
+
+    public void serverUserInterrupt(String args,
+                                    PrintJid out,
+                                    long requestId) throws Exception {
+        out.println("*** Server Command Interrupted ***");
+    }
 }

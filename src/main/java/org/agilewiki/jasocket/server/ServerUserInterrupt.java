@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Bill La Forge
+ * Copyright 2013 Bill La Forge
  *
  * This file is part of AgileWiki and is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,18 +29,13 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.jid.PrintJid;
 
-public class EvalServerCommand extends Request<PrintJid, Server> {
-    private String operatorName;
-    private String commandLine;
-    private PrintJid out;
-    private long requestId;
+public class ServerUserInterrupt extends Request<PrintJid, Server> {
+    final private String commandString;
+    final private PrintJid out;
+    final private long requestId;
 
-    public EvalServerCommand(String operatorName,
-                             String commandLine,
-                             PrintJid out,
-                             long requestId) {
-        this.operatorName = operatorName;
-        this.commandLine = commandLine;
+    public ServerUserInterrupt(String commandString, PrintJid out, long requestId) {
+        this.commandString = commandString;
         this.out = out;
         this.requestId = requestId;
     }
@@ -53,6 +48,6 @@ public class EvalServerCommand extends Request<PrintJid, Server> {
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
         ((Server) targetActor).
-                evalServerCommand(operatorName, commandLine, out, requestId, rp);
+                serverUserInterrupt(commandString, out, requestId, rp);
     }
 }

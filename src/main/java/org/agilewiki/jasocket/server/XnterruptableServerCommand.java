@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Bill La Forge
+ * Copyright 2013 Bill La Forge
  *
  * This file is part of AgileWiki and is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,36 +23,16 @@
  */
 package org.agilewiki.jasocket.server;
 
-import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.jid.PrintJid;
 
-public class EvalServerCommand extends Request<PrintJid, Server> {
-    private String operatorName;
-    private String commandLine;
-    private PrintJid out;
-    private long requestId;
-
-    public EvalServerCommand(String operatorName,
-                             String commandLine,
-                             PrintJid out,
-                             long requestId) {
-        this.operatorName = operatorName;
-        this.commandLine = commandLine;
-        this.out = out;
-        this.requestId = requestId;
+public class XnterruptableServerCommand extends ServerCommand {
+    public XnterruptableServerCommand(String name, String description) {
+        super(name, description);
     }
 
     @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof Server;
-    }
-
-    @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((Server) targetActor).
-                evalServerCommand(operatorName, commandLine, out, requestId, rp);
+    public void eval(String operatorName, String args, PrintJid out, long requestId, RP<PrintJid> rp) throws Exception {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }
