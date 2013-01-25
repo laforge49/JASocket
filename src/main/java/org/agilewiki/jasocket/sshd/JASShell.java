@@ -131,7 +131,6 @@ public class JASShell implements Command, Shell {
                     JAFuture future = new JAFuture();
                     while (true) {
                         String commandLine = ReadLine.req.send(future, lineReader);
-                        System.out.println("command: "+commandLine);
                         (new Interpret(commandLine)).send(future, interpreter);
                     }
                 } catch (InterruptedException ex) {

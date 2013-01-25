@@ -21,12 +21,14 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.cluster;
+package org.agilewiki.jasocket.sshd;
 
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jasocket.cluster.GetLocalServer;
 import org.agilewiki.jasocket.console.Interpreter;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jasocket.server.Server;
 import org.agilewiki.jid.Jid;
 import org.apache.mina.util.ConcurrentHashSet;
 import org.joda.time.Period;
@@ -34,26 +36,33 @@ import org.joda.time.format.ISOPeriodFormat;
 
 import java.util.Iterator;
 
-public class WhoerAgent extends AgentJid {
+public class SSHAgent extends AgentJid {
     @Override
     public void start(final RP<Jid> rp) throws Exception {
-        PrintJid out = PrintJid.newPrintJid(this);
-        ConcurrentHashSet<Interpreter> interpreters = agentChannelManager().interpreters;
-        Iterator<Interpreter> it = interpreters.iterator();
-        while (it.hasNext()) {
-            Interpreter interpreter = it.next();
-            out.println(interpreter.getOperatorName() +
-                    " " +
-                    agentChannelManager().agentChannelManagerAddress() +
-                    " " +
-                    ISOPeriodFormat.standard().print(new Period(interpreter.getLogonTime())) +
-                    " " +
-                    interpreter.getCommandCount() +
-                    " " +
-                    ISOPeriodFormat.standard().print(new Period(interpreter.getIdleTime())) +
-                    " " +
-                    interpreter.isSSH());
-        }
-        rp.processResponse(out);
+        final PrintJid out = PrintJid.newPrintJid(this);
+        (new GetLocalServer("sshServer")).send(this, agentChannelManager(), new RP<Server>() {
+            @Override
+            public void processResponse(Server response) throws Exception {
+                if (response != null) {
+                    SSHServer sshServer = (SSHServer) response;
+                    ConcurrentHashSet<Interpreter> interpreters = agentChannelManager().interpreters;
+                    Iterator<Interpreter> it = interpreters.iterator();
+                    int count = 0;
+                    while (it.hasNext()) {
+                        Interpreter interpreter = it.next();
+                        if (interpreter.isSSH())
+                            count += 1;
+                    }
+                    out.println(agentChannelManager().agentChannelManagerAddress() +
+                            " " +
+                            sshServer.sshPort() +
+                            " " +
+                            ISOPeriodFormat.standard().print(new Period(sshServer.runTime())) +
+                            " " +
+                            count);
+                }
+                rp.processResponse(out);
+            }
+        });
     }
 }

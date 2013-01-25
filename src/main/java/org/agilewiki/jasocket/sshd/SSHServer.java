@@ -23,16 +23,24 @@
  */
 package org.agilewiki.jasocket.sshd;
 
+import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jactor.factory.JAFactory;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jasocket.agentChannel.AgentChannel;
+import org.agilewiki.jasocket.agentChannel.ShipAgent;
+import org.agilewiki.jasocket.cluster.Channels;
+import org.agilewiki.jasocket.cluster.GetAgentChannel;
 import org.agilewiki.jasocket.console.Interpreter;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
+import org.agilewiki.jasocket.server.InterruptableServerCommand;
 import org.agilewiki.jasocket.server.Server;
-import org.agilewiki.jasocket.server.ServerCommand;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
 import java.util.Iterator;
+import java.util.TreeSet;
 
 public class SSHServer extends Server {
     private SshServer sshd;
@@ -44,7 +52,7 @@ public class SSHServer extends Server {
 
     @Override
     protected void startServer(PrintJid out, RP rp) throws Exception {
-        registerSshPort();
+        registerSshServers();
         out.println("ssh port: " + sshPort());
         sshd = SshServer.setUpDefaultServer();
         sshd.setPasswordAuthenticator(node().passwordAuthenticator());
@@ -86,16 +94,65 @@ public class SSHServer extends Server {
         sshd.setShellFactory(new JASShellFactory(this, node()));
     }
 
-    public void registerSshPort() {
-        registerServerCommand(new ServerCommand("sshPort", "displays the ssh port number") {
+    public void registerSshServers() {
+        registerServerCommand(new InterruptableServerCommand<All>(
+                "all",
+                "Lists all sshServer's address/sshPort/runtime/userCount") {
+
             @Override
             public void eval(String operatorName,
                              String args,
-                             PrintJid out,
+                             final PrintJid out,
                              long requestId,
                              RP<PrintJid> rp) throws Exception {
-                out.println("" + sshPort());
-                rp.processResponse(out);
+                final All all = new All(out, rp);
+                contextMap.put(requestId, all);
+                final SSHAgent sshAgent = (SSHAgent) JAFactory.newActor(
+                        SSHServer.this,
+                        JASocketFactories.SSH_AGENT_FACTORY,
+                        getMailbox(),
+                        agentChannelManager());
+                final ShipAgent shipAgent = new ShipAgent(sshAgent);
+                Channels.req.send(SSHServer.this, agentChannelManager(), new RP<TreeSet<String>>() {
+                    @Override
+                    public void processResponse(TreeSet<String> addresses) throws Exception {
+                        all.expecting = addresses.size() + 1;
+                        setExceptionHandler(new ExceptionHandler() {
+                            @Override
+                            public void process(Exception exception) throws Exception {
+                                all.processResponse(null);
+                            }
+                        });
+                        Iterator<String> ita = addresses.iterator();
+                        while (ita.hasNext()) {
+                            String address = ita.next();
+                            (new GetAgentChannel(address)).
+                                    send(SSHServer.this, agentChannelManager(), new RP<AgentChannel>() {
+                                        @Override
+                                        public void processResponse(AgentChannel response) throws Exception {
+                                            if (response == null)
+                                                all.processResponse(null);
+                                            else
+                                                shipAgent.send(SSHServer.this, response, all);
+                                        }
+                                    });
+                        }
+                        sshAgent.start(all);
+                    }
+                });
+            }
+
+            @Override
+            public void serverUserInterrupt(String args,
+                                            PrintJid out,
+                                            long requestId) throws Exception {
+                All all = contextMap.get(requestId);
+                Iterator<String> it = all.ts.iterator();
+                while (it.hasNext()) {
+                    out.println(it.next());
+                }
+                out.println("*** sshPorts Interrupted ***");
+                out.println("No response from " + all.expecting + " nodes.");
             }
         });
     }
@@ -109,5 +166,38 @@ public class SSHServer extends Server {
             node.mailboxFactory().close();
             throw ex;
         }
+    }
+}
+
+class All extends RP {
+    PrintJid out;
+    RP rp;
+    int expecting;
+    TreeSet<String> ts = new TreeSet<String>();
+
+    All(PrintJid out, RP rp) {
+        this.out = out;
+        this.rp = rp;
+    }
+
+    @Override
+    public void processResponse(Object response) throws Exception {
+        if (response != null) {
+            PrintJid o = (PrintJid) response;
+            int s = o.size();
+            int i = 0;
+            while (i < s) {
+                ts.add(o.iGet(i).getValue());
+                i += 1;
+            }
+        }
+        expecting -= 1;
+        if (expecting > 0)
+            return;
+        Iterator<String> it = ts.iterator();
+        while (it.hasNext()) {
+            out.println(it.next());
+        }
+        rp.processResponse(out);
     }
 }

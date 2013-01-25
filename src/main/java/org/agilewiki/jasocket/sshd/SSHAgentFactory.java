@@ -21,24 +21,21 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.commands;
+package org.agilewiki.jasocket.sshd;
 
-import org.agilewiki.jactor.Actor;
-import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
 
-public class UserInterrupt extends Request<Object, CommandAgent> {
-    public final static UserInterrupt req = new UserInterrupt();
+public class SSHAgentFactory extends AppJidFactory {
+    public final static SSHAgentFactory fac = new SSHAgentFactory();
 
-    @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof CommandAgent;
+    public SSHAgentFactory() {
+        super(JASocketFactories.SSH_AGENT_FACTORY);
     }
 
     @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((CommandAgent) targetActor)._userInterrupt();
-        rp.processResponse(null);
+    protected JLPCActor instantiateActor() throws Exception {
+        return new SSHAgent();
     }
 }

@@ -47,6 +47,10 @@ public class Server extends JLPCActor implements Closable {
         return operatorName;
     }
 
+    public long runTime() {
+        return System.currentTimeMillis() - startTime;
+    }
+
     public String startupArgs() {
         return startupArgs;
     }

@@ -82,13 +82,17 @@ abstract public class CommandAgent extends AgentJid {
         process(rp);
     }
 
-    public void userInterrupt() throws Exception {
+    public void _userInterrupt() throws Exception {
         setExceptionHandler(new ExceptionHandler() {
             @Override
             public void process(Exception exception) throws Exception {
                 commandRP.processResponse(exception);
             }
         });
+        userInterrupt();
+    }
+
+    public void userInterrupt() throws Exception {
         out.println("*** Command Interrupted ***");
         commandRP.processResponse(out);
     }

@@ -54,7 +54,7 @@ public class ConsoleCommands extends Commands {
                 WriteAgentFactory.fac);
         cmd("broadcast", "send a message to all users",
                 BroadcastAgentFactory.fac);
-        cmd("who", "List all user names/node/logonTime/commandCount/idleTime",
+        cmd("who", "List all user names/node/logonTime/commandCount/idleTime/ssh",
                 WhoAgentFactory.fac);
     }
 }

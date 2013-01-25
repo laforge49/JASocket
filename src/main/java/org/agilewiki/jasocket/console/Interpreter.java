@@ -36,6 +36,7 @@ import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.commands.EvalAgent;
 import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.node.Node;
+import org.agilewiki.jasocket.sshd.JASShell;
 import org.agilewiki.jid.Jid;
 
 import java.io.PrintStream;
@@ -54,6 +55,10 @@ public class Interpreter extends JLPCActor implements Closable, Interruptable {
     private long lastTime;
     private RP _rp;
     private EvalAgent evalAgent;
+
+    public boolean isSSH() {
+        return shell instanceof JASShell;
+    }
 
     public String getOperatorName() {
         return operatorName;
