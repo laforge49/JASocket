@@ -23,6 +23,7 @@
  */
 package org.agilewiki.jasocket.commands;
 
+import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.cluster.GetLocalServer;
 import org.agilewiki.jasocket.jid.PrintJid;
@@ -62,6 +63,12 @@ public class ServerEvalAgent extends CommandStringAgent {
 
     @Override
     public void userInterrupt() throws Exception {
+        setExceptionHandler(new ExceptionHandler() {
+            @Override
+            public void process(Exception exception) throws Exception {
+                commandRP.processResponse(exception);
+            }
+        });
         (new ServerUserInterrupt(commandLine, out, getRequestId())).
                 send(this, server, commandRP);
     }

@@ -20,6 +20,7 @@ public class HelloWorld extends Server {
         registerHi();
         registerException();
         registerPause();
+        registerInterruptException();
         super.startServer(out, rp);
     }
 
@@ -86,6 +87,27 @@ public class HelloWorld extends Server {
                 TimerTask timerTask = contextMap.get(requestId);
                 timerTask.cancel();
                 out.println("*** Pause Interrupted ***");
+            }
+        });
+    }
+
+    public void registerInterruptException() {
+        registerServerCommand(new InterruptableServerCommand<Void>(
+                "interruptException",
+                "Hangs and then throws an exception in response to a user interrupt") {
+            @Override
+            public void eval(String operatorName,
+                             String args,
+                             final PrintJid out,
+                             long requestId,
+                             RP<PrintJid> rp) throws Exception {
+            }
+
+            @Override
+            public void serverUserInterrupt(String args,
+                                            PrintJid out,
+                                            long requestId) throws Exception {
+                throw new Exception("User interrupt received");
             }
         });
     }

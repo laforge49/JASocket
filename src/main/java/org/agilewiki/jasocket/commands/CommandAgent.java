@@ -23,6 +23,7 @@
  */
 package org.agilewiki.jasocket.commands;
 
+import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
@@ -82,6 +83,12 @@ abstract public class CommandAgent extends AgentJid {
     }
 
     public void userInterrupt() throws Exception {
+        setExceptionHandler(new ExceptionHandler() {
+            @Override
+            public void process(Exception exception) throws Exception {
+                commandRP.processResponse(exception);
+            }
+        });
         out.println("*** Command Interrupted ***");
         commandRP.processResponse(out);
     }
