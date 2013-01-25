@@ -28,13 +28,13 @@ import org.agilewiki.jasocket.console.Interpreter;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
 import org.agilewiki.jasocket.server.Server;
+import org.agilewiki.jasocket.server.ServerCommand;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
 import java.util.Iterator;
 
 public class SSHServer extends Server {
-    private int sshPort;
     private SshServer sshd;
 
     @Override
@@ -44,11 +44,11 @@ public class SSHServer extends Server {
 
     @Override
     protected void startServer(PrintJid out, RP rp) throws Exception {
-        sshPort = sshPort();
-        out.println("ssh port: " + sshPort);
+        registerSshPort();
+        out.println("ssh port: " + sshPort());
         sshd = SshServer.setUpDefaultServer();
         sshd.setPasswordAuthenticator(node().passwordAuthenticator());
-        sshd.setPort(sshPort);
+        sshd.setPort(sshPort());
         sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider("hostkey.ser"));
         setShellFactory();
         sshd.start();
@@ -84,6 +84,20 @@ public class SSHServer extends Server {
 
     protected void setShellFactory() {
         sshd.setShellFactory(new JASShellFactory(this, node()));
+    }
+
+    public void registerSshPort() {
+        registerServerCommand(new ServerCommand("sshPort", "displays the ssh port number") {
+            @Override
+            public void eval(String operatorName,
+                             String args,
+                             PrintJid out,
+                             long requestId,
+                             RP<PrintJid> rp) throws Exception {
+                out.println("" + sshPort());
+                rp.processResponse(out);
+            }
+        });
     }
 
     public static void main(String[] args) throws Exception {
