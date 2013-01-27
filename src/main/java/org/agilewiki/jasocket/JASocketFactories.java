@@ -48,6 +48,7 @@ public class JASocketFactories extends JLPCActor {
     public final static String EVAL_FACTORY = "evalAgent";
     public final static String BROADCASTER_AGENT_FACTORY = "broadcasterAgent";
     public final static String WHOER_AGENT_FACTORY = "whoerAgent";
+    public final static String HEAPER_AGENT_FACTORY = "heaperAgent";
     public final static String SSH_AGENT_FACTORY = "sshAgent";
     public final static String USER_INTERRUPT_AGENT_FACTORY = "userInterruptAgent";
 
@@ -70,6 +71,7 @@ public class JASocketFactories extends JLPCActor {
         registerActorFactory(EvalAgentFactory.fac);
         registerActorFactory(BroadcasterAgentFactory.fac);
         registerActorFactory(WhoerAgentFactory.fac);
+        registerActorFactory(HeaperAgentFactory.fac);
         registerActorFactory(SSHAgentFactory.fac);
         registerActorFactory(UserInterruptAgentFactory.fac);
     }
