@@ -47,6 +47,8 @@ public class AgentSocket extends JLPCActor implements ExceptionProcessor {
     SocketChannel socketChannel;
     ByteBuffer writeBuffer;
     ExceptionProcessor exceptionProcessor = this;
+    public long bytesRead;
+    public long bytesWritten;
 
     public void setAgentChannel(AgentChannel agentChannel) {
         this.agentChannel = agentChannel;
@@ -130,6 +132,7 @@ public class AgentSocket extends JLPCActor implements ExceptionProcessor {
                         CloseChannel.req.sendEvent(agentChannel);
                         return;
                     }
+                    bytesRead += i;
                     agentChannel.received();
                     byteBuffer.flip();
                     (new ReceiveByteBuffer(byteBuffer)).sendEvent(AgentSocket.this);
@@ -182,8 +185,9 @@ public class AgentSocket extends JLPCActor implements ExceptionProcessor {
     void write() throws Exception {
         agentChannel.sent();
         writeBuffer.flip();
-        while (writeBuffer.hasRemaining())
-            socketChannel.write(writeBuffer);
+        while (writeBuffer.hasRemaining()) {
+            bytesWritten += socketChannel.write(writeBuffer);
+        }
         writeBuffer.clear();
     }
 

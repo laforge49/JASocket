@@ -29,31 +29,31 @@ import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.agentChannel.ShipAgent;
+import org.agilewiki.jasocket.cluster.ByteCountserAgent;
 import org.agilewiki.jasocket.cluster.Channels;
 import org.agilewiki.jasocket.cluster.GetAgentChannel;
-import org.agilewiki.jasocket.cluster.HeaperAgent;
 import org.agilewiki.jasocket.jid.PrintJid;
 
 import java.util.Iterator;
 import java.util.TreeSet;
 
-public class HeapAgent extends CommandStringAgent {
+public class ByteCountsAgent extends CommandStringAgent {
     private final TreeSet<String> ts = new TreeSet<String>();
     private int expecting;
 
     @Override
     public void process(final RP<PrintJid> rp) throws Exception {
-        final HeaperAgent heaperAgent = (HeaperAgent) JAFactory.newActor(
+        final ByteCountserAgent byteCountserAgent = (ByteCountserAgent) JAFactory.newActor(
                 this,
-                JASocketFactories.HEAPER_AGENT_FACTORY,
+                JASocketFactories.BYTE_COUNTSER_AGENT_FACTORY,
                 getMailbox(),
                 agentChannelManager());
-        final ShipAgent shipAgent = new ShipAgent(heaperAgent);
+        final ShipAgent shipAgent = new ShipAgent(byteCountserAgent);
         Channels.req.send(this, agentChannelManager(), new RP<TreeSet<String>>() {
             @Override
             public void processResponse(TreeSet<String> addresses) throws Exception {
                 expecting = addresses.size() + 1;
-                final RP heapRP = new RP() {
+                final RP byteCountsRP = new RP() {
                     @Override
                     public void processResponse(Object response) throws Exception {
                         if (response != null) {
@@ -75,24 +75,24 @@ public class HeapAgent extends CommandStringAgent {
                 setExceptionHandler(new ExceptionHandler() {
                     @Override
                     public void process(Exception exception) throws Exception {
-                        heapRP.processResponse(null);
+                        byteCountsRP.processResponse(null);
                     }
                 });
                 Iterator<String> ita = addresses.iterator();
                 while (ita.hasNext()) {
                     String address = ita.next();
                     (new GetAgentChannel(address)).
-                            send(HeapAgent.this, agentChannelManager(), new RP<AgentChannel>() {
+                            send(ByteCountsAgent.this, agentChannelManager(), new RP<AgentChannel>() {
                                 @Override
                                 public void processResponse(AgentChannel response) throws Exception {
                                     if (response == null)
-                                        heapRP.processResponse(null);
+                                        byteCountsRP.processResponse(null);
                                     else
-                                        shipAgent.send(HeapAgent.this, response, heapRP);
+                                        shipAgent.send(ByteCountsAgent.this, response, byteCountsRP);
                                 }
                             });
                 }
-                heaperAgent.start(heapRP);
+                byteCountserAgent.start(byteCountsRP);
             }
         });
     }
@@ -106,7 +106,7 @@ public class HeapAgent extends CommandStringAgent {
 
     public void userInterrupt() throws Exception {
         respond();
-        out.println("*** Heap Interrupted ***");
+        out.println("*** ByteCounts Interrupted ***");
         out.println("No response from " + expecting + " nodes.");
         commandRP.processResponse(out);
     }

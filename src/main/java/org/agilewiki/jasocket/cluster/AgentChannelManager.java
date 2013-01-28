@@ -91,6 +91,32 @@ public class AgentChannelManager extends JLPCActor {
         return channels;
     }
 
+    public long bytesRead() {
+        long bytesRead = 0L;
+        Iterator<String> it = agentChannels.keySet().iterator();
+        while (it.hasNext()) {
+            try {
+                AgentChannel agentChannel = getAgentChannel(it.next());
+                if (agentChannel != null)
+                    bytesRead += agentChannel.bytesRead();
+            } catch (Exception ex) {}
+        }
+        return bytesRead;
+    }
+
+    public long bytesWritten() {
+        long bytesWritten = 0L;
+        Iterator<String> it = agentChannels.keySet().iterator();
+        while (it.hasNext()) {
+            try {
+                AgentChannel agentChannel = getAgentChannel(it.next());
+                if (agentChannel != null)
+                    bytesWritten += agentChannel.bytesWritten();
+            } catch (Exception ex) {}
+        }
+        return bytesWritten;
+    }
+
     public AgentChannel getAgentChannel(String address) throws Exception {
         List<String> locations = locateServer(address);
         if (locations.size() > 0)

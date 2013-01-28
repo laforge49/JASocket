@@ -59,6 +59,18 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
     public String remoteAddress;
     public ConcurrentHashMap<Long, AgentJid> agents = new ConcurrentHashMap<Long, AgentJid>();
 
+    public long bytesRead() {
+        if (agentSocket == null)
+            return 0L;
+        return agentSocket.bytesRead;
+    }
+
+    public long bytesWritten() {
+        if (agentSocket == null)
+            return 0L;
+        return agentSocket.bytesWritten;
+    }
+
     public AgentChannelManager agentChannelManager() {
         return (AgentChannelManager) getParent();
     }
