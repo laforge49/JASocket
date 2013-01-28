@@ -60,15 +60,17 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
     public ConcurrentHashMap<Long, AgentJid> agents = new ConcurrentHashMap<Long, AgentJid>();
 
     public long bytesRead() {
-        if (agentSocket == null)
+        AgentSocket as = agentSocket;
+        if (as == null)
             return 0L;
-        return agentSocket.bytesRead;
+        return as.bytesRead;
     }
 
     public long bytesWritten() {
-        if (agentSocket == null)
+        AgentSocket as = agentSocket;
+        if (as == null)
             return 0L;
-        return agentSocket.bytesWritten;
+        return as.bytesWritten;
     }
 
     public AgentChannelManager agentChannelManager() {
