@@ -38,7 +38,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-public class JASShell implements Command, Shell {
+public class JASShell implements Command, ConsoleIO {
     protected Node node;
     protected AgentChannelManager agentChannelManager;
     protected MailboxFactory mailboxFactory;
@@ -132,6 +132,7 @@ public class JASShell implements Command, Shell {
                     ps.println(
                             "\n*** JASShell " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
                     while (true) {
+                        interpreter.prompt();
                         String commandLine = ReadLine.req.send(future, lineReader);
                         (new Interpret(commandLine)).send(future, interpreter);
                     }
@@ -158,5 +159,27 @@ public class JASShell implements Command, Shell {
     @Override
     public void close() {
         exitCallback.onExit(0);
+    }
+
+    @Override
+    public void print(String s) {
+        ps.print(s);
+        ps.flush();
+    }
+
+    @Override
+    public void println(String s) {
+        ps.println(s);
+        ps.flush();
+    }
+
+    @Override
+    public String readLine() throws Exception {
+        return ReadLine.req.send(new JAFuture(), lineReader);
+    }
+
+    @Override
+    public String readPassword() throws Exception {
+        return ReadPassword.req.send(new JAFuture(), lineReader);
     }
 }

@@ -25,21 +25,19 @@ package org.agilewiki.jasocket.node;
 
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jasocket.console.Interpret;
-import org.agilewiki.jasocket.console.Interpreter;
-import org.agilewiki.jasocket.console.Interrupter;
-import org.agilewiki.jasocket.console.Shell;
+import org.agilewiki.jasocket.console.*;
 
 import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class ConsoleApp implements Shell {
+public class ConsoleApp implements ConsoleIO {
     private Node node;
     private Interpreter interpreter;
     private BufferedReader inbr;
     private String operatorName;
+    private Console cons;
 
     public boolean hasInput() {
         try {
@@ -49,16 +47,12 @@ public class ConsoleApp implements Shell {
         }
     }
 
-    protected String input() throws IOException {
-        return inbr.readLine();
-    }
-
     public void create(Node node, Interrupter interrupter) throws Exception {
         AgentChannelManager agentChannelManager = node.agentChannelManager();
         System.out.println("\n*** ConsoleApp " +
                 agentChannelManager.agentChannelManagerAddress() +
                 " ***\n");
-        Console cons = System.console();
+        cons = System.console();
         boolean authenticated = false;
         while (!authenticated) {
             operatorName = cons.readLine("name: ");
@@ -89,7 +83,7 @@ public class ConsoleApp implements Shell {
                 else
                     first = false;
                 interpreter.prompt();
-                commandLine = input();
+                commandLine = readLine();
             }
             (new Interpret(commandLine)).send(future, interpreter);
         }
@@ -108,5 +102,27 @@ public class ConsoleApp implements Shell {
 
     @Override
     public void close() {
+    }
+
+    @Override
+    public void print(String s) {
+        System.out.print(s);
+        System.out.flush();
+    }
+
+    @Override
+    public void println(String s) {
+        System.out.println(s);
+        System.out.flush();
+    }
+
+    @Override
+    public String readLine() throws IOException {
+        return inbr.readLine();
+    }
+
+    @Override
+    public String readPassword() throws Exception {
+        return new String(cons.readPassword());
     }
 }

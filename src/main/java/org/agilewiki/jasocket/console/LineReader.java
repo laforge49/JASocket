@@ -41,6 +41,7 @@ public class LineReader extends JLPCActor implements Shell, Interruptable {
     private int sz;
     private ArrayDeque<String> pendingLines = new ArrayDeque<String>();
     private PrintStream ps;
+    private boolean noEcho;
 
     public void start(
             InputStream in,
@@ -58,7 +59,6 @@ public class LineReader extends JLPCActor implements Shell, Interruptable {
     }
 
     public void readLine(RP<String> rp) throws Exception {
-        interpreter.prompt();
         if (pendingLines.isEmpty()) {
             if (sz > 0) {
                 out.write(bytes, 0, sz);
@@ -74,6 +74,19 @@ public class LineReader extends JLPCActor implements Shell, Interruptable {
         }
     }
 
+    public void readPassword(RP<String> rp) throws Exception {
+        if (pendingLines.isEmpty()) {
+            if (sz > 0) {
+                sz = 0;
+            }
+            noEcho = true;
+            _rp = rp;
+        } else {
+            String line = pendingLines.poll();
+            rp.processResponse(line);
+        }
+    }
+
     public void line(String line) throws Exception {
         if (_rp == null) {
             sz = 0;
@@ -81,6 +94,7 @@ public class LineReader extends JLPCActor implements Shell, Interruptable {
         } else {
             _rp.processResponse(line);
             _rp = null;
+            noEcho = false;
         }
     }
 
@@ -90,7 +104,7 @@ public class LineReader extends JLPCActor implements Shell, Interruptable {
                 bytes[sz] = (byte) b;
                 sz += 1;
             }
-        } else {
+        } else if (!noEcho) {
             out.write(b);
             out.flush();
         }

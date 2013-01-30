@@ -47,7 +47,7 @@ public class Interpreter extends JLPCActor implements Closable, Interruptable {
     private Node node;
     private PrintStream ps;
     private AgentChannelManager agentChannelManager;
-    private Shell shell;
+    private ConsoleIO consoleIO;
     private String id;
 
     private ConcurrentLinkedQueue<String> notices = new ConcurrentLinkedQueue<String>();
@@ -58,7 +58,11 @@ public class Interpreter extends JLPCActor implements Closable, Interruptable {
     private EvalAgent evalAgent;
 
     public boolean isSSH() {
-        return shell instanceof JASShell;
+        return consoleIO instanceof JASShell;
+    }
+
+    public Shell shell() {
+        return consoleIO;
     }
 
     public String getOperatorName() {
@@ -81,7 +85,7 @@ public class Interpreter extends JLPCActor implements Closable, Interruptable {
         notices.add(n);
         if (_rp == null) {
             boolean wrote = false;
-            while (notices.size() > 0 && !shell.hasInput()) {
+            while (notices.size() > 0 && !consoleIO.hasInput()) {
                 n = notices.poll();
                 if (n != null) {
                     ps.println(n);
@@ -97,12 +101,12 @@ public class Interpreter extends JLPCActor implements Closable, Interruptable {
             String operatorName,
             String id,
             Node node,
-            Shell shell,
+            ConsoleIO consoleIO,
             PrintStream out) throws Exception {
         this.operatorName = operatorName;
         this.id = id;
         this.node = node;
-        this.shell = shell;
+        this.consoleIO = consoleIO;
         this.ps = out;
         agentChannelManager = node.agentChannelManager();
         startTime = System.currentTimeMillis();
@@ -178,6 +182,6 @@ public class Interpreter extends JLPCActor implements Closable, Interruptable {
 
     @Override
     public void close() {
-        shell.close();
+        consoleIO.close();
     }
 }
