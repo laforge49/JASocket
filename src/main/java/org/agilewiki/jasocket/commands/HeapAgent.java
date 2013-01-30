@@ -37,7 +37,7 @@ import org.agilewiki.jasocket.jid.PrintJid;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-public class HeapAgent extends CommandStringAgent {
+public class HeapAgent extends CommandAgent {
     private final TreeSet<String> ts = new TreeSet<String>();
     private int expecting;
 

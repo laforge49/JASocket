@@ -31,7 +31,7 @@ public class HelpAgentFactory extends AppJidFactory {
     public final static HelpAgentFactory fac = new HelpAgentFactory();
 
     public HelpAgentFactory() {
-        super("helpAgent", StringJidFactory.fac);
+        super("helpAgent", StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

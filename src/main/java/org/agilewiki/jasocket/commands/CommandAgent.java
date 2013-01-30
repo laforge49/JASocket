@@ -40,16 +40,29 @@ abstract public class CommandAgent extends AgentJid {
         return (StringJid) _iGet(0);
     }
 
+    private StringJid getIdJid() throws Exception {
+        return (StringJid) _iGet(1);
+    }
+
     public void setOperatorName(String operatorName) throws Exception {
         getOperatorJid().setValue(operatorName);
+    }
+
+    protected String getId() throws Exception {
+        return getIdJid().getValue();
+    }
+
+    public void setId(String operatorName) throws Exception {
+        getIdJid().setValue(operatorName);
     }
 
     protected String getOperatorName() throws Exception {
         return getOperatorJid().getValue();
     }
 
-    public void configure(String operatorName, String commandLine) throws Exception {
+    public void configure(String operatorName, String id, String commandLine) throws Exception {
         setOperatorName(operatorName);
+        setId(id);
     }
 
     protected Commands commands() {

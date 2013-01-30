@@ -31,7 +31,7 @@ public class LocalServersAgentFactory extends AppJidFactory {
     public final static LocalServersAgentFactory fac = new LocalServersAgentFactory();
 
     public LocalServersAgentFactory() {
-        super("localServersAgent", StringJidFactory.fac);
+        super("localServersAgent", StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

@@ -48,6 +48,7 @@ public class Interpreter extends JLPCActor implements Closable, Interruptable {
     private PrintStream ps;
     private AgentChannelManager agentChannelManager;
     private Shell shell;
+    private String id;
 
     private ConcurrentLinkedQueue<String> notices = new ConcurrentLinkedQueue<String>();
     private int commandCount;
@@ -94,10 +95,12 @@ public class Interpreter extends JLPCActor implements Closable, Interruptable {
 
     public void configure(
             String operatorName,
+            String id,
             Node node,
             Shell shell,
             PrintStream out) throws Exception {
         this.operatorName = operatorName;
+        this.id = id;
         this.node = node;
         this.shell = shell;
         this.ps = out;
@@ -114,7 +117,7 @@ public class Interpreter extends JLPCActor implements Closable, Interruptable {
                 JASocketFactories.EVAL_FACTORY,
                 getMailboxFactory().createAsyncMailbox(),
                 agentChannelManager);
-        evalAgent.configure(operatorName, commandLine);
+        evalAgent.configure(operatorName, id, commandLine);
         setExceptionHandler(new ExceptionHandler() {
             @Override
             public void process(Exception exception) throws Exception {

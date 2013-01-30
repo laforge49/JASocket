@@ -31,7 +31,7 @@ public class ExceptionAgentFactory extends AppJidFactory {
     public final static ExceptionAgentFactory fac = new ExceptionAgentFactory();
 
     public ExceptionAgentFactory() {
-        super("exceptionAgent", StringJidFactory.fac);
+        super("exceptionAgent", StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

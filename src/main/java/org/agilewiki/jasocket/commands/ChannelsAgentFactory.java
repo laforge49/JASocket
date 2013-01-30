@@ -31,7 +31,7 @@ public class ChannelsAgentFactory extends AppJidFactory {
     public final static ChannelsAgentFactory fac = new ChannelsAgentFactory();
 
     public ChannelsAgentFactory() {
-        super("channelsAgent", StringJidFactory.fac);
+        super("channelsAgent", StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

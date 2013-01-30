@@ -31,7 +31,7 @@ public class WriteAgentFactory extends AppJidFactory {
     public final static WriteAgentFactory fac = new WriteAgentFactory();
 
     public WriteAgentFactory() {
-        super("writeAgent", StringJidFactory.fac, StringJidFactory.fac);
+        super("writeAgent", StringJidFactory.fac, StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

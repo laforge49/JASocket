@@ -31,7 +31,7 @@ public class HaltAgentFactory extends AppJidFactory {
     public final static HaltAgentFactory fac = new HaltAgentFactory();
 
     public HaltAgentFactory() {
-        super("haltAgent", StringJidFactory.fac);
+        super("haltAgent", StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

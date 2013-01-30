@@ -31,7 +31,7 @@ public class PauseAgentFactory extends AppJidFactory {
     public final static PauseAgentFactory fac = new PauseAgentFactory();
 
     public PauseAgentFactory() {
-        super("pauseAgent", StringJidFactory.fac, StringJidFactory.fac);
+        super("pauseAgent", StringJidFactory.fac, StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

@@ -27,12 +27,13 @@ import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 abstract public class CommandStringAgent extends CommandAgent {
     private StringJid getStringJid() throws Exception {
-        return (StringJid) _iGet(1);
+        return (StringJid) _iGet(2);
     }
 
     @Override
-    public void configure(String operatorName, String commandLineString) throws Exception {
-        setOperatorName(operatorName);
+    public void configure(String operatorName, String id, String commandLineString) throws Exception {
+        super.configure(operatorName, id, commandLineString);
+        System.out.println(getClass());
         getStringJid().setValue(commandLineString);
     }
 

@@ -71,7 +71,7 @@ public class ConsoleApp implements Shell {
         }
         interpreter = new Interpreter();
         interpreter.initialize(node.mailboxFactory().createAsyncMailbox());
-        interpreter.configure(operatorName, node, this, System.out);
+        interpreter.configure(operatorName, "c", node, this, System.out);
         if (interrupter != null) {
             node.mailboxFactory().addClosable(interrupter);
             interrupter.activate(interpreter);

@@ -31,7 +31,7 @@ public class LatencyBenchmarkAgentFactory extends AppJidFactory {
     public final static LatencyBenchmarkAgentFactory fac = new LatencyBenchmarkAgentFactory();
 
     public LatencyBenchmarkAgentFactory() {
-        super("latencyBenchmarkAgent", StringJidFactory.fac, StringJidFactory.fac);
+        super("latencyBenchmarkAgent", StringJidFactory.fac, StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

@@ -31,7 +31,7 @@ public class BroadcastAgentFactory extends AppJidFactory {
     public final static BroadcastAgentFactory fac = new BroadcastAgentFactory();
 
     public BroadcastAgentFactory() {
-        super("broadcastAgent", StringJidFactory.fac, StringJidFactory.fac);
+        super("broadcastAgent", StringJidFactory.fac, StringJidFactory.fac, StringJidFactory.fac);
     }
 
     @Override

@@ -56,10 +56,6 @@ public class JASShell implements Command, Shell {
     private LineReader lineReader;
     private String id;
 
-    public String id() {
-        return id;
-    }
-
     public String getOperatorName() {
         return operatorName;
     }
@@ -126,7 +122,7 @@ public class JASShell implements Command, Shell {
                     id = AssignSSHId.req.send(future, sshServer);
                     interpreter = new Interpreter();
                     interpreter.initialize(node.mailboxFactory().createAsyncMailbox());
-                    interpreter.configure(operatorName, node, JASShell.this, ps);
+                    interpreter.configure(operatorName, id, node, JASShell.this, ps);
                     agentChannelManager.interpreters.put(id, interpreter);
                     lineReader = new LineReader();
                     lineReader.initialize(node.mailboxFactory().createAsyncMailbox());
