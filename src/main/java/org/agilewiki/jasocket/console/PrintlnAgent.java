@@ -23,12 +23,32 @@
  */
 package org.agilewiki.jasocket.console;
 
-public interface ConsoleIO extends Shell {
-    public void print(String s);
+import org.agilewiki.jactor.RP;
+import org.agilewiki.jasocket.cluster.AgentChannelManager;
+import org.agilewiki.jasocket.jid.agent.AgentJid;
+import org.agilewiki.jid.Jid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
-    public void println(String s);
+public class PrintlnAgent extends AgentJid {
+    private StringJid getIdJid() throws Exception {
+        return (StringJid) _iGet(0);
+    }
 
-    public String readLine() throws Exception;
+    private StringJid getValueJid() throws Exception {
+        return (StringJid) _iGet(1);
+    }
 
-    public String readPassword() throws Exception;
+    public void configure(String id, String value) throws Exception {
+        getIdJid().setValue(id);
+        getValueJid().setValue(value);
+    }
+
+    @Override
+    public void start(RP<Jid> rp) throws Exception {
+        AgentChannelManager agentChannelManager = agentChannelManager();
+        Interpreter interpreter = agentChannelManager.interpreters.get(getIdJid().getValue());
+        ConsoleIO consoleIO = interpreter.consoleIO();
+        consoleIO.println(getValueJid().getValue());
+        rp.processResponse(null);
+    }
 }

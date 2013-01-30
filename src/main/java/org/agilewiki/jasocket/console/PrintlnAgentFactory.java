@@ -23,12 +23,20 @@
  */
 package org.agilewiki.jasocket.console;
 
-public interface ConsoleIO extends Shell {
-    public void print(String s);
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.JASocketFactories;
+import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
-    public void println(String s);
+public class PrintlnAgentFactory extends AppJidFactory {
+    public final static PrintlnAgentFactory fac = new PrintlnAgentFactory();
 
-    public String readLine() throws Exception;
+    public PrintlnAgentFactory() {
+        super(JASocketFactories.PRINTLN_AGENT_FACTORY, StringJidFactory.fac, StringJidFactory.fac);
+    }
 
-    public String readPassword() throws Exception;
+    @Override
+    protected JLPCActor instantiateActor() throws Exception {
+        return new PrintlnAgent();
+    }
 }

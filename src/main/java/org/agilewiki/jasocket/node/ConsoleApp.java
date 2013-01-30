@@ -25,7 +25,10 @@ package org.agilewiki.jasocket.node;
 
 import org.agilewiki.jactor.JAFuture;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
-import org.agilewiki.jasocket.console.*;
+import org.agilewiki.jasocket.console.ConsoleIO;
+import org.agilewiki.jasocket.console.Interpret;
+import org.agilewiki.jasocket.console.Interpreter;
+import org.agilewiki.jasocket.console.Interrupter;
 
 import java.io.BufferedReader;
 import java.io.Console;

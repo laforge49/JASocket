@@ -57,6 +57,10 @@ public class Interpreter extends JLPCActor implements Closable, Interruptable {
     private RP _rp;
     private EvalAgent evalAgent;
 
+    public ConsoleIO consoleIO() {
+        return consoleIO;
+    }
+
     public boolean isSSH() {
         return consoleIO instanceof JASShell;
     }

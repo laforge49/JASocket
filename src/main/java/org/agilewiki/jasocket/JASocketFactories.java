@@ -31,6 +31,9 @@ import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.cluster.*;
 import org.agilewiki.jasocket.commands.EvalAgentFactory;
 import org.agilewiki.jasocket.commands.UserInterruptAgentFactory;
+import org.agilewiki.jasocket.console.PrintlnAgentFactory;
+import org.agilewiki.jasocket.console.ReadLineAgentFactory;
+import org.agilewiki.jasocket.console.ReadPasswordAgentFactory;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.PrintJidFactory;
 import org.agilewiki.jasocket.jid.TransportJidFactory;
@@ -52,6 +55,9 @@ public class JASocketFactories extends JLPCActor {
     public final static String BYTE_COUNTSER_AGENT_FACTORY = "byteCounterAgent";
     public final static String SSH_AGENT_FACTORY = "sshAgent";
     public final static String USER_INTERRUPT_AGENT_FACTORY = "userInterruptAgent";
+    public final static String PRINTLN_AGENT_FACTORY = "printlnAgent";
+    public final static String READ_LINE_AGENT_FACTORY = "readLineAgent";
+    public final static String READ_PASSWORD_AGENT_FACTORY = "readPasswordAgent";
 
     @Override
     public void initialize(Mailbox mailbox, Actor parent, ActorFactory actorFactory)
@@ -76,6 +82,9 @@ public class JASocketFactories extends JLPCActor {
         registerActorFactory(ByteCountserAgentFactory.fac);
         registerActorFactory(SSHAgentFactory.fac);
         registerActorFactory(UserInterruptAgentFactory.fac);
+        registerActorFactory(PrintlnAgentFactory.fac);
+        registerActorFactory(ReadLineAgentFactory.fac);
+        registerActorFactory(ReadPasswordAgentFactory.fac);
     }
 
     public void registerActorFactory(ActorFactory actorFactory) throws Exception {
