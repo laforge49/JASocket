@@ -51,7 +51,7 @@ public class ToAgent extends CommandStringAgent {
             rp.processResponse(out);
             return;
         }
-        evalAgent = (EvalAgent)JAFactory.newActor(
+        evalAgent = (EvalAgent) JAFactory.newActor(
                 this,
                 JASocketFactories.EVAL_FACTORY,
                 getMailbox(),

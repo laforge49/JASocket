@@ -28,6 +28,7 @@ public class HelloWorld extends Server {
         registerServerCommand(new ServerCommand("hi", "says hello") {
             @Override
             public void eval(String operatorName,
+                             String id,
                              String args,
                              PrintJid out,
                              long requestId,
@@ -42,6 +43,7 @@ public class HelloWorld extends Server {
         registerServerCommand(new ServerCommand("exception", "User-raised exception") {
             @Override
             public void eval(String operatorName,
+                             String id,
                              String args,
                              PrintJid out,
                              long requestId,
@@ -57,6 +59,7 @@ public class HelloWorld extends Server {
                 "pause for n seconds, where n defaults to 5") {
             @Override
             public void eval(String operatorName,
+                             String id,
                              String args,
                              final PrintJid out,
                              long requestId,
@@ -97,6 +100,7 @@ public class HelloWorld extends Server {
                 "Hangs and then throws an exception in response to a user interrupt") {
             @Override
             public void eval(String operatorName,
+                             String id,
                              String args,
                              final PrintJid out,
                              long requestId,

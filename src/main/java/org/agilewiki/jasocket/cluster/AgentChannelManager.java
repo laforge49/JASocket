@@ -98,7 +98,8 @@ public class AgentChannelManager extends JLPCActor {
                 AgentChannel agentChannel = getAgentChannel(it.next());
                 if (agentChannel != null)
                     bytesRead += agentChannel.bytesRead();
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+            }
         }
         return bytesRead;
     }
@@ -111,7 +112,8 @@ public class AgentChannelManager extends JLPCActor {
                 AgentChannel agentChannel = getAgentChannel(it.next());
                 if (agentChannel != null)
                     bytesWritten += agentChannel.bytesWritten();
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+            }
         }
         return bytesWritten;
     }

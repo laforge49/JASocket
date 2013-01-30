@@ -39,10 +39,11 @@ abstract public class InterruptableServerCommand<CONTEXT_TYPE> extends ServerCom
     @Override
     public void _eval(Server server,
                       String operatorName,
-                     String args,
-                     PrintJid out,
-                     final long requestId,
-                     final RP<PrintJid> rp) throws Exception {
+                      String id,
+                      String args,
+                      PrintJid out,
+                      final long requestId,
+                      final RP<PrintJid> rp) throws Exception {
         server.setExceptionHandler(new ExceptionHandler() {
             @Override
             public void process(Exception exception) throws Exception {
@@ -50,7 +51,7 @@ abstract public class InterruptableServerCommand<CONTEXT_TYPE> extends ServerCom
                 ((RP) rp).processResponse(exception);
             }
         });
-        eval(operatorName, args, out, requestId, new RP<PrintJid>() {
+        eval(operatorName, id, args, out, requestId, new RP<PrintJid>() {
             @Override
             public void processResponse(PrintJid response) throws Exception {
                 contextMap.remove(requestId);
@@ -62,9 +63,9 @@ abstract public class InterruptableServerCommand<CONTEXT_TYPE> extends ServerCom
     @Override
     public void _serverUserInterrupt(Server server,
                                      String args,
-                                    PrintJid out,
-                                    final long requestId,
-                                    final RP<PrintJid> rp) throws Exception {
+                                     PrintJid out,
+                                     final long requestId,
+                                     final RP<PrintJid> rp) throws Exception {
         server.setExceptionHandler(new ExceptionHandler() {
             @Override
             public void process(Exception exception) throws Exception {
@@ -78,6 +79,6 @@ abstract public class InterruptableServerCommand<CONTEXT_TYPE> extends ServerCom
     }
 
     abstract public void serverUserInterrupt(String args,
-                                    PrintJid out,
-                                    long requestId) throws Exception;
+                                             PrintJid out,
+                                             long requestId) throws Exception;
 }

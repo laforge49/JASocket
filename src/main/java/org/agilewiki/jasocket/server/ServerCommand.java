@@ -39,11 +39,12 @@ abstract public class ServerCommand {
     public void _eval(
             Server server,
             String operatorName,
+            String id,
             String args,
             PrintJid out,
             long requestId,
             RP<PrintJid> rp) throws Exception {
-        eval(operatorName, args, out, requestId, rp);
+        eval(operatorName, id, args, out, requestId, rp);
     }
 
     public void _serverUserInterrupt(Server server,
@@ -57,6 +58,7 @@ abstract public class ServerCommand {
 
     abstract public void eval(
             String operatorName,
+            String id,
             String args,
             PrintJid out,
             long requestId,

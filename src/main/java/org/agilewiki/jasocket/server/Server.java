@@ -118,6 +118,7 @@ public class Server extends JLPCActor implements Closable {
 
     public void evalServerCommand(
             String operatorName,
+            String id,
             String commandLine,
             PrintJid out,
             long requestId,
@@ -136,7 +137,7 @@ public class Server extends JLPCActor implements Closable {
             rp.processResponse(out);
             return;
         }
-        serverCommand._eval(this, operatorName, args, out, requestId, rp);
+        serverCommand._eval(this, operatorName, id, args, out, requestId, rp);
     }
 
     public void serverUserInterrupt(String commandLine,
@@ -162,6 +163,7 @@ public class Server extends JLPCActor implements Closable {
             @Override
             public void eval(
                     String operatorName,
+                    String id,
                     String args,
                     PrintJid out,
                     long requestId,
@@ -180,6 +182,7 @@ public class Server extends JLPCActor implements Closable {
             @Override
             public void eval(
                     String operatorName,
+                    String id,
                     String args,
                     PrintJid out,
                     long requestId,

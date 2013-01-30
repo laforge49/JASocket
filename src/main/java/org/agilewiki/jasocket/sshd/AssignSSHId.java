@@ -40,6 +40,6 @@ public class AssignSSHId extends Request<String, SSHServer> {
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
         SSHServer sshServer = (SSHServer) targetActor;
         sshServer.idCounter += 1;
-        rp.processResponse("s"+sshServer.idCounter);
+        rp.processResponse("s" + sshServer.idCounter);
     }
 }

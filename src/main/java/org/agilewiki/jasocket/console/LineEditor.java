@@ -38,7 +38,8 @@ public class LineEditor extends JLPCActor implements Closable {
 
     public void start(InputStream in, OutputStream out, LineReader lineReader, RP rp)
             throws Exception {
-        consoleReader = new ConsoleReader(in, out, new TerminalSupport(true) {});
+        consoleReader = new ConsoleReader(in, out, new TerminalSupport(true) {
+        });
         while (!halt) {
             try {
                 String line = consoleReader.readLine();

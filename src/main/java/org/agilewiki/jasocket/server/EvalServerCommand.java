@@ -30,16 +30,19 @@ import org.agilewiki.jactor.lpc.Request;
 import org.agilewiki.jasocket.jid.PrintJid;
 
 public class EvalServerCommand extends Request<PrintJid, Server> {
-    private String operatorName;
-    private String commandLine;
-    private PrintJid out;
-    private long requestId;
+    private final String operatorName;
+    private final String id;
+    private final String commandLine;
+    private final PrintJid out;
+    private final long requestId;
 
     public EvalServerCommand(String operatorName,
+                             String id,
                              String commandLine,
                              PrintJid out,
                              long requestId) {
         this.operatorName = operatorName;
+        this.id = id;
         this.commandLine = commandLine;
         this.out = out;
         this.requestId = requestId;
@@ -53,6 +56,6 @@ public class EvalServerCommand extends Request<PrintJid, Server> {
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
         ((Server) targetActor).
-                evalServerCommand(operatorName, commandLine, out, requestId, rp);
+                evalServerCommand(operatorName, id, commandLine, out, requestId, rp);
     }
 }
