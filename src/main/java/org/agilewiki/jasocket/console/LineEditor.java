@@ -52,6 +52,10 @@ public class LineEditor extends JLPCActor implements Closable {
         consoleReader.shutdown();
     }
 
+    public void clear() {
+        consoleReader.getCursorBuffer().clear();
+    }
+
 
     @Override
     public void close() {
