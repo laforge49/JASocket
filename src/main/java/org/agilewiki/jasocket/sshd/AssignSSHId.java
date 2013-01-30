@@ -21,32 +21,25 @@
  * A copy of this license is also included and can be
  * found as well at http://www.opensource.org/licenses/cpl1.0.txt
  */
-package org.agilewiki.jasocket.commands;
+package org.agilewiki.jasocket.sshd;
 
+import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.factory.JAFactory;
-import org.agilewiki.jasocket.JASocketFactories;
-import org.agilewiki.jasocket.cluster.BroadcasterAgent;
-import org.agilewiki.jasocket.cluster.ShipAgentEventToAll;
-import org.agilewiki.jasocket.jid.PrintJid;
-import org.agilewiki.jid.Jid;
+import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jactor.lpc.Request;
 
-public class BroadcastAgent extends CommandStringAgent {
+public class AssignSSHId extends Request<String, SSHServer> {
+    public final static AssignSSHId req = new AssignSSHId();
+
     @Override
-    public void process(final RP<PrintJid> rp) throws Exception {
-        String args = getArgString();
-        BroadcasterAgent broadcasterAgent = (BroadcasterAgent) JAFactory.newActor(
-                this,
-                JASocketFactories.BROADCASTER_AGENT_FACTORY,
-                getMailbox(),
-                agentChannelManager());
-        broadcasterAgent.configure(getOperatorName(), args);
-        (new ShipAgentEventToAll(broadcasterAgent)).sendEvent(this, agentChannelManager());
-        broadcasterAgent.start(new RP<Jid>() {
-            @Override
-            public void processResponse(Jid response) throws Exception {
-                rp.processResponse(out);
-            }
-        });
+    public boolean isTargetType(Actor targetActor) {
+        return targetActor instanceof SSHServer;
+    }
+
+    @Override
+    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
+        SSHServer sshServer = (SSHServer) targetActor;
+        sshServer.idCounter += 1;
+        rp.processResponse("s"+sshServer.idCounter);
     }
 }

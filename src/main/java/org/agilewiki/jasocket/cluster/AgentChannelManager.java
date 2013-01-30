@@ -41,7 +41,6 @@ import org.agilewiki.jasocket.serverNameListener.ServerNameAdded;
 import org.agilewiki.jasocket.serverNameListener.ServerNameListener;
 import org.agilewiki.jasocket.serverNameListener.ServerRemoved;
 import org.agilewiki.jid.Jid;
-import org.apache.mina.util.ConcurrentHashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +68,7 @@ public class AgentChannelManager extends JLPCActor {
     private Set<AgentChannel> inactiveReceivers = Collections.newSetFromMap(new ConcurrentHashMap<AgentChannel, Boolean>());
     private Set<AgentChannel> activeReceivers = Collections.newSetFromMap(new ConcurrentHashMap<AgentChannel, Boolean>());
     private Set<String> inactiveSenders = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
-    public ConcurrentHashSet<Interpreter> interpreters = new ConcurrentHashSet<Interpreter>();
+    public ConcurrentHashMap<String, Interpreter> interpreters = new ConcurrentHashMap<String, Interpreter>();
 
     public void received(AgentChannel agentChannel) {
         inactiveReceivers.remove(agentChannel);

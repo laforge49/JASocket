@@ -28,9 +28,9 @@ import org.agilewiki.jasocket.console.Interpreter;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.scalar.vlens.string.StringJid;
-import org.apache.mina.util.ConcurrentHashSet;
 
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BroadcasterAgent extends AgentJid {
     private StringJid getOperatorNameJid() throws Exception {
@@ -48,15 +48,17 @@ public class BroadcasterAgent extends AgentJid {
 
     @Override
     public void start(final RP<Jid> rp) throws Exception {
-        ConcurrentHashSet<Interpreter> interpreters =
+        ConcurrentHashMap<String, Interpreter> interpreters =
                 agentChannelManager().interpreters;
-        Iterator<Interpreter> it = interpreters.iterator();
+        Iterator<String> it = interpreters.keySet().iterator();
         String notice = "[broadcast] " +
                 getOperatorNameJid().getValue() + ": " +
                 getMessageJid().getValue();
         while (it.hasNext()) {
-            Interpreter interpreter = it.next();
-            interpreter.notice(notice);
+            String id = it.next();
+            Interpreter interpreter = interpreters.get(id);
+            if (interpreter != null)
+                interpreter.notice(notice);
         }
         rp.processResponse(null);
     }

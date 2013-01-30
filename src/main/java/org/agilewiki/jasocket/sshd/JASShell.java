@@ -54,6 +54,11 @@ public class JASShell implements Command, Shell {
     protected String operatorName;
     private Interpreter interpreter;
     private LineReader lineReader;
+    private String id;
+
+    public String id() {
+        return id;
+    }
 
     public String getOperatorName() {
         return operatorName;
@@ -117,10 +122,12 @@ public class JASShell implements Command, Shell {
             @Override
             public void run() {
                 try {
+                    JAFuture future = new JAFuture();
+                    id = AssignSSHId.req.send(future, sshServer);
                     interpreter = new Interpreter();
                     interpreter.initialize(node.mailboxFactory().createAsyncMailbox());
                     interpreter.configure(operatorName, node, JASShell.this, ps);
-                    agentChannelManager.interpreters.add(interpreter);
+                    agentChannelManager.interpreters.put(id, interpreter);
                     lineReader = new LineReader();
                     lineReader.initialize(node.mailboxFactory().createAsyncMailbox());
                     (new StartLineReader(in, outputStream, interpreter)).
@@ -128,7 +135,6 @@ public class JASShell implements Command, Shell {
                     thread = Thread.currentThread();
                     ps.println(
                             "\n*** JASShell " + agentChannelManager.agentChannelManagerAddress() + " ***\n");
-                    JAFuture future = new JAFuture();
                     while (true) {
                         String commandLine = ReadLine.req.send(future, lineReader);
                         (new Interpret(commandLine)).send(future, interpreter);

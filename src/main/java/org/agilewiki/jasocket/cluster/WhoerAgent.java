@@ -28,31 +28,32 @@ import org.agilewiki.jasocket.console.Interpreter;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jid.Jid;
-import org.apache.mina.util.ConcurrentHashSet;
 import org.joda.time.Period;
 import org.joda.time.format.ISOPeriodFormat;
 
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WhoerAgent extends AgentJid {
     @Override
     public void start(final RP<Jid> rp) throws Exception {
         PrintJid out = PrintJid.newPrintJid(this);
-        ConcurrentHashSet<Interpreter> interpreters = agentChannelManager().interpreters;
-        Iterator<Interpreter> it = interpreters.iterator();
+        ConcurrentHashMap<String, Interpreter> interpreters = agentChannelManager().interpreters;
+        Iterator<String> it = interpreters.keySet().iterator();
         while (it.hasNext()) {
-            Interpreter interpreter = it.next();
+            String id = it.next();
+            Interpreter interpreter = interpreters.get(id);
             out.println(interpreter.getOperatorName() +
                     " " +
                     agentChannelManager().agentChannelManagerAddress() +
+                    " " +
+                    id +
                     " " +
                     ISOPeriodFormat.standard().print(new Period(interpreter.getLogonTime())) +
                     " " +
                     interpreter.getCommandCount() +
                     " " +
-                    ISOPeriodFormat.standard().print(new Period(interpreter.getIdleTime())) +
-                    " " +
-                    interpreter.isSSH());
+                    ISOPeriodFormat.standard().print(new Period(interpreter.getIdleTime())));
         }
         rp.processResponse(out);
     }

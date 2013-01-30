@@ -26,14 +26,14 @@ package org.agilewiki.jasocket.commands;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jasocket.console.Interpreter;
 import org.agilewiki.jasocket.jid.PrintJid;
-import org.apache.mina.util.ConcurrentHashSet;
 
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WriteAgent extends CommandStringAgent {
     @Override
     public void process(RP<PrintJid> rp) throws Exception {
-        ConcurrentHashSet<Interpreter> interpreters = agentChannelManager().interpreters;
+        ConcurrentHashMap<String, Interpreter> interpreters = agentChannelManager().interpreters;
         String args = getArgString();
         if (interpreters.size() == 0) {
             out.println("no operators present");
@@ -44,10 +44,11 @@ public class WriteAgent extends CommandStringAgent {
             } else {
                 String name = args.substring(0, i);
                 String msg = args.substring(i + 1);
-                Iterator<Interpreter> it = interpreters.iterator();
+                Iterator<String> it = interpreters.keySet().iterator();
                 boolean found = false;
                 while (it.hasNext()) {
-                    Interpreter interpreter = it.next();
+                    String id = it.next();
+                    Interpreter interpreter = interpreters.get(id);
                     if (interpreter.getOperatorName().equals(name)) {
                         found = true;
                         interpreter.notice(getOperatorName() + ": " + msg);

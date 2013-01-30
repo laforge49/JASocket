@@ -77,7 +77,7 @@ public class ConsoleApp implements Shell {
             interrupter.activate(interpreter);
         }
         this.node = node;
-        agentChannelManager.interpreters.add(interpreter);
+        agentChannelManager.interpreters.put("c", interpreter);
         inbr = new BufferedReader(new InputStreamReader(System.in));
         JAFuture future = new JAFuture();
         boolean first = true;

@@ -39,11 +39,13 @@ import org.agilewiki.jasocket.server.Server;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 
 public class SSHServer extends Server {
     private SshServer sshd;
+    public int idCounter;
 
     @Override
     protected String serverName() {
@@ -65,9 +67,11 @@ public class SSHServer extends Server {
 
     @Override
     public void close() {
-        Iterator<Interpreter> it = agentChannelManager().interpreters.iterator();
+        HashMap<String, Interpreter> interpreters = new HashMap<String, Interpreter>(agentChannelManager().interpreters);
+        Iterator<String> it = interpreters.keySet().iterator();
         while (it.hasNext()) {
-            Interpreter interpreter = it.next();
+            String id = it.next();
+            Interpreter interpreter = interpreters.get(id);
             try {
                 interpreter.close();
             } catch (Exception ex) {

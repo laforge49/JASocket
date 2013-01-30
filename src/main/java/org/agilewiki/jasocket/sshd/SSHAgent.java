@@ -30,11 +30,11 @@ import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.server.Server;
 import org.agilewiki.jid.Jid;
-import org.apache.mina.util.ConcurrentHashSet;
 import org.joda.time.Period;
 import org.joda.time.format.ISOPeriodFormat;
 
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SSHAgent extends AgentJid {
     @Override
@@ -45,11 +45,12 @@ public class SSHAgent extends AgentJid {
             public void processResponse(Server response) throws Exception {
                 if (response != null) {
                     SSHServer sshServer = (SSHServer) response;
-                    ConcurrentHashSet<Interpreter> interpreters = agentChannelManager().interpreters;
-                    Iterator<Interpreter> it = interpreters.iterator();
+                    ConcurrentHashMap<String, Interpreter> interpreters = agentChannelManager().interpreters;
+                    Iterator<String> it = interpreters.keySet().iterator();
                     int count = 0;
                     while (it.hasNext()) {
-                        Interpreter interpreter = it.next();
+                        String id = it.next();
+                        Interpreter interpreter = interpreters.get(id);
                         if (interpreter.isSSH())
                             count += 1;
                     }

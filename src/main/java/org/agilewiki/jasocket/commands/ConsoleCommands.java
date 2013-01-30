@@ -54,9 +54,9 @@ public class ConsoleCommands extends Commands {
                 WriteAgentFactory.fac);
         cmd("broadcast", "send a message to all users",
                 BroadcastAgentFactory.fac);
-        cmd("who", "List all user names/node/logonTime/commandCount/idleTime/ssh",
+        cmd("who", "List all user names/node/id/logonTime/commandCount/idleTime",
                 WhoAgentFactory.fac);
-        cmd("heap", "List the initial/used/commited/max heap for each node",
+        cmd("heap", "List the initial/used/committed/max heap for each node",
                 HeapAgentFactory.fac);
         cmd("byteCounts", "List the bytes read/written for each node",
                 ByteCountsAgentFactory.fac);

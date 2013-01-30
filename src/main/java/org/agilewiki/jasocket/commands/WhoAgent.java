@@ -32,9 +32,7 @@ import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.cluster.Channels;
 import org.agilewiki.jasocket.cluster.GetAgentChannel;
 import org.agilewiki.jasocket.cluster.WhoerAgent;
-import org.agilewiki.jasocket.console.Interpreter;
 import org.agilewiki.jasocket.jid.PrintJid;
-import org.apache.mina.util.ConcurrentHashSet;
 
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -45,7 +43,6 @@ public class WhoAgent extends CommandStringAgent {
 
     @Override
     public void process(final RP<PrintJid> rp) throws Exception {
-        ConcurrentHashSet<Interpreter> interpreters = agentChannelManager().interpreters;
         final WhoerAgent whoerAgent = (WhoerAgent) JAFactory.newActor(
                 this,
                 JASocketFactories.WHOER_AGENT_FACTORY,
