@@ -25,6 +25,7 @@ package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.jid.PrintJid;
 
 import java.util.HashMap;
@@ -40,6 +41,7 @@ abstract public class InterruptableServerCommand<CONTEXT_TYPE> extends ServerCom
     public void _eval(Server server,
                       String operatorName,
                       String id,
+                      AgentChannel agentChannel,
                       String args,
                       PrintJid out,
                       final long requestId,
@@ -51,7 +53,7 @@ abstract public class InterruptableServerCommand<CONTEXT_TYPE> extends ServerCom
                 ((RP) rp).processResponse(exception);
             }
         });
-        eval(operatorName, id, args, out, requestId, new RP<PrintJid>() {
+        eval(operatorName, id, agentChannel, args, out, requestId, new RP<PrintJid>() {
             @Override
             public void processResponse(PrintJid response) throws Exception {
                 contextMap.remove(requestId);

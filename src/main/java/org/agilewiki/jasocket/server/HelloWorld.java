@@ -2,6 +2,7 @@ package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.continuation.Continuation;
+import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.node.Node;
 
@@ -29,6 +30,7 @@ public class HelloWorld extends Server {
             @Override
             public void eval(String operatorName,
                              String id,
+                             AgentChannel agentChannel,
                              String args,
                              PrintJid out,
                              long requestId,
@@ -44,6 +46,7 @@ public class HelloWorld extends Server {
             @Override
             public void eval(String operatorName,
                              String id,
+                             AgentChannel agentChannel,
                              String args,
                              PrintJid out,
                              long requestId,
@@ -60,6 +63,7 @@ public class HelloWorld extends Server {
             @Override
             public void eval(String operatorName,
                              String id,
+                             AgentChannel agentChannel,
                              String args,
                              final PrintJid out,
                              long requestId,
@@ -101,6 +105,7 @@ public class HelloWorld extends Server {
             @Override
             public void eval(String operatorName,
                              String id,
+                             AgentChannel agentChannel,
                              String args,
                              final PrintJid out,
                              long requestId,

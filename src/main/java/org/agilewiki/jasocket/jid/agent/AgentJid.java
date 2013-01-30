@@ -24,6 +24,7 @@
 package org.agilewiki.jasocket.jid.agent;
 
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
 import org.agilewiki.jasocket.node.Node;
@@ -34,7 +35,10 @@ abstract public class AgentJid extends AppJid {
     abstract public void start(RP<Jid> rp) throws Exception;
 
     protected AgentChannel agentChannel() {
-        return (AgentChannel) getParent();
+        JLPCActor actor = getParent();
+        if (actor instanceof  AgentChannel)
+            return (AgentChannel) getParent();
+        return null;
     }
 
     protected String remoteAddress() {

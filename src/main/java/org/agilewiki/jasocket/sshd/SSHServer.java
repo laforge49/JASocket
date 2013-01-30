@@ -106,6 +106,7 @@ public class SSHServer extends Server {
             @Override
             public void eval(String operatorName,
                              String id,
+                             AgentChannel agentChannel,
                              String args,
                              final PrintJid out,
                              long requestId,

@@ -24,6 +24,7 @@
 package org.agilewiki.jasocket.server;
 
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.jid.PrintJid;
 
 abstract public class ServerCommand {
@@ -40,11 +41,12 @@ abstract public class ServerCommand {
             Server server,
             String operatorName,
             String id,
+            AgentChannel agentChannel,
             String args,
             PrintJid out,
             long requestId,
             RP<PrintJid> rp) throws Exception {
-        eval(operatorName, id, args, out, requestId, rp);
+        eval(operatorName, id, agentChannel, args, out, requestId, rp);
     }
 
     public void _serverUserInterrupt(Server server,
@@ -59,6 +61,7 @@ abstract public class ServerCommand {
     abstract public void eval(
             String operatorName,
             String id,
+            AgentChannel agentChannel,
             String args,
             PrintJid out,
             long requestId,

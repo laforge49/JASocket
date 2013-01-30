@@ -27,6 +27,7 @@ import org.agilewiki.jactor.Closable;
 import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.agentChannel.AgentChannel;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
 import org.agilewiki.jasocket.cluster.RegisterServer;
 import org.agilewiki.jasocket.cluster.UnregisterServer;
@@ -119,6 +120,7 @@ public class Server extends JLPCActor implements Closable {
     public void evalServerCommand(
             String operatorName,
             String id,
+            AgentChannel agentChannel,
             String commandLine,
             PrintJid out,
             long requestId,
@@ -137,7 +139,7 @@ public class Server extends JLPCActor implements Closable {
             rp.processResponse(out);
             return;
         }
-        serverCommand._eval(this, operatorName, id, args, out, requestId, rp);
+        serverCommand._eval(this, operatorName, id, agentChannel, args, out, requestId, rp);
     }
 
     public void serverUserInterrupt(String commandLine,
@@ -164,6 +166,7 @@ public class Server extends JLPCActor implements Closable {
             public void eval(
                     String operatorName,
                     String id,
+                    AgentChannel agentChannel,
                     String args,
                     PrintJid out,
                     long requestId,
@@ -183,6 +186,7 @@ public class Server extends JLPCActor implements Closable {
             public void eval(
                     String operatorName,
                     String id,
+                    AgentChannel agentChannel,
                     String args,
                     PrintJid out,
                     long requestId,
