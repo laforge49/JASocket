@@ -124,6 +124,7 @@ public class LineReader extends JLPCActor implements Shell, Interruptable {
     public void interrupt() throws Exception {
         if (_rp != null) {
             lineEditor.clear();
+            ps.println();
             _rp.processResponse(null);
             _rp = null;
         } else

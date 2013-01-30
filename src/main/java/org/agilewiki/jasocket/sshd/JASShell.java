@@ -134,9 +134,7 @@ public class JASShell implements Command, ConsoleIO {
                     while (true) {
                         interpreter.prompt();
                         String commandLine = ReadLine.req.send(future, lineReader);
-                        if (commandLine == null)
-                            ps.println();
-                        else
+                        if (commandLine != null)
                             (new Interpret(commandLine)).send(future, interpreter);
                     }
                 } catch (InterruptedException ex) {
