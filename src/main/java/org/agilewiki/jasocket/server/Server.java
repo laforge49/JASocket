@@ -210,7 +210,7 @@ public class Server extends JLPCActor implements Closable {
         });
     }
 
-    public void println(String id,
+    public void consolePrintln(String id,
                          AgentChannel agentChannel,
                          String value) throws Exception {
         PrintlnAgent printlnAgent = (PrintlnAgent) JAFactory.newActor(
@@ -226,7 +226,7 @@ public class Server extends JLPCActor implements Closable {
         shipAgent.sendEvent(this, agentChannel);
     }
 
-    public void readLine(String id,
+    public void consoleReadLine(String id,
                          AgentChannel agentChannel,
                          String prompt,
                          final RP<String> rp) throws Exception {
@@ -249,7 +249,7 @@ public class Server extends JLPCActor implements Closable {
         shipAgent.send(this, agentChannel, _rp);
     }
 
-    public void readPassword(String id,
+    public void consoleReadPassword(String id,
                          AgentChannel agentChannel,
                          String prompt,
                          final RP<String> rp) throws Exception {
