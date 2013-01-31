@@ -20,6 +20,7 @@ public class HelloWorld extends Server {
     protected void startServer(PrintJid out, RP rp) throws Exception {
         registerHi();
         registerException();
+        registerPassword();
         registerEcho();
         registerPause();
         registerInterruptException();
@@ -53,6 +54,28 @@ public class HelloWorld extends Server {
                              long requestId,
                              RP<PrintJid> rp) throws Exception {
                 throw new Exception("User-raised exception");
+            }
+        });
+    }
+
+    public void registerPassword() {
+        registerServerCommand(new ServerCommand("password", "Read no echo") {
+            @Override
+            public void eval(String operatorName,
+                             String id,
+                             AgentChannel agentChannel,
+                             String args,
+                             final PrintJid out,
+                             long requestId,
+                             final RP<PrintJid> rp) throws Exception {
+                consoleReadPassword(id, agentChannel, "password>", new RP<String>() {
+                    @Override
+                    public void processResponse(String response) throws Exception {
+                        if (response != null)
+                            out.println(response);
+                        rp.processResponse(out);
+                    }
+                });
             }
         });
     }

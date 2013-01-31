@@ -83,6 +83,7 @@ public class LineReader extends JLPCActor implements Shell, Interruptable {
             _rp = rp;
         } else {
             String line = pendingLines.poll();
+            ps.println();
             rp.processResponse(line);
         }
     }
@@ -92,9 +93,12 @@ public class LineReader extends JLPCActor implements Shell, Interruptable {
             sz = 0;
             pendingLines.add(line);
         } else {
+            if (noEcho) {
+                noEcho = false;
+                ps.println();
+            }
             _rp.processResponse(line);
             _rp = null;
-            noEcho = false;
         }
     }
 
@@ -122,6 +126,7 @@ public class LineReader extends JLPCActor implements Shell, Interruptable {
 
     @Override
     public void interrupt() throws Exception {
+        noEcho = false;
         if (_rp != null) {
             lineEditor.clear();
             ps.println();

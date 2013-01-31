@@ -126,6 +126,14 @@ public class ConsoleApp implements ConsoleIO {
 
     @Override
     public String readPassword() throws Exception {
+        char[] p = cons.readPassword();
+        if (p == null) {
+            /*
+            System.out.println();
+            System.out.flush();
+            */
+            return null;
+        }
         return new String(cons.readPassword());
     }
 }
