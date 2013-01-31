@@ -212,18 +212,26 @@ public class Server extends JLPCActor implements Closable {
 
     public void consolePrintln(String id,
                          AgentChannel agentChannel,
-                         String value) throws Exception {
+                         String value,
+                         final RP<String> rp) throws Exception {
         PrintlnAgent printlnAgent = (PrintlnAgent) JAFactory.newActor(
                 this,
                 JASocketFactories.PRINTLN_AGENT_FACTORY,
-                getMailboxFactory().createAsyncMailbox());
+                getMailboxFactory().createAsyncMailbox(),
+                agentChannelManager());
         printlnAgent.configure(id, value);
+        RP<Jid> _rp = new RP<Jid>() {
+            @Override
+            public void processResponse(Jid response) throws Exception {
+                rp.processResponse(null);
+            }
+        };
         if (agentChannel == null) {
-            StartAgent.req.sendEvent(this, printlnAgent);
+            StartAgent.req.send(this, printlnAgent, _rp);
             return;
         }
         ShipAgent shipAgent = new ShipAgent(printlnAgent);
-        shipAgent.sendEvent(this, agentChannel);
+        shipAgent.send(this, agentChannel, _rp);
     }
 
     public void consoleReadLine(String id,
@@ -232,8 +240,9 @@ public class Server extends JLPCActor implements Closable {
                          final RP<String> rp) throws Exception {
         ReadLineAgent readLineAgent = (ReadLineAgent) JAFactory.newActor(
                 this,
-                JASocketFactories.PRINTLN_AGENT_FACTORY,
-                getMailboxFactory().createAsyncMailbox());
+                JASocketFactories.READ_LINE_AGENT_FACTORY,
+                getMailboxFactory().createAsyncMailbox(),
+                agentChannelManager());
         readLineAgent.configure(id, prompt);
         RP<Jid> _rp = new RP<Jid>() {
             @Override
@@ -255,8 +264,9 @@ public class Server extends JLPCActor implements Closable {
                          final RP<String> rp) throws Exception {
         ReadPasswordAgent readPasswordAgent = (ReadPasswordAgent) JAFactory.newActor(
                 this,
-                JASocketFactories.PRINTLN_AGENT_FACTORY,
-                getMailboxFactory().createAsyncMailbox());
+                JASocketFactories.READ_PASSWORD_AGENT_FACTORY,
+                getMailboxFactory().createAsyncMailbox(),
+                agentChannelManager());
         readPasswordAgent.configure(id, prompt);
         RP<Jid> _rp = new RP<Jid>() {
             @Override

@@ -127,26 +127,35 @@ abstract public class CommandAgent extends AgentJid {
         return requestId;
     }
 
-    public void consolePrintln(String value) throws Exception {
+    public void consolePrintln(String value,
+                               final RP<String> rp) throws Exception {
         PrintlnAgent printlnAgent = (PrintlnAgent) JAFactory.newActor(
                 this,
                 JASocketFactories.PRINTLN_AGENT_FACTORY,
-                getMailboxFactory().createAsyncMailbox());
+                getMailboxFactory().createAsyncMailbox(),
+                agentChannelManager());
         printlnAgent.configure(getId(), value);
+        RP<Jid> _rp = new RP<Jid>() {
+            @Override
+            public void processResponse(Jid response) throws Exception {
+                rp.processResponse(null);
+            }
+        };
         if (agentChannel() == null) {
-            StartAgent.req.sendEvent(this, printlnAgent);
+            StartAgent.req.send(this, printlnAgent, _rp);
             return;
         }
         ShipAgent shipAgent = new ShipAgent(printlnAgent);
-        shipAgent.sendEvent(this, agentChannel());
+        shipAgent.send(this, agentChannel(), _rp);
     }
 
     public void consoleReadLine(String prompt,
                                 final RP<String> rp) throws Exception {
         ReadLineAgent readLineAgent = (ReadLineAgent) JAFactory.newActor(
                 this,
-                JASocketFactories.PRINTLN_AGENT_FACTORY,
-                getMailboxFactory().createAsyncMailbox());
+                JASocketFactories.READ_LINE_AGENT_FACTORY,
+                getMailboxFactory().createAsyncMailbox(),
+                agentChannelManager());
         readLineAgent.configure(getId(), prompt);
         RP<Jid> _rp = new RP<Jid>() {
             @Override
@@ -166,8 +175,9 @@ abstract public class CommandAgent extends AgentJid {
                                     final RP<String> rp) throws Exception {
         ReadPasswordAgent readPasswordAgent = (ReadPasswordAgent) JAFactory.newActor(
                 this,
-                JASocketFactories.PRINTLN_AGENT_FACTORY,
-                getMailboxFactory().createAsyncMailbox());
+                JASocketFactories.READ_PASSWORD_AGENT_FACTORY,
+                getMailboxFactory().createAsyncMailbox(),
+                agentChannelManager());
         readPasswordAgent.configure(getId(), prompt);
         RP<Jid> _rp = new RP<Jid>() {
             @Override

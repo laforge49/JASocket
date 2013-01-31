@@ -33,7 +33,6 @@ abstract public class CommandStringAgent extends CommandAgent {
     @Override
     public void configure(String operatorName, String id, String commandLineString) throws Exception {
         super.configure(operatorName, id, commandLineString);
-        System.out.println(getClass());
         getStringJid().setValue(commandLineString);
     }
 

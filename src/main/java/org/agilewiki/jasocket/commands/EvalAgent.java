@@ -62,7 +62,7 @@ public class EvalAgent extends CommandStringAgent {
         }
         String type = cmd.type();
         agent = (CommandAgent)
-                JAFactory.newActor(this, type, getMailboxFactory().createAsyncMailbox(), agentChannelManager());
+                JAFactory.newActor(this, type, getMailboxFactory().createAsyncMailbox(), getParent());
         agent.configure(getOperatorName(), getId(), rem);
         StartAgent.req.send(this, agent, (RP) rp);
     }
