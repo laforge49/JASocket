@@ -26,13 +26,22 @@ package org.agilewiki.jasocket.server;
 import org.agilewiki.jactor.Closable;
 import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
+import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jactor.lpc.JLPCActor;
+import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
+import org.agilewiki.jasocket.agentChannel.ShipAgent;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
 import org.agilewiki.jasocket.cluster.RegisterServer;
 import org.agilewiki.jasocket.cluster.UnregisterServer;
+import org.agilewiki.jasocket.console.PrintlnAgent;
+import org.agilewiki.jasocket.console.ReadLineAgent;
+import org.agilewiki.jasocket.console.ReadPasswordAgent;
 import org.agilewiki.jasocket.jid.PrintJid;
+import org.agilewiki.jasocket.jid.agent.StartAgent;
 import org.agilewiki.jasocket.node.Node;
+import org.agilewiki.jid.Jid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -199,5 +208,67 @@ public class Server extends JLPCActor implements Closable {
                 rp.processResponse(out);
             }
         });
+    }
+
+    public void println(String id,
+                         AgentChannel agentChannel,
+                         String value) throws Exception {
+        PrintlnAgent printlnAgent = (PrintlnAgent) JAFactory.newActor(
+                this,
+                JASocketFactories.PRINTLN_AGENT_FACTORY,
+                getMailboxFactory().createAsyncMailbox());
+        printlnAgent.configure(id, value);
+        if (agentChannel == null) {
+            StartAgent.req.sendEvent(this, printlnAgent);
+            return;
+        }
+        ShipAgent shipAgent = new ShipAgent(printlnAgent);
+        shipAgent.sendEvent(this, agentChannel);
+    }
+
+    public void readLine(String id,
+                         AgentChannel agentChannel,
+                         String prompt,
+                         final RP<String> rp) throws Exception {
+        ReadLineAgent readLineAgent = (ReadLineAgent) JAFactory.newActor(
+                this,
+                JASocketFactories.PRINTLN_AGENT_FACTORY,
+                getMailboxFactory().createAsyncMailbox());
+        readLineAgent.configure(id, prompt);
+        RP<Jid> _rp = new RP<Jid>() {
+            @Override
+            public void processResponse(Jid response) throws Exception {
+                rp.processResponse(((StringJid) response).getValue());
+            }
+        };
+        if (agentChannel == null) {
+            StartAgent.req.send(this, readLineAgent, _rp);
+            return;
+        }
+        ShipAgent shipAgent = new ShipAgent(readLineAgent);
+        shipAgent.send(this, agentChannel, _rp);
+    }
+
+    public void readPassword(String id,
+                         AgentChannel agentChannel,
+                         String prompt,
+                         final RP<String> rp) throws Exception {
+        ReadPasswordAgent readPasswordAgent = (ReadPasswordAgent) JAFactory.newActor(
+                this,
+                JASocketFactories.PRINTLN_AGENT_FACTORY,
+                getMailboxFactory().createAsyncMailbox());
+        readPasswordAgent.configure(id, prompt);
+        RP<Jid> _rp = new RP<Jid>() {
+            @Override
+            public void processResponse(Jid response) throws Exception {
+                rp.processResponse(((StringJid) response).getValue());
+            }
+        };
+        if (agentChannel == null) {
+            StartAgent.req.send(this, readPasswordAgent, _rp);
+            return;
+        }
+        ShipAgent shipAgent = new ShipAgent(readPasswordAgent);
+        shipAgent.send(this, agentChannel, _rp);
     }
 }
