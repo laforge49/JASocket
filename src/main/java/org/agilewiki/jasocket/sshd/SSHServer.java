@@ -143,7 +143,7 @@ public class SSHServer extends Server {
                                         }
                                     });
                         }
-                        sshAgent.start(all);
+                        sshAgent._start(all);
                     }
                 });
             }

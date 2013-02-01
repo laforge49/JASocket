@@ -39,6 +39,6 @@ public class StartAgent extends Request<Jid, AgentJid> {
 
     @Override
     public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        ((AgentJid) targetActor).start(rp);
+        ((AgentJid) targetActor)._start(rp);
     }
 }

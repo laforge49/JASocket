@@ -92,7 +92,7 @@ public class WhoAgent extends CommandAgent {
                                 }
                             });
                 }
-                whoerAgent.start(whoRP);
+                whoerAgent._start(whoRP);
             }
         });
     }
@@ -108,6 +108,6 @@ public class WhoAgent extends CommandAgent {
         respond();
         out.println("*** Who Interrupted ***");
         out.println("No response from " + expecting + " nodes.");
-        commandRP.processResponse(out);
+        startRP.processResponse(out);
     }
 }

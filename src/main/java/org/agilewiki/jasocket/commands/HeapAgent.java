@@ -92,7 +92,7 @@ public class HeapAgent extends CommandAgent {
                                 }
                             });
                 }
-                heaperAgent.start(heapRP);
+                heaperAgent._start(heapRP);
             }
         });
     }
@@ -108,6 +108,6 @@ public class HeapAgent extends CommandAgent {
         respond();
         out.println("*** Heap Interrupted ***");
         out.println("No response from " + expecting + " nodes.");
-        commandRP.processResponse(out);
+        startRP.processResponse(out);
     }
 }

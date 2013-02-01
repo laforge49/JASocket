@@ -58,6 +58,6 @@ public class PauseAgent extends CommandStringAgent {
     public void userInterrupt() throws Exception {
         timerTask.cancel();
         out.println("*** Pause Interrupted ***");
-        commandRP.processResponse(out);
+        startRP.processResponse(out);
     }
 }

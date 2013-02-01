@@ -72,10 +72,10 @@ public class ServerEvalAgent extends CommandStringAgent {
         setExceptionHandler(new ExceptionHandler() {
             @Override
             public void process(Exception exception) throws Exception {
-                commandRP.processResponse(exception);
+                startRP.processResponse(exception);
             }
         });
         (new ServerUserInterrupt(commandLine, out, getRequestId())).
-                send(this, server, commandRP);
+                send(this, server, startRP);
     }
 }

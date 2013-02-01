@@ -42,7 +42,7 @@ public class BroadcastAgent extends CommandStringAgent {
                 agentChannelManager());
         broadcasterAgent.configure(getOperatorName(), args);
         (new ShipAgentEventToAll(broadcasterAgent)).sendEvent(this, agentChannelManager());
-        broadcasterAgent.start(new RP<Jid>() {
+        broadcasterAgent._start(new RP<Jid>() {
             @Override
             public void processResponse(Jid response) throws Exception {
                 rp.processResponse(out);

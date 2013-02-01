@@ -92,7 +92,7 @@ public class ByteCountsAgent extends CommandAgent {
                                 }
                             });
                 }
-                byteCountserAgent.start(byteCountsRP);
+                byteCountserAgent._start(byteCountsRP);
             }
         });
     }
@@ -108,6 +108,6 @@ public class ByteCountsAgent extends CommandAgent {
         respond();
         out.println("*** ByteCounts Interrupted ***");
         out.println("No response from " + expecting + " nodes.");
-        commandRP.processResponse(out);
+        startRP.processResponse(out);
     }
 }

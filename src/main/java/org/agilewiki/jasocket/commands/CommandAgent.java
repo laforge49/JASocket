@@ -23,7 +23,6 @@
  */
 package org.agilewiki.jasocket.commands;
 
-import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.factory.JAFactory;
 import org.agilewiki.jasocket.JASocketFactories;
@@ -41,7 +40,6 @@ import java.util.Iterator;
 
 abstract public class CommandAgent extends AgentJid {
     protected PrintJid out;
-    protected RP commandRP;
     private long requestId = -1L;
 
     private StringJid getOperatorJid() throws Exception {
@@ -99,23 +97,13 @@ abstract public class CommandAgent extends AgentJid {
             agentChannel().agents.put(requestId, this);
         }
         out = PrintJid.newPrintJid(this);
-        commandRP = rp;
         process(rp);
     }
 
-    public void _userInterrupt() throws Exception {
-        setExceptionHandler(new ExceptionHandler() {
-            @Override
-            public void process(Exception exception) throws Exception {
-                commandRP.processResponse(exception);
-            }
-        });
-        userInterrupt();
-    }
-
+    @Override
     public void userInterrupt() throws Exception {
         out.println("*** Command Interrupted ***");
-        commandRP.processResponse(out);
+        startRP.processResponse(out);
     }
 
     @Override

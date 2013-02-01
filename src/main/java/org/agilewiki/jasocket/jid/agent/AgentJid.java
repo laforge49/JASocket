@@ -23,6 +23,7 @@
  */
 package org.agilewiki.jasocket.jid.agent;
 
+import org.agilewiki.jactor.ExceptionHandler;
 import org.agilewiki.jactor.RP;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.agentChannel.AgentChannel;
@@ -32,7 +33,28 @@ import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.collection.flenc.AppJid;
 
 abstract public class AgentJid extends AppJid {
+    protected RP startRP;
+
+    public void _start(RP<Jid> rp) throws Exception {
+        startRP = rp;
+        start(rp);
+    }
+
     abstract public void start(RP<Jid> rp) throws Exception;
+
+    public void _userInterrupt() throws Exception {
+        setExceptionHandler(new ExceptionHandler() {
+            @Override
+            public void process(Exception exception) throws Exception {
+                startRP.processResponse(exception);
+            }
+        });
+        userInterrupt();
+    }
+
+    public void userInterrupt() throws Exception {
+        startRP.processResponse(null);
+    }
 
     protected AgentChannel agentChannel() {
         JLPCActor actor = getParent();
