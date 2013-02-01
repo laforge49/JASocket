@@ -33,10 +33,14 @@ import org.agilewiki.jid.Jid;
 import org.agilewiki.jid.collection.flenc.AppJid;
 
 abstract public class AgentJid extends AppJid {
+    private long requestId = -1L;
     protected RP startRP;
 
     public void _start(RP<Jid> rp) throws Exception {
         startRP = rp;
+        if (requestId > -1) {
+            agentChannel().agents.put(requestId, this);
+        }
         start(rp);
     }
 
@@ -90,5 +94,10 @@ abstract public class AgentJid extends AppJid {
     }
 
     public void setRequestId(long requestId) {
+        this.requestId = requestId;
+    }
+
+    public long getRequestId() {
+        return requestId;
     }
 }

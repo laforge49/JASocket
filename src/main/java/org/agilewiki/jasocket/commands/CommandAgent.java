@@ -40,7 +40,6 @@ import java.util.Iterator;
 
 abstract public class CommandAgent extends AgentJid {
     protected PrintJid out;
-    private long requestId = -1L;
 
     private StringJid getOperatorJid() throws Exception {
         return (StringJid) _iGet(0);
@@ -93,9 +92,6 @@ abstract public class CommandAgent extends AgentJid {
     public void start(RP rp) throws Exception {
         if (getOperatorName() == null)
             throw new IllegalArgumentException("missing operator name");
-        if (requestId > -1) {
-            agentChannel().agents.put(requestId, this);
-        }
         out = PrintJid.newPrintJid(this);
         process(rp);
     }
@@ -104,15 +100,6 @@ abstract public class CommandAgent extends AgentJid {
     public void userInterrupt() throws Exception {
         out.println("*** Command Interrupted ***");
         startRP.processResponse(out);
-    }
-
-    @Override
-    public void setRequestId(long requestId) {
-        this.requestId = requestId;
-    }
-
-    public long getRequestId() {
-        return requestId;
     }
 
     public void consolePrintln(String value,
