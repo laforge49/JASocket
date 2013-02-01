@@ -35,6 +35,7 @@ import org.agilewiki.jasocket.agentSocket.AgentSocket;
 import org.agilewiki.jasocket.agentSocket.WriteBytes;
 import org.agilewiki.jasocket.cluster.AgentChannelClosed;
 import org.agilewiki.jasocket.cluster.AgentChannelManager;
+import org.agilewiki.jasocket.commands.UserInterrupt;
 import org.agilewiki.jasocket.jid.ExceptionJid;
 import org.agilewiki.jasocket.jid.ExceptionJidFactory;
 import org.agilewiki.jasocket.jid.RemoteException;
@@ -141,6 +142,14 @@ public class AgentChannel extends JLPCActor implements SocketProtocol {
             } catch (Exception x) {
                 getMailboxFactory().logException(false, "unhandled exception while aborting unsatisfied request", x);
             }
+        }
+        Iterator<Long> idit = agents.keySet().iterator();
+        while (idit.hasNext()) {
+            Long id = idit.next();
+            try {
+                AgentJid agent = agents.get(id);
+                UserInterrupt.req.sendEvent(AgentChannel.this, agent);
+            } catch (Exception ex) {}
         }
         try {
             (new AgentChannelClosed(this)).sendEvent(agentChannelManager());
