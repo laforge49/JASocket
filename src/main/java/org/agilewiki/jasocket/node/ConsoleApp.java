@@ -134,6 +134,6 @@ public class ConsoleApp implements ConsoleIO {
             */
             return null;
         }
-        return new String(cons.readPassword());
+        return new String(p);
     }
 }
