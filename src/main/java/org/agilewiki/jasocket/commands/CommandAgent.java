@@ -57,8 +57,8 @@ abstract public class CommandAgent extends AgentJid {
         return getIdJid().getValue();
     }
 
-    public void setId(String operatorName) throws Exception {
-        getIdJid().setValue(operatorName);
+    public void setId(String id) throws Exception {
+        getIdJid().setValue(id);
     }
 
     protected String getOperatorName() throws Exception {
@@ -67,7 +67,8 @@ abstract public class CommandAgent extends AgentJid {
 
     public void configure(String operatorName, String id, String commandLine) throws Exception {
         setOperatorName(operatorName);
-        setId(id);
+        if (id != null)
+            setId(id);
     }
 
     protected Commands commands() {

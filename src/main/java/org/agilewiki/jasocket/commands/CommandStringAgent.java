@@ -32,8 +32,12 @@ abstract public class CommandStringAgent extends CommandAgent {
 
     @Override
     public void configure(String operatorName, String id, String commandLineString) throws Exception {
+        try {
         super.configure(operatorName, id, commandLineString);
         getStringJid().setValue(commandLineString);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     protected String getArgString() throws Exception {
