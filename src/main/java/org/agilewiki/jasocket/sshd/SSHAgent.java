@@ -37,10 +37,12 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SSHAgent extends AgentJid {
+    private String serverName;
+
     @Override
     public void start(final RP<Jid> rp) throws Exception {
         final PrintJid out = PrintJid.newPrintJid(this);
-        (new GetLocalServer("sshServer")).send(this, agentChannelManager(), new RP<Server>() {
+        (new GetLocalServer(serverName)).send(this, agentChannelManager(), new RP<Server>() {
             @Override
             public void processResponse(Server response) throws Exception {
                 if (response != null) {
@@ -65,5 +67,9 @@ public class SSHAgent extends AgentJid {
                 rp.processResponse(out);
             }
         });
+    }
+
+    public void configure(String serverName) {
+        this.serverName = serverName;
     }
 }

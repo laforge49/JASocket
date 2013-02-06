@@ -23,22 +23,41 @@
  */
 package org.agilewiki.jasocket.sshd;
 
-import org.agilewiki.jactor.Actor;
 import org.agilewiki.jactor.RP;
-import org.agilewiki.jactor.lpc.JLPCActor;
-import org.agilewiki.jactor.lpc.Request;
+import org.agilewiki.jasocket.jid.PrintJid;
 
-public class AssignSSHId extends Request<String, SSHServer> {
-    public final static AssignSSHId req = new AssignSSHId();
+import java.util.Iterator;
+import java.util.TreeSet;
 
-    @Override
-    public boolean isTargetType(Actor targetActor) {
-        return targetActor instanceof SSHServer;
+public class MungeRP extends RP {
+    PrintJid out;
+    RP rp;
+    public int expecting;
+    public TreeSet<String> ts = new TreeSet<String>();
+
+    public MungeRP(PrintJid out, RP rp) {
+        this.out = out;
+        this.rp = rp;
     }
 
     @Override
-    public void processRequest(JLPCActor targetActor, RP rp) throws Exception {
-        SSHServer sshServer = (SSHServer) targetActor;
-        rp.processResponse("s" + sshServer.incId());
+    public void processResponse(Object response) throws Exception {
+        if (response != null) {
+            PrintJid o = (PrintJid) response;
+            int s = o.size();
+            int i = 0;
+            while (i < s) {
+                ts.add(o.iGet(i).getValue());
+                i += 1;
+            }
+        }
+        expecting -= 1;
+        if (expecting > 0)
+            return;
+        Iterator<String> it = ts.iterator();
+        while (it.hasNext()) {
+            out.println(it.next());
+        }
+        rp.processResponse(out);
     }
 }
