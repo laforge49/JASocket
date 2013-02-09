@@ -69,6 +69,11 @@ public class ServerEvalAgent extends CommandStringAgent {
 
     @Override
     public void userInterrupt() throws Exception {
+        if (server == null) {
+            out.println("nothing to interrupt");
+            startRP.processResponse(out);
+            return;
+        }
         setExceptionHandler(new ExceptionHandler() {
             @Override
             public void process(Exception exception) throws Exception {

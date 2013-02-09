@@ -30,6 +30,7 @@ import org.agilewiki.jasocket.jid.PrintJid;
 import org.agilewiki.jasocket.jid.agent.AgentJid;
 import org.agilewiki.jasocket.server.Server;
 import org.agilewiki.jid.Jid;
+import org.agilewiki.jid.scalar.vlens.string.StringJid;
 import org.joda.time.Period;
 import org.joda.time.format.ISOPeriodFormat;
 
@@ -37,12 +38,14 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SSHAgent extends AgentJid {
-    private String serverName;
+    private StringJid getNameJid() throws Exception {
+        return (StringJid) _iGet(0);
+    }
 
     @Override
     public void start(final RP<Jid> rp) throws Exception {
         final PrintJid out = PrintJid.newPrintJid(this);
-        (new GetLocalServer(serverName)).send(this, agentChannelManager(), new RP<Server>() {
+        (new GetLocalServer(getNameJid().getValue())).send(this, agentChannelManager(), new RP<Server>() {
             @Override
             public void processResponse(Server response) throws Exception {
                 if (response != null) {
@@ -69,7 +72,7 @@ public class SSHAgent extends AgentJid {
         });
     }
 
-    public void configure(String serverName) {
-        this.serverName = serverName;
+    public void configure(String serverName) throws Exception {
+        getNameJid().setValue(serverName);
     }
 }

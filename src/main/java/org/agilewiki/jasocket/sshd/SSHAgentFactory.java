@@ -26,12 +26,13 @@ package org.agilewiki.jasocket.sshd;
 import org.agilewiki.jactor.lpc.JLPCActor;
 import org.agilewiki.jasocket.JASocketFactories;
 import org.agilewiki.jid.collection.flenc.AppJidFactory;
+import org.agilewiki.jid.scalar.vlens.string.StringJidFactory;
 
 public class SSHAgentFactory extends AppJidFactory {
     public final static SSHAgentFactory fac = new SSHAgentFactory();
 
     public SSHAgentFactory() {
-        super(JASocketFactories.SSH_AGENT_FACTORY);
+        super(JASocketFactories.SSH_AGENT_FACTORY, StringJidFactory.fac);
     }
 
     @Override
